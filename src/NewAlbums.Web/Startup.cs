@@ -1,3 +1,4 @@
+using GenericServices.Setup;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NewAlbums.EntityFrameworkCore;
+using System.Reflection;
 
 namespace NewAlbums.Web
 {
@@ -23,7 +25,9 @@ namespace NewAlbums.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<NewAlbumsDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("Default"))); 
+                options.UseSqlServer(Configuration.GetConnectionString("Default")));
+
+            services.GenericServicesSimpleSetup<NewAlbumsDbContext>(Assembly.GetAssembly(typeof(BaseAppService)));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
