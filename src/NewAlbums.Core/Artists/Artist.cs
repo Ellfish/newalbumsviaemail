@@ -1,10 +1,11 @@
-﻿using System;
+﻿using NewAlbums.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NewAlbums.Core.Artists
+namespace NewAlbums.Artists
 {
-    public class Artist
+    public class Artist : Entity<long>
     {
         public string Name { get; set; }
 

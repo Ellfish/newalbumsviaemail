@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NewAlbums.Application\NewAlbums.Application.csproj" />
+    <ProjectReference Include="..\NewAlbums.EntityFrameworkCore\NewAlbums.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
