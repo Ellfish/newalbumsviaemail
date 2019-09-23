@@ -6,7 +6,7 @@ export class Home extends Component {
     render() {
         const redirectUrl = encodeURIComponent(`${process.env.REACT_APP_API_URL}/spotifycallback/`);
         const scopes = encodeURIComponent('user-follow-read');
-        const spotifyAuthoriseUrl = `https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${redirectUrl}&scope=${scopes}`;
+        const spotifyAuthoriseUrl = `https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${redirectUrl}&scope=${scopes}&show_dialog=true`;
 
         return (
             <div>

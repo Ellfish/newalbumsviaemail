@@ -8,7 +8,7 @@ using NewAlbums.Artists;
 namespace NewAlbums.Web.Controllers
 {
     [Route("api/[controller]")]
-    public class SampleDataController : Controller
+    public class SampleDataController : BaseController
     {
         private readonly IArtistAppService _artistAppService;
 
