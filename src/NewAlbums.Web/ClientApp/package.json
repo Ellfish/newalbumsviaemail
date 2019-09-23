@@ -1,5 +1,5 @@
 {
-  "name": "NewAlbums.Web",
+  "name": "NewAlbumsViaEmail",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

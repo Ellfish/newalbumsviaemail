@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NewAlbums.Artists;
 using NewAlbums.EntityFrameworkCore;
+using NewAlbums.Spotify;
 using System.Reflection;
 
 namespace NewAlbums.Web
@@ -32,6 +33,7 @@ namespace NewAlbums.Web
             services.GenericServicesSimpleSetup<NewAlbumsDbContext>(Assembly.GetAssembly(typeof(BaseAppService)));
 
             //NewsAlbums.Application services
+            services.AddTransient<ISpotifyAppService, SpotifyAppService>();
             services.AddTransient<IArtistAppService, ArtistAppService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
