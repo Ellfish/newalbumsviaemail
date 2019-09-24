@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NewAlbums.Artists;
 using NewAlbums.EntityFrameworkCore;
+using NewAlbums.Logging;
 using NewAlbums.Spotify;
 using NewAlbums.Web.Filters;
 using NewAlbums.Web.Responses.Common;
@@ -55,7 +56,9 @@ namespace NewAlbums.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddLog4Net();
+            NewAlbumsLogging.ConfigureLogger(loggerFactory);
+            //Set the injected loggerFactory (which is used by ASP.NET logging messages) as the singleton instance to use everywhere
+            NewAlbumsLogging.LoggerFactory = loggerFactory;
 
             if (env.IsDevelopment())
             {
