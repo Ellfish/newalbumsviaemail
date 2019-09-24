@@ -6,7 +6,9 @@ using SpotifyAPI.Web.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NewAlbums.Spotify
@@ -51,10 +53,30 @@ namespace NewAlbums.Spotify
                 {
                     Logger.LogError("Error status: {0}, message: {1}", response.Error.Status, response.Error.Message);
 
-                    return new GetFollowedArtistsOutput
+                    //Handle rate limiting: https://developer.spotify.com/documentation/web-api/#rate-limiting
+                    if (response.StatusCode() == HttpStatusCode.TooManyRequests)
                     {
-                        ErrorMessage = response.Error.Message
-                    };
+                        string retryAfterSeconds = response.Header("Retry-After");
+                        if (!String.IsNullOrWhiteSpace(retryAfterSeconds))
+                        {
+                            int retryAfterSecondsInt = 0;
+                            if (int.TryParse(retryAfterSeconds, out retryAfterSecondsInt))
+                            {
+                                //Safest to add one second here, see comments for: https://stackoverflow.com/a/30557896
+                                retryAfterSecondsInt++;
+                                await Task.Delay(retryAfterSecondsInt * 1000);
+
+                                continue;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return new GetFollowedArtistsOutput
+                        {
+                            ErrorMessage = response.Error.Message
+                        };
+                    }
                 }
 
                 if (response.Artists.Items == null || response.Artists.Items.Count == 0)
