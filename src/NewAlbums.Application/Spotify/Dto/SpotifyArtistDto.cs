@@ -9,5 +9,7 @@ namespace NewAlbums.Spotify.Dto
         public string Id { get; set; }
 
         public string Name { get; set; }
+
+        public SpotifyImageDto Image { get; set; }
     }
 }

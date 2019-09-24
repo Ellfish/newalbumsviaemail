@@ -1,7 +1,9 @@
 import React from 'react';
 import Loader from 'react-loader-spinner';
-import { useOurApi } from '../hooks/useOurApi';
-import ErrorMessage from './common/ErrorMessage';
+import { Button } from 'react-bootstrap';
+import { useOurApi } from '../../hooks/useOurApi';
+import ErrorMessage from '../common/ErrorMessage';
+import FollowedArtistsListItem from './FollowedArtistsListItem';
 
 export default function FollowedArtistsList(props) {
     const url = `/api/Spotify/FollowedArtists?AccessToken=${props.accessToken}`;
@@ -25,12 +27,17 @@ export default function FollowedArtistsList(props) {
 
     let artists = [];
     for (let i = 0; i < data.length; i++) {
-        artists.push(<li key={data[i].id}>{data[i].name}</li>);
+        artists.push(<FollowedArtistsListItem artist={data[i]} key={data[i].id} />);
     }
 
     return (
-        <ul className="followed-artists-list">
-            {artists}
-        </ul>
+        <div>
+            <Button>Select All</Button>
+            <Button>Select None</Button>
+
+            <ul className="followed-artists-list">
+                {artists}
+            </ul>
+        </div>
     );    
 }

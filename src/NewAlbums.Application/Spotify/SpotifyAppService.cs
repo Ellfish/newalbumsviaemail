@@ -3,6 +3,7 @@ using NewAlbums.Spotify.Dto;
 using SpotifyAPI.Web;
 using SpotifyAPI.Web.Auth;
 using SpotifyAPI.Web.Enums;
+using SpotifyAPI.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,7 +87,8 @@ namespace NewAlbums.Spotify
                     response.Artists.Items.Select(artistItem => new SpotifyArtistDto
                     {
                         Id = artistItem.Id,
-                        Name = artistItem.Name
+                        Name = artistItem.Name,
+                        Image = GetArtistImage(artistItem.Images)
                     })
                 );
 
@@ -102,6 +104,33 @@ namespace NewAlbums.Spotify
             {
                 Artists = followedArtists.OrderBy(a => a.Name).ToList()
             };
+        }
+
+        /// <summary>
+        /// Finds the smallest image over 100px wide and sets that as the SpotifyArtistDto.Image.
+        /// If no images meet this criteria, returns a default image (shouldn't be necessary, but makes front-end simpler)
+        /// </summary>
+        private SpotifyImageDto GetArtistImage(List<Image> apiImages)
+        {
+            if (apiImages == null || !apiImages.Any())
+                return new SpotifyImageDto();
+
+            var spotifyImage = apiImages
+                .Where(i => i.Width >= 100)
+                .OrderBy(i => i.Width)
+                .FirstOrDefault();
+
+            if (spotifyImage != null)
+            {
+                return new SpotifyImageDto
+                {
+                    Url = spotifyImage.Url,
+                    Width = spotifyImage.Width,
+                    Height = spotifyImage.Height
+                };
+            }
+
+            return new SpotifyImageDto();
         }
     }
 }

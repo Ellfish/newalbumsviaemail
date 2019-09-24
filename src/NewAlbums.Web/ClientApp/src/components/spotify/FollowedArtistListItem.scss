@@ -1,0 +1,23 @@
+$container-width: 180px;
+
+.artist-container {
+    display: inline-block;
+    width: $container-width;
+    vertical-align: top;
+    margin-right: 40px;
+    margin-bottom: 65px;
+
+    .artist-image {
+        display: block;
+        width: $container-width;
+        height: $container-width;
+        margin-bottom: 20px;
+        object-fit: contain;
+        border-radius: 50%;
+    }
+
+    .artist-name {
+        font-weight: bold;
+        text-align: center;
+    }
+}

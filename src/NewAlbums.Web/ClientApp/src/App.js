@@ -4,7 +4,7 @@ import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { FetchData } from './components/FetchData';
 import { Counter } from './components/Counter';
-import { SpotifyCallback } from './components/SpotifyCallback';
+import { SpotifyCallback } from './components/spotify/SpotifyCallback';
 
 export default class App extends Component {
     displayName = App.name

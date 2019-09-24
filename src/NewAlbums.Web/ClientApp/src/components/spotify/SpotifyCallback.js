@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import parseHash from '../utils/parseHash';
-import parseSearch from '../utils/parseSearch';
+import parseHash from '../../utils/parseHash';
+import parseSearch from '../../utils/parseSearch';
 import FollowedArtistsList from './FollowedArtistsList';
 
 export class SpotifyCallback extends Component {
