@@ -5,6 +5,7 @@ using SpotifyAPI.Web.Auth;
 using SpotifyAPI.Web.Enums;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,7 +13,16 @@ namespace NewAlbums.Spotify
 {
     public class SpotifyAppService : BaseAppService, ISpotifyAppService
     {
+        /// <summary>
+        /// Enforced by Spotify API
+        /// </summary>
         private const int MAX_LIMIT_GET_FOLLOWED_ARTISTS = 50;
+
+        /// <summary>
+        /// Max number of artists we want to return for a user, to avoid hitting the Spotify API
+        /// too hard and to reduce load time of the request
+        /// </summary>
+        private const int MAX_FOLLOWED_ARTISTS = 1000;
 
         public SpotifyAppService()
         {
@@ -28,31 +38,47 @@ namespace NewAlbums.Spotify
                 UseAuth = true
             };
 
-            var response = await api.GetFollowedArtistsAsync(FollowType.Artist, limit: MAX_LIMIT_GET_FOLLOWED_ARTISTS);
-            if (response.HasError())
-            {
-                Logger.LogError("Error status: {0}, message: {1}", response.Error.Status, response.Error.Message);
-
-                return new GetFollowedArtistsOutput
-                {
-                    ErrorMessage = response.Error.Message
-                };
-            }
-
             var followedArtists = new List<SpotifyArtistDto>();
-            
-            foreach (var artist in response.Artists.Items)
+
+            //Keep requesting MAX_LIMIT_GET_FOLLOWED_ARTISTS until we get all followed artists, or reach MAX_FOLLOWED_ARTISTS
+            int i = MAX_FOLLOWED_ARTISTS / MAX_LIMIT_GET_FOLLOWED_ARTISTS;
+            string afterArtistId = "";
+
+            while (i > 0)
             {
-                followedArtists.Add(new SpotifyArtistDto
+                var response = await api.GetFollowedArtistsAsync(FollowType.Artist, limit: MAX_LIMIT_GET_FOLLOWED_ARTISTS, after: afterArtistId);
+                if (response.HasError())
                 {
-                    Id = artist.Id,
-                    Name = artist.Name
-                });
+                    Logger.LogError("Error status: {0}, message: {1}", response.Error.Status, response.Error.Message);
+
+                    return new GetFollowedArtistsOutput
+                    {
+                        ErrorMessage = response.Error.Message
+                    };
+                }
+
+                if (response.Artists.Items == null || response.Artists.Items.Count == 0)
+                    break;
+
+                followedArtists.AddRange(
+                    response.Artists.Items.Select(artistItem => new SpotifyArtistDto
+                    {
+                        Id = artistItem.Id,
+                        Name = artistItem.Name
+                    })
+                );
+
+                if (!response.Artists.HasNext())
+                    break;
+
+                afterArtistId = response.Artists.Items[response.Artists.Items.Count - 1].Id;
+
+                i--;
             }
 
             return new GetFollowedArtistsOutput
             {
-                Artists = followedArtists
+                Artists = followedArtists.OrderBy(a => a.Name).ToList()
             };
         }
     }
