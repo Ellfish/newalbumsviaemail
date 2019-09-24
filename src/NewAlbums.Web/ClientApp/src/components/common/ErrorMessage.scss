@@ -1,0 +1,9 @@
+.error-message-container {
+    padding: 10px;
+    background-color: red;
+
+    .error-message {
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+}

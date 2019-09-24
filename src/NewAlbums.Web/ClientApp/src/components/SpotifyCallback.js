@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import queryString from 'query-string';
+import parseHash from '../utils/parseHash';
+import parseSearch from '../utils/parseSearch';
 import FollowedArtistsList from './FollowedArtistsList';
 
 export class SpotifyCallback extends Component {
@@ -7,8 +8,8 @@ export class SpotifyCallback extends Component {
     constructor(props) {
         super(props);
 
-        const hashValues = queryString.parse(this.props.location.hash);
-        const searchValues = queryString.parse(this.props.location.search);
+        const hashValues = parseHash();
+        const searchValues = parseSearch();
 
         this.state = {
             error: searchValues.error,
