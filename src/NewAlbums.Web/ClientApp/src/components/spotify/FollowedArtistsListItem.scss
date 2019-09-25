@@ -1,7 +1,6 @@
-$container-width: 180px;
+@import '../../styles/variables';
 
-//TODO: refactor out to variable file
-$spotify-green: #1DB954;
+$container-width: 180px;
 
 .artist-container {
     display: inline-block;

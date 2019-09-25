@@ -1,0 +1,16 @@
+﻿@import '../../styles/variables';
+
+footer {
+    height: auto;
+    padding: 100px 20px;
+    background-color: $colour-primary;
+    
+    a {
+        color: $colour-primary-lighter;
+
+        &:active, &:hover {
+            color: $colour-primary-light;
+        }
+    }
+
+}

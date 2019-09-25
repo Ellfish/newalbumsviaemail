@@ -1,19 +1,30 @@
 import React, { Component } from 'react';
+import { Button } from 'react-bootstrap';
 
 export class Home extends Component {
     displayName = Home.name
 
     render() {
-        const redirectUrl = encodeURIComponent(`${process.env.REACT_APP_API_URL}/spotifycallback/`);
+        const redirectUrl = encodeURIComponent(`${process.env.REACT_APP_API_URL}/spotify-callback/`);
         const scopes = encodeURIComponent('user-follow-read');
         const spotifyAuthoriseUrl = `https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${redirectUrl}&scope=${scopes}&show_dialog=true`;
 
         return (
             <div>
-                <h1>New Albums via Email</h1>
-                <p>Receive an email alert when an artist you follow releases a new album.</p>
+                <h2>How does it work?</h2>
+
+                <ol>
+                    <li>Allow this app access to your followed artists on Spotify</li>
+                    <li>Choose which followed artists to subscribe to</li>
+                    <li>Enter your email address</li>
+                </ol>
+
+                <p>
+                    Our app checks for new album releases daily. If it finds one from an artist that you've subscribed to, we'll send you an email notification. It's easy to unsubscribe at any time.
+                </p>
 
                 <h2>Spotify already sends me weekly new release emails, why do I need this?</h2>
+
                 <ul>
                     <li>Receive emails within one day of a new album release</li>
                     <li>We only email you about albums, which are more important than single releases</li>
@@ -26,7 +37,7 @@ export class Home extends Component {
                     In fact, you can check our source code to verify this on <a href='https://github.com/Ellfish/newalbumsviaemail'>Github</a>.
                 </p>
 
-                <a href={spotifyAuthoriseUrl} className='btn btn-primary btn-lg'>Get Started</a>
+                <Button bsStyle='primary' bsSize='lg' href={spotifyAuthoriseUrl}>Get Started</Button>
             </div>
         );
     }

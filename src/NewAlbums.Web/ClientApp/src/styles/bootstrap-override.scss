@@ -1,0 +1,45 @@
+﻿@import './variables';
+
+//
+//Bootstrap variables - override before importing bootstrap scss
+//
+
+//Colours
+$brand-primary: $colour-primary;
+
+//Scaffolding
+$body-bg: $spotify-black;
+$text-color: $white;
+$link-color: $colour-primary-light;
+$link-hover-color: $colour-primary;
+
+//Typography
+$font-family-sans-serif: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-size-base: 16px;
+$headings-font-weight: 700;
+$headings-color: $colour-primary;
+
+//Buttons
+$btn-font-weight: 700;
+
+//Forms
+//$input-border: #ccc;
+$input-border-focus: $colour-primary;
+
+//
+//Import Bootstrap
+//
+@import '~bootstrap-sass/assets/stylesheets/bootstrap-sprockets';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap';
+
+//Not an override, but additional styling provided by Bootstrap
+.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+
+    > .col,
+    > [class*="col-"] {
+        padding-right: 0;
+        padding-left: 0;
+    }
+}

@@ -4,6 +4,7 @@ import Loader from 'react-loader-spinner';
 import { useOurApi } from '../../hooks/useOurApi';
 import ErrorMessage from '../common/ErrorMessage';
 import FollowedArtistsListItem from './FollowedArtistsListItem';
+import './FollowedArtistsList.scss';
 
 export default function FollowedArtistsList(props) {
     const url = `/api/Spotify/FollowedArtists?AccessToken=${props.accessToken}`;
@@ -37,10 +38,10 @@ export default function FollowedArtistsList(props) {
 
     return (
         <div>
-            <Button bsStyle='primary' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
+            <Button bsStyle='primary' className='m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
             <Button bsStyle='primary' onClick={() => setSelectedAllArtists(false)}>Select None</Button>
 
-            <ul className="followed-artists-list">
+            <ul className='followed-artists-list list-unstyled'>
                 {artistListItems}
             </ul>
         </div>

@@ -1,0 +1,16 @@
+﻿@import '../../styles/variables';
+
+header {
+    height: auto;
+    padding: 150px 20px;
+    margin-bottom: 50px;
+    background-color: $colour-primary;
+    color: $white;
+    text-align: center;
+
+    .app-name {
+        color: $white;
+        font-size: 50px;
+        line-height: 75px;
+    }
+}
