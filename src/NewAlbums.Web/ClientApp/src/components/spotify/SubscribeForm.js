@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, FormGroup, FormControl, ControlLabel, Grid, Row, Col } from 'react-bootstrap';
+import { Button, FormGroup, FormControl, ControlLabel, Row, Col } from 'react-bootstrap';
 import { useOurApi } from '../../hooks/useOurApi';
 import LoadingSpinner from '../common/LoadingSpinner';
 import './SubscribeForm.scss';

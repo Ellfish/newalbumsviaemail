@@ -10,6 +10,11 @@ export class PrivacyPolicy extends Component {
                 <h2>Privacy Policy</h2>
 
                 <p>Coming soon</p>
+
+                <p>We respect your privacy.</p>
+
+                <p>We use Google Analytics</p>
+                
             </div>
         );
     }
