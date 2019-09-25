@@ -102,7 +102,8 @@ namespace NewAlbums.Spotify
 
             return new GetFollowedArtistsOutput
             {
-                Artists = followedArtists.OrderBy(a => a.Name).ToList()
+                Artists = followedArtists.OrderBy(a => a.Name).ToList(),
+                ErrorMessage = !followedArtists.Any() ? "You're not currently following any artists." : null
             };
         }
 

@@ -17,6 +17,12 @@ $spotify-green: #1DB954;
         }
     }
 
+    &:hover:not(.selected) {
+        .artist-image {
+            border: 4px solid $spotify-green;
+        }
+    }
+
     .artist-image {
         display: block;
         width: $container-width;
