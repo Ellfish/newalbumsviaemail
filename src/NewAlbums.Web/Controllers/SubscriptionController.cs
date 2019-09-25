@@ -52,13 +52,17 @@ namespace NewAlbums.Web.Controllers
                 Artists = model.SpotifyArtists
             });
 
-            /*
-            var output = await _subscriptionAppService.SubscribeToArtists(new SubscribeToArtistsInput
+            if (artistsOutput.HasError)
+                return StatusCode(500, new ApiResponse(500, artistsOutput.ErrorMessage));
+
+            var subscriptionOutput = await _subscriptionAppService.SubscribeToArtists(new SubscribeToArtistsInput
             {
-                EmailAddress = model.EmailAddress,
-                SpotifyArtists = model.SpotifyArtists
+                Subscriber = subscriberOutput.Subscriber,
+                Artists = artistsOutput.Artists
             });
-            */
+
+            if (subscriptionOutput.HasError)
+                return StatusCode(500, new ApiResponse(500, subscriptionOutput.ErrorMessage));
 
             return Ok(new ApiOkResponse(true));
         }

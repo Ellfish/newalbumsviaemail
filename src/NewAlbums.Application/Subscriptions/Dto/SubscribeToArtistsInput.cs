@@ -1,4 +1,6 @@
-﻿using NewAlbums.Spotify.Dto;
+﻿using NewAlbums.Artists.Dto;
+using NewAlbums.Spotify.Dto;
+using NewAlbums.Subscribers.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,13 +9,13 @@ namespace NewAlbums.Subscriptions.Dto
 {
     public class SubscribeToArtistsInput
     {
-        public string EmailAddress { get; set; }
+        public SubscriberDto Subscriber { get; set; }
 
-        public IList<SpotifyArtistDto> SpotifyArtists { get; set; }
+        public IList<ArtistDto> Artists { get; set; }
 
         public SubscribeToArtistsInput()
         {
-            SpotifyArtists = new List<SpotifyArtistDto>();
+            Artists = new List<ArtistDto>();
         }
     }
 }
