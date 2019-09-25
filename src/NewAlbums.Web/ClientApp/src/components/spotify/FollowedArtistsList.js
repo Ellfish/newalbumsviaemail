@@ -44,6 +44,8 @@ export default function FollowedArtistsList(props) {
             <ul className='followed-artists-list list-unstyled'>
                 {artistListItems}
             </ul>
+
+
         </div>
     );
 
