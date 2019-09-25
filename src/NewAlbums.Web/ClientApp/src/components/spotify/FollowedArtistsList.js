@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
-import Loader from 'react-loader-spinner';
 import { useOurApi } from '../../hooks/useOurApi';
 import ErrorMessage from '../common/ErrorMessage';
+import LoadingSpinner from '../common/LoadingSpinner';
 import FollowedArtistsListItem from './FollowedArtistsListItem';
+import SubscribeForm from './SubscribeForm';
 import './FollowedArtistsList.scss';
 
 export default function FollowedArtistsList(props) {
@@ -12,15 +13,7 @@ export default function FollowedArtistsList(props) {
     const [artists, setArtists] = useState([]);
 
     if (isLoading || (!hasError && data.length === 0)) {
-        return (
-            <Loader
-                type='Oval'
-                visible='true'
-                height={50}
-                width={50}
-                timeout={15}
-            />
-        );
+        return <LoadingSpinner />;
     }
 
     if (hasError) {
@@ -45,7 +38,10 @@ export default function FollowedArtistsList(props) {
                 {artistListItems}
             </ul>
 
+            <Button bsStyle='primary' className='m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
+            <Button bsStyle='primary' onClick={() => setSelectedAllArtists(false)}>Select None</Button>
 
+            <SubscribeForm artists={artists} />
         </div>
     );
 
