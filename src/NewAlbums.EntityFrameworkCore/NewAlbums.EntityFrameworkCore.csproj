@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190925063917_Added_Subscriber_Subscription_And_CreationAuditedEntity_Base_Class.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.11">

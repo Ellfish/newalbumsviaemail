@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NewAlbums.EntityFrameworkCore;
 
 namespace NewAlbums.Migrations
 {
     [DbContext(typeof(NewAlbumsDbContext))]
-    partial class NewAlbumsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190925064158_Added_Subscriber_Subscription_And_CreationAuditedEntity_Base_Class")]
+    partial class Added_Subscriber_Subscription_And_CreationAuditedEntity_Base_Class
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

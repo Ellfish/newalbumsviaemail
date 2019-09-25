@@ -107,6 +107,13 @@ namespace NewAlbums.Spotify
             };
         }
 
+        public async Task<SubscribeToArtistsOutput> SubscribeToArtists(SubscribeToArtistsInput input)
+        {
+
+
+            return new SubscribeToArtistsOutput();
+        }
+
         /// <summary>
         /// Finds the smallest image over 100px wide and sets that as the SpotifyArtistDto.Image.
         /// If no images meet this criteria, returns a default image (shouldn't be necessary, but makes front-end simpler)

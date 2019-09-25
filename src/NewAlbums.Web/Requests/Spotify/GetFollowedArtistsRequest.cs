@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NewAlbums.Web.Models.Spotify
+namespace NewAlbums.Web.Requests.Spotify
 {
     public class GetFollowedArtistsRequest
     {

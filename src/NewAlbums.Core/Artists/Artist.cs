@@ -5,10 +5,10 @@ using System.Text;
 
 namespace NewAlbums.Artists
 {
-    public class Artist : Entity<long>
+    public class Artist : CreationAuditedEntity<long>
     {
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
 
-        public string SpotifyId { get; set; }
+        public virtual string SpotifyId { get; set; }
     }
 }

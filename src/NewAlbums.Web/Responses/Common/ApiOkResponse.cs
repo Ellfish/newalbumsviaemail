@@ -15,5 +15,11 @@ namespace NewAlbums.Web.Responses.Common
         {
             Result = result;
         }
+
+        public ApiOkResponse()
+            : base(200)
+        {
+
+        }
     }
 }

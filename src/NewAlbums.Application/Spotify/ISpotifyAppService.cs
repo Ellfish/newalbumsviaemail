@@ -9,5 +9,7 @@ namespace NewAlbums.Spotify
     public interface ISpotifyAppService
     {
         Task<GetFollowedArtistsOutput> GetFollowedArtists(GetFollowedArtistsInput input);
+
+        Task<SubscribeToArtistsOutput> SubscribeToArtists(SubscribeToArtistsInput input);
     }
 }
