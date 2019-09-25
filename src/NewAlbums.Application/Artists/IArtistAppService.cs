@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NewAlbums.Artists
 {
     public interface IArtistAppService
     {
-        IList<ArtistListDto> GetAll();
+        Task<GetOrCreateManyOutput> GetOrCreateMany(GetOrCreateManyInput input);
     }
 }

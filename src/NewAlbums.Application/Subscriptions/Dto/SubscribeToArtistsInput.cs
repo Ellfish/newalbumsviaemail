@@ -1,8 +1,9 @@
-﻿using System;
+﻿using NewAlbums.Spotify.Dto;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NewAlbums.Spotify.Dto
+namespace NewAlbums.Subscriptions.Dto
 {
     public class SubscribeToArtistsInput
     {

@@ -6,8 +6,10 @@ using System.Text;
 
 namespace NewAlbums.Artists.Dto
 {
-    public class ArtistListDto : CreationAuditedEntityDto<long>, ILinkToEntity<Artist>
+    public class ArtistDto : CreationAuditedEntityDto<long>, ILinkToEntity<Artist>
     {
         public string Name { get; set; }
+
+        public string SpotifyId { get; set; }
     }
 }
