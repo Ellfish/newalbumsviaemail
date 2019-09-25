@@ -4,7 +4,8 @@ footer {
     height: auto;
     padding: 100px 20px;
     background-color: $colour-primary;
-    
+    text-align: center;
+
     a {
         color: $colour-primary-lighter;
 
@@ -13,4 +14,19 @@ footer {
         }
     }
 
+    .footer-links-list {
+        margin-bottom: 40px;
+    }
+
+    .spotify-logo-container {
+        //Spotify brand guidelines specify minimum width of 70px
+        $logo-width: 140px;
+        
+        .spotify-logo {
+            display: block;
+            margin: 20px auto 0 auto;
+            width: $logo-width;
+            height: auto;
+        }
+    }
 }

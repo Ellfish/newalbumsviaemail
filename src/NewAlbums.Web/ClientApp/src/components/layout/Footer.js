@@ -5,11 +5,10 @@ export default function Footer(props) {
 
     return (
         <footer>
-
-            <ul className='footer-links-list list-unstyled text-center'>
+            <ul className='footer-links-list list-unstyled'>
                 <li>
                     New Albums via Email
-                        </li>
+                </li>
                 <li>
                     An app by <a href='http://www.icebergweb.com.au'>Iceberg Web Development</a>
                 </li>
@@ -20,6 +19,14 @@ export default function Footer(props) {
                     <a href='/privacy-policy'>Privacy policy</a>
                 </li>
             </ul>
+
+            <div className='spotify-logo-container'>
+                Artist and album content including cover art supplied by:
+
+                <a href='https://www.spotify.com'>
+                    <img className='spotify-logo' src='/images/spotify-logo-white.png' alt='Spotify' />
+                </a>
+            </div>
         </footer>
     );
 };

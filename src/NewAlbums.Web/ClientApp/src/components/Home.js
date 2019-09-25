@@ -37,7 +37,7 @@ export class Home extends Component {
                     In fact, you can check our source code to verify this on <a href='https://github.com/Ellfish/newalbumsviaemail'>Github</a>.
                 </p>
 
-                <Button bsStyle='primary' bsSize='lg' href={spotifyAuthoriseUrl}>Get Started</Button>
+                <Button bsStyle='primary' bsSize='lg' className='m-t-50' href={spotifyAuthoriseUrl}>Get Started</Button>
             </div>
         );
     }
