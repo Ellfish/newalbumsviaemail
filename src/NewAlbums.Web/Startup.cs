@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,7 @@ using NewAlbums.Subscribers;
 using NewAlbums.Subscriptions;
 using NewAlbums.Web.Filters;
 using NewAlbums.Web.Responses.Common;
+using NewAlbums.Web.Rules;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -87,7 +90,39 @@ namespace NewAlbums.Web
             {
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
+
+                var options = new RewriteOptions()
+                    .AddRedirectToHttps(301)
+                    .Add(new NonWwwRule());
+
+                app.UseRewriter(options);
             }
+
+            //NWebSec extensions
+            //Other headers, from: https://damienbod.com/2018/02/08/adding-http-headers-to-improve-security-in-an-asp-net-mvc-core-application/
+            app.UseXContentTypeOptions();
+            app.UseReferrerPolicy(opts => opts.OriginWhenCrossOrigin());
+            app.UseXXssProtection(opts => opts.EnabledWithBlockMode());
+            app.UseXfo(options => options.Deny());
+
+            app.UseCsp(opts => opts
+                .BlockAllMixedContent()
+                .StyleSources(s => s.Self())
+                .StyleSources(s => s.CustomSources("https://fonts.googleapis.com"))
+                .StyleSources(s => s.UnsafeInline())
+                .FontSources(s => s.Self())
+                .FontSources(s => s.CustomSources("https://fonts.gstatic.com"))
+                .FormActions(s => s.Self())
+                .FrameAncestors(s => s.Self())
+                .ImageSources(s => s.Self())
+                .ImageSources(s => s.CustomSources("https://i.scdn.co"))
+                //.ImageSources(s => s.CustomSources("data:"))
+                .ScriptSources(s => s.Self())
+            );
+
+            //Fix for IIS
+            var provider = new FileExtensionContentTypeProvider();
+            provider.Mappings[".webmanifest"] = "application/manifest+json";
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
