@@ -115,9 +115,10 @@ namespace NewAlbums.Web
                 .FormActions(s => s.Self())
                 .FrameAncestors(s => s.Self())
                 .ImageSources(s => s.Self())
-                .ImageSources(s => s.CustomSources("https://i.scdn.co"))
+                .ImageSources(s => s.CustomSources("https://i.scdn.co", "https://www.google-analytics.com"))
                 //.ImageSources(s => s.CustomSources("data:"))
                 .ScriptSources(s => s.Self())
+                .ScriptSources(s => s.CustomSources("https://www.google-analytics.com"))
             );
 
             //Fix for IIS
