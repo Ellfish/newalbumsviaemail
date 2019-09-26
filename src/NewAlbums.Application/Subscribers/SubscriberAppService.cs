@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GenericServices;
 using Microsoft.Extensions.Logging;
 using NewAlbums.Subscribers.Dto;
+using NewAlbums.Utils;
 
 namespace NewAlbums.Subscribers
 {
@@ -19,23 +20,32 @@ namespace NewAlbums.Subscribers
 
         public async Task<GetOrCreateSubscriberOutput> GetOrCreate(GetOrCreateSubscriberInput input)
         {
-            if (String.IsNullOrWhiteSpace(input.EmailAddress))
-                throw new ArgumentException("EmailAddress must be a valid email address", "EmailAddress");
-
             try
             {
                 SubscriberDto subscriberDto = null;
+                bool newSubscriber = false;
+                string normalisedEmail = StringUtils.NormaliseEmailAddress(input.EmailAddress);
 
-                subscriberDto = await _crudServices.ReadSingleAsync<SubscriberDto>(s => s.EmailAddress == input.EmailAddress);
+                subscriberDto = await _crudServices.ReadSingleAsync<SubscriberDto>(s => s.EmailAddress == normalisedEmail);
                 if (subscriberDto == null)
                 {
-                    subscriberDto = await _crudServices.CreateAndSaveAsync(new SubscriberDto { EmailAddress = input.EmailAddress });
+                    subscriberDto = await _crudServices.CreateAndSaveAsync(new SubscriberDto { EmailAddress = normalisedEmail });
+                    if (!_crudServices.IsValid)
+                    {
+                        return new GetOrCreateSubscriberOutput
+                        {
+                            ErrorMessage = _crudServices.GetAllErrors()
+                        };
+                    }
+
+                    newSubscriber = true;
                 }
 
                 return new GetOrCreateSubscriberOutput
                 {
                     Subscriber = subscriberDto,
-                    ErrorMessage = subscriberDto == null ? "Error creating subscriber in database" : null
+                    CreatedNewSubscriber = newSubscriber,
+                    ErrorMessage = subscriberDto == null ? $"Error creating subscriber with email '{normalisedEmail}' in database" : null
                 };
             }
             catch (Exception ex)

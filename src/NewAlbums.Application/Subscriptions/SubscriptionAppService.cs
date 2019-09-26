@@ -40,7 +40,10 @@ namespace NewAlbums.Subscriptions
 
                 await _crudServices.Context.SaveChangesAsync();
 
-                return new SubscribeToArtistsOutput();
+                return new SubscribeToArtistsOutput
+                {
+                    ErrorMessage = _crudServices.IsValid ? null : _crudServices.GetAllErrors()
+                };
             }
             catch (Exception ex)
             {

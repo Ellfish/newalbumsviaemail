@@ -2,6 +2,7 @@
 using NewAlbums.Entities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace NewAlbums.Subscribers.Dto
@@ -10,6 +11,7 @@ namespace NewAlbums.Subscribers.Dto
     {
         public string EmailAddress { get; set; }
 
+        [ReadOnly(true)]
         public string UnsubscribeToken { get; set; }
     }
 }

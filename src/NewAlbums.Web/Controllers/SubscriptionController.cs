@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using NewAlbums.Artists;
 using NewAlbums.Artists.Dto;
+using NewAlbums.Configuration;
+using NewAlbums.Emails;
+using NewAlbums.Emails.Dto;
 using NewAlbums.Subscribers;
 using NewAlbums.Subscribers.Dto;
 using NewAlbums.Subscriptions;
@@ -22,19 +27,25 @@ namespace NewAlbums.Web.Controllers
         private readonly ISubscriberAppService _subscriberAppService;
         private readonly IArtistAppService _artistAppService;
         private readonly ISubscriptionAppService _subscriptionAppService;
+        private readonly EmailManager _emailManager;
+        private readonly IConfiguration _configuration;
 
         public SubscriptionController(
             ISubscriberAppService subscriberAppService,
             IArtistAppService artistAppService,
-            ISubscriptionAppService subscriptionAppService)
+            ISubscriptionAppService subscriptionAppService,
+            EmailManager emailManager,
+            IConfiguration configuration)
         {
             _subscriberAppService = subscriberAppService;
             _artistAppService = artistAppService;
             _subscriptionAppService = subscriptionAppService;
+            _emailManager = emailManager;
+            _configuration = configuration;
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> SubscribeToArtists(SubscribeToArtistsRequest model)
+        public async Task<IActionResult> SubscribeToArtists([FromBody] SubscribeToArtistsRequest model)
         {
             if (!model.SpotifyArtists.Any())
                 return BadRequest(new ApiResponse(400, "Please select at least one artist to subscribe to."));
@@ -64,7 +75,40 @@ namespace NewAlbums.Web.Controllers
             if (subscriptionOutput.HasError)
                 return StatusCode(500, new ApiResponse(500, subscriptionOutput.ErrorMessage));
 
+            if (subscriberOutput.CreatedNewSubscriber)
+            {
+                await SendNotificationEmail(subscriberOutput.Subscriber.EmailAddress, artistsOutput.Artists.Count);
+            }            
+
             return Ok(new ApiOkResponse(true));
+        }
+
+        private async Task SendNotificationEmail(string subscriberEmailAddress, int artistsCount)
+        {
+            string adminEmailAddress = _configuration[AppSettingKeys.App.AdminEmailAddress];
+            if (String.IsNullOrWhiteSpace(adminEmailAddress))
+            {
+                Logger.LogInformation("Not sending new subscriber notification email, no AdminEmailAddress configured.");
+                return;
+            }
+
+            string adminFullName = _configuration[AppSettingKeys.App.AdminFullName];
+
+            var message = new EmailMessage
+            {
+                BodyText = $"New subscriber: {subscriberEmailAddress}, subscribed to: {artistsCount} artists",
+                Subject = "New subscriber to New Albums via Email",
+                ToAddresses = new List<EmailAddress>
+                {
+                    new EmailAddress
+                    {
+                        Address = adminEmailAddress,
+                        DisplayName = adminFullName
+                    }
+                }
+            };
+
+            await _emailManager.SendEmail(message);
         }
     }
 }

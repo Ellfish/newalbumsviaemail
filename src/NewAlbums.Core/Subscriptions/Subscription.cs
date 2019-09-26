@@ -12,7 +12,7 @@ namespace NewAlbums.Subscriptions
     {
         public virtual long SubscriberId { get; set; }
 
-        [ForeignKey("SubscribeId")]
+        [ForeignKey("SubscriberId")]
         public virtual Subscriber Subscriber { get; set; }
 
         public virtual long ArtistId { get; set; }

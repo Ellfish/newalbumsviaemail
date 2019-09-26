@@ -8,6 +8,7 @@ namespace NewAlbums.Subscribers.Dto
     public class GetOrCreateSubscriberInput
     {
         [Required]
+        [EmailAddress]
         public string EmailAddress { get; set; }
     }
 }

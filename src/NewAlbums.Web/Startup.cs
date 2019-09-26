@@ -1,3 +1,4 @@
+using GenericServices.Configuration;
 using GenericServices.Setup;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -11,12 +12,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NewAlbums.Artists;
+using NewAlbums.Emails;
 using NewAlbums.EntityFrameworkCore;
 using NewAlbums.Logging;
+using NewAlbums.Paths;
 using NewAlbums.Spotify;
+using NewAlbums.Subscribers;
+using NewAlbums.Subscriptions;
 using NewAlbums.Web.Filters;
 using NewAlbums.Web.Responses.Common;
 using Newtonsoft.Json;
+using System;
+using System.IO;
 using System.Reflection;
 
 namespace NewAlbums.Web
@@ -36,11 +43,23 @@ namespace NewAlbums.Web
             services.AddDbContext<NewAlbumsDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Default")));
 
-            services.GenericServicesSimpleSetup<NewAlbumsDbContext>(Assembly.GetAssembly(typeof(BaseAppService)));
+            services.GenericServicesSimpleSetup<NewAlbumsDbContext>(
+                new GenericServicesConfig
+                {
+                    NoErrorOnReadSingleNull = true
+                }, 
+                Assembly.GetAssembly(typeof(BaseAppService))
+            );
 
             //NewsAlbums.Application services
             services.AddTransient<ISpotifyAppService, SpotifyAppService>();
             services.AddTransient<IArtistAppService, ArtistAppService>();
+            services.AddTransient<ISubscriberAppService, SubscriberAppService>();
+            services.AddTransient<ISubscriptionAppService, SubscriptionAppService>();
+
+            //NewAlbums.Core managers
+            services.AddTransient<EmailManager>();
+            services.AddTransient<IPathProvider, PathProvider>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -110,6 +129,9 @@ namespace NewAlbums.Web
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            //Set the App_Data directory so we can retrieve it later. https://stackoverflow.com/a/48357218
+            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(env.ContentRootPath, "App_Data"));
         }
     }
 }
