@@ -8,9 +8,14 @@ header {
     color: $white;
     text-align: center;
 
+    .home-link {
+        text-decoration: none !important;
+    }
+
     .app-name {
         color: $white;
         font-size: 50px;
+        font-weight: 700;
         line-height: 75px;
     }
 }

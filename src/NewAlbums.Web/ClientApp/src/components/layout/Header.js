@@ -1,11 +1,14 @@
 ﻿import React from 'react';
+import { Link } from 'react-router-dom';
 import './Header.scss';
 
 export default function Header(props) {
 
     return (
         <header>
-            <h1 className='app-name'>New Albums via Email</h1>
+            <Link to='/' className='home-link'>
+                <div className='app-name'>New Albums via Email</div>
+            </Link>
             <div className='app-subheading'>Receive email notifications when artists you follow on Spotify release new albums</div>
         </header>
     );

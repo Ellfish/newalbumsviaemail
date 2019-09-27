@@ -9,8 +9,8 @@ footer {
     a {
         color: $colour-primary-lighter;
 
-        &:active, &:hover {
-            color: $colour-primary-light;
+        &:active, &:hover, &:visited, &:focus {
+            color: $colour-primary-light !important;
         }
     }
 

@@ -25,6 +25,7 @@ using NewAlbums.Web.Filters;
 using NewAlbums.Web.Responses.Common;
 using NewAlbums.Web.Rules;
 using Newtonsoft.Json;
+using NWebsec.Core.Common.Middleware.Options;
 using System;
 using System.IO;
 using System.Reflection;
@@ -118,6 +119,10 @@ namespace NewAlbums.Web
                 .ImageSources(s => s.CustomSources("https://i.scdn.co", "https://www.google-analytics.com"))
                 //.ImageSources(s => s.CustomSources("data:"))
                 .ScriptSources(s => s.Self())
+#if DEBUG
+                //Needed for webpackHotDevClient in development only
+                .ScriptSources(s => s.UnsafeInline())
+#endif
                 .ScriptSources(s => s.CustomSources("https://www.google-analytics.com"))
             );
 

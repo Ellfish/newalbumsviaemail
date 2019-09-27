@@ -1,0 +1,4 @@
+sitemap: https://newalbumsvia.email/sitemap.xml
+
+User-agent: *
+Disallow: /spotify-callback

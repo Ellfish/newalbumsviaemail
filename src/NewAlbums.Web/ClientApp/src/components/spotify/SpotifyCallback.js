@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import parseHash from '../../utils/parseHash';
 import parseSearch from '../../utils/parseSearch';
 
@@ -21,8 +21,8 @@ export class SpotifyCallback extends Component {
         if (this.state.error) {
             return (
                 <div>
-                    <h2>Error</h2>
-                    <p>You must authorise access to your Spotify account so we can read your followed artists. <a href='/'>Go back and try again.</a></p>
+                    <h1>Error</h1>
+                    <p>You must authorise access to your Spotify account so we can read your followed artists. <Link to='/'>Go back and try again.</Link></p>
                 </div>
             );
         }

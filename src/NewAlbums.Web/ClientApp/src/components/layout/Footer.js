@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import { Link } from 'react-router-dom';
 import './Footer.scss';
 
 export default function Footer(props) {
@@ -16,7 +17,10 @@ export default function Footer(props) {
                     Source code on <a href='https://github.com/Ellfish/newalbumsviaemail'>Github</a>
                 </li>
                 <li>
-                    <a href='/privacy-policy'>Privacy policy</a>
+                    <Link to='/'>Home</Link>
+                </li>
+                <li>
+                    <Link to='/privacy-policy'>Privacy policy</Link>
                 </li>
             </ul>
 

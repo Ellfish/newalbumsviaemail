@@ -14,7 +14,7 @@ export class SubscribeToArtists extends Component {
     render() {
         return (
             <div>
-                <h2>Select artists to subscribe to</h2>
+                <h1>Select artists to subscribe to</h1>
 
                 <FollowedArtistsList accessToken={this.state.accessToken} />
             </div>

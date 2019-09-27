@@ -11,6 +11,8 @@ export class Home extends Component {
 
         return (
             <div>
+                <h1>Subscribe to new album releases from your followed Spotify artists</h1>
+
                 <h2>How does it work?</h2>
 
                 <ol>
