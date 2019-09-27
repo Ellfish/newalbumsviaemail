@@ -119,11 +119,10 @@ namespace NewAlbums.Web
                 .ImageSources(s => s.CustomSources("https://i.scdn.co", "https://www.google-analytics.com"))
                 //.ImageSources(s => s.CustomSources("data:"))
                 .ScriptSources(s => s.Self())
-#if DEBUG
-                //Needed for webpackHotDevClient in development only
+                //Needed for webpackHotDevClient in development, and when compiled for production. 
+                //Would be better to implement nonces
                 .ScriptSources(s => s.UnsafeInline())
-#endif
-                .ScriptSources(s => s.CustomSources("https://www.google-analytics.com"))
+                .ScriptSources(s => s.CustomSources("https://www.google-analytics.com", "https://storage.googleapis.com"))
             );
 
             //Fix for IIS
