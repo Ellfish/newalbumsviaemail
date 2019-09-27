@@ -120,7 +120,7 @@ namespace NewAlbums.Web
                 //.ImageSources(s => s.CustomSources("data:"))
                 .ScriptSources(s => s.Self())
                 //Needed for webpackHotDevClient in development, and when compiled for production. 
-                //Would be better to implement nonces
+                //TODO implement nonces instead
                 .ScriptSources(s => s.UnsafeInline())
                 .ScriptSources(s => s.CustomSources("https://www.google-analytics.com", "https://storage.googleapis.com"))
             );

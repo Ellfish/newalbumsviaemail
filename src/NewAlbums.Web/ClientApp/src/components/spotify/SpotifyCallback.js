@@ -21,7 +21,7 @@ export class SpotifyCallback extends Component {
         if (this.state.error) {
             return (
                 <div>
-                    <h1>Error</h1>
+                    <h1>Cancelled</h1>
                     <p>You must authorise access to your Spotify account so we can read your followed artists. <Link to='/'>Go back and try again.</Link></p>
                 </div>
             );
