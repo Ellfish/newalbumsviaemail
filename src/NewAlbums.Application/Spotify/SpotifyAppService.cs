@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NewAlbums.Debugging;
 using NewAlbums.Spotify.Dto;
 using SpotifyAPI.Web;
 using SpotifyAPI.Web.Auth;
@@ -91,6 +92,13 @@ namespace NewAlbums.Spotify
                         Image = GetArtistImage(artistItem.Images)
                     })
                 );
+
+                //Only return a manageable amount of artists when debugging
+                if (DebugHelper.IsDebug)
+                {
+                    followedArtists = followedArtists.Take(20).ToList();
+                    break;
+                }
 
                 if (!response.Artists.HasNext())
                     break;

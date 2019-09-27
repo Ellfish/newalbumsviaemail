@@ -9,10 +9,10 @@ import './FollowedArtistsList.scss';
 
 export default function FollowedArtistsList(props) {
     const url = `/api/Spotify/FollowedArtists?AccessToken=${props.accessToken}`;
-    const { data, isLoading, hasError, errorMessage } = useOurApi(url, []);
+    const { responseData, isLoading, hasError, errorMessage } = useOurApi(url, []);
     const [artists, setArtists] = useState([]);
 
-    if (isLoading || (!hasError && data.length === 0)) {
+    if (isLoading || (!hasError && responseData.length === 0)) {
         return <LoadingSpinner />;
     }
 
@@ -20,14 +20,9 @@ export default function FollowedArtistsList(props) {
         return <ErrorMessage message={errorMessage} />;
     }
 
-    if (data.length > 0 && artists.length === 0) {
-        setArtists(data);
+    if (responseData.length > 0 && artists.length === 0) {
+        setArtists(responseData);
     }    
-
-    let artistListItems = [];
-    for (let i = 0; i < artists.length; i++) {
-        artistListItems.push(<FollowedArtistsListItem artist={artists[i]} key={artists[i].id} handleClick={(artist) => handleArtistClick(artist)} />);
-    }
 
     return (
         <div>
@@ -35,7 +30,7 @@ export default function FollowedArtistsList(props) {
             <Button bsStyle='primary' onClick={() => setSelectedAllArtists(false)}>Select None</Button>
 
             <ul className='followed-artists-list list-unstyled'>
-                {artistListItems}
+                {renderArtistListItems()}
             </ul>
 
             <Button bsStyle='primary' className='m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
@@ -44,6 +39,15 @@ export default function FollowedArtistsList(props) {
             <SubscribeForm artists={artists} />
         </div>
     );
+
+    function renderArtistListItems() {
+        let artistListItems = [];
+        for (let i = 0; i < artists.length; i++) {
+            artistListItems.push(<FollowedArtistsListItem artist={artists[i]} key={artists[i].id} handleClick={(artist) => handleArtistClick(artist)} />);
+        }
+
+        return artistListItems;
+    }
 
     function handleArtistClick(artist) {
         setArtists(artists.map((a) => {

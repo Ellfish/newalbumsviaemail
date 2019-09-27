@@ -6,6 +6,7 @@ import { Home } from './components/Home';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { SpotifyCallback } from './components/spotify/SpotifyCallback';
 import { SubscribeToArtists } from './components/spotify/SubscribeToArtists';
+import { SubscribeSuccess } from './components/spotify/SubscribeSuccess';
 
 export default class App extends Component {
     displayName = App.name
@@ -23,6 +24,7 @@ export default class App extends Component {
                 <Route exact path='/' component={Home} />
                 <Route path='/spotify-callback' component={SpotifyCallback} />
                 <Route path='/subscribe-to-artists' component={SubscribeToArtists} />
+                <Route path='/subscribe-success' component={SubscribeSuccess} />
                 <Route path='/privacy-policy' component={PrivacyPolicy} />
             </Layout>
         );

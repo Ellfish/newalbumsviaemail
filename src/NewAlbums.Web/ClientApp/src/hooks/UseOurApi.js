@@ -1,19 +1,16 @@
 import { useEffect, useState } from 'react';
 
 /*  Example
-    initialUrl: "/api/jobs"
+    url: "/api/jobs"
     initialData: [] //usually empty array or object
 
     Adapted from: https://www.henriksommerfeld.se/error-handling-with-fetch/
 */
-export const useOurApi = (initialUrl, initialData) => {
-    const [url, setUrl] = useState(initialUrl);
-    const [isLoading, setIsLoading] = useState(true);
+export const useOurApi = (url, initialData, method, postData) => {
+    const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
     const [fetchedData, setFetchedData] = useState(initialData);
-
-    //TODO: add errorMessage, setErrorMessage
 
     useEffect(() => {
         let unmounted = false;
@@ -24,14 +21,19 @@ export const useOurApi = (initialUrl, initialData) => {
             setHasError(!response.ok);
             setIsLoading(false);
 
+            const contentType = response.headers.get("content-type");
+            const isJson = contentType && contentType.indexOf("application/json") !== -1;
+
             //We expect our API to always return consistent json responses. See NewAlbums.Web.Responses.Common classes
-            if (!response.ok || !response.json) {
-                if (response.json) {
+            if (!response.ok || !isJson) {
+                if (isJson) {
                     response.json().then(data => {
                         setErrorMessage(data.message);
                     });
                 } else {
-                    setErrorMessage('Unexpected response format');
+                    response.text().then(text => {
+                        setErrorMessage(text);
+                    });
                 }
 
                 return initialData;
@@ -42,18 +44,34 @@ export const useOurApi = (initialUrl, initialData) => {
 
         const fetchData = () => {
             setIsLoading(true);
-            return fetch(url, { credentials: 'include' })
+
+            let fetchOptions = {
+                credentials: 'same-origin',
+                method: method ? method : 'GET'
+            };
+
+            if (method === 'POST') {
+                fetchOptions.headers = {
+                    'Content-Type': 'application/json'
+                };
+
+                fetchOptions.body = JSON.stringify(postData);
+            }
+
+            return fetch(url, fetchOptions)
                 .then(handleFetchResponse)
                 .catch(handleFetchResponse);
         };
 
-        if (initialUrl && !unmounted)
+        if (url && !unmounted) {
             fetchData().then(responseJson => !unmounted && setFetchedData(responseJson.result));
 
-        return () => {
-            unmounted = true;
-        };
+            //Only return the cleanup function when we've actually called fetchData()
+            return () => {
+                unmounted = true;
+            };
+        }
     }, [url]);
 
-    return { isLoading, hasError, errorMessage, setUrl, data: fetchedData };
+    return { isLoading, hasError, errorMessage, responseData: fetchedData };
 };
