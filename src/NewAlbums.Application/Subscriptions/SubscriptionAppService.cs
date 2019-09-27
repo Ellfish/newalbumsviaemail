@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GenericServices;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NewAlbums.Subscriptions.Dto;
 
@@ -28,14 +29,22 @@ namespace NewAlbums.Subscriptions
 
             try
             {
+                //The subscriber may have existing subscriptions
+                var existingSubscriptions = await _crudServices.ReadManyNoTracked<Subscription>()
+                    .Where(s => s.SubscriberId == input.Subscriber.Id)
+                    .ToListAsync();
+
                 foreach (var artist in input.Artists)
                 {
-                    //Don't use _crudServices.CreateAndSaveAsync, because we only want to call Save once for performance reasons
-                    _crudServices.Context.Add(new Subscription
+                    if (!existingSubscriptions.Any(s => s.ArtistId == artist.Id))
                     {
-                        ArtistId = artist.Id,
-                        SubscriberId = input.Subscriber.Id
-                    });
+                        //Don't use _crudServices.CreateAndSaveAsync, because we only want to call Save once for performance reasons
+                        _crudServices.Context.Add(new Subscription
+                        {
+                            ArtistId = artist.Id,
+                            SubscriberId = input.Subscriber.Id
+                        });
+                    }
                 }
 
                 await _crudServices.Context.SaveChangesAsync();
