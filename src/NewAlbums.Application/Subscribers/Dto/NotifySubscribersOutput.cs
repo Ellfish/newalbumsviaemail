@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NewAlbums.Notifications.Dto
+namespace NewAlbums.Subscribers.Dto
 {
     public class NotifySubscribersOutput : BaseOutput
     {

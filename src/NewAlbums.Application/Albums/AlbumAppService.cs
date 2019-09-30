@@ -19,54 +19,49 @@ namespace NewAlbums.Albums
             _crudServices = crudServices;
         }
 
-        /*
         /// <summary>
-        /// When a user subscribes to an artist, we want to store the artist in our database. 
-        /// An artist may already exist if another user has already subscribed to them.
-        /// When a user subscribes they will usually subscribe to many artists in one go. 
-        /// This method is optimised for that scenario, allowing for the fact that some artists may already exist.
+        /// When we notify a subscriber about an album, we want to store the album in our database so we know
+        /// that we've handled the album and don't send more notifications for it in future.
+        /// This method creates albums that don't already exist, and returns only those that were created.
         /// </summary>
-        public async Task<GetOrCreateManyOutput> GetOrCreateMany(GetOrCreateManyInput input)
+        public async Task<CreateNewAlbumsOutput> CreateNewAlbums(CreateNewAlbumsInput input)
         {
-            if (!input.Artists.Any())
-                throw new ArgumentException("Artists must contain at least one artist", "Artists");
-
-            var spotifyArtistIds = input.Artists.Select(a => a.Id).ToList();
+            var inputSpotifyAlbumIds = input.Albums.Select(a => a.SpotifyId).ToList();
 
             try
             {
-                var output = new GetOrCreateManyOutput();
+                var output = new CreateNewAlbumsOutput();
 
-                var existingArtists = await _crudServices.ReadManyNoTracked<ArtistDto>()
-                    .Where(a => spotifyArtistIds.Contains(a.SpotifyId))
+                var existingSpotifyAlbumIds = await _crudServices.ReadManyNoTracked<Album>()
+                    .Where(a => inputSpotifyAlbumIds.Contains(a.SpotifyId))
+                    .Select(a => a.SpotifyId)
                     .ToListAsync();
 
-                foreach (var spotifyArtist in input.Artists)
+                foreach (var inputAlbum in input.Albums)
                 {
-                    var existingArtist = existingArtists.FirstOrDefault(a => a.SpotifyId == spotifyArtist.Id);
-                    if (existingArtist == null)
+                    if (!existingSpotifyAlbumIds.Any(id => id == inputAlbum.SpotifyId))
                     {
-                        existingArtist = await _crudServices.CreateAndSaveAsync(new ArtistDto
+                        var newAlbum = await _crudServices.CreateAndSaveAsync(new AlbumDto
                         {
-                            Name = spotifyArtist.Name,
-                            SpotifyId = spotifyArtist.Id
+                            Name = inputAlbum.Name,
+                            SpotifyId = inputAlbum.SpotifyId,
+                            ReleaseDate = inputAlbum.ReleaseDate
                         });
-                    }
 
-                    output.Artists.Add(existingArtist);
+                        output.NewAlbums.Add(newAlbum);
+                    }
                 }
 
                 return output;
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "SpotifyArtistIds: " + String.Join(',', spotifyArtistIds));
-                return new GetOrCreateManyOutput
+                Logger.LogError(ex, "InputSpotifyAlbumIds: " + String.Join(',', inputSpotifyAlbumIds));
+                return new CreateNewAlbumsOutput
                 {
                     ErrorMessage = ex.Message
                 };
             }
         }
-        */
     }
 }

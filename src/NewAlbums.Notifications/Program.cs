@@ -2,10 +2,12 @@
 using GenericServices.Setup;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NewAlbums.Albums;
 using NewAlbums.Artists;
 using NewAlbums.Emails;
 using NewAlbums.EntityFrameworkCore;
@@ -33,6 +35,8 @@ namespace NewAlbums.Notifications
         {
             var builder = new HostBuilder();
 
+            IConfiguration configuration = null;
+
             builder.ConfigureHostConfiguration(configHost =>
             {
                 configHost.SetBasePath(Directory.GetCurrentDirectory());
@@ -56,6 +60,8 @@ namespace NewAlbums.Notifications
                 {
                     configApp.AddUserSecrets<Program>();
                 }
+
+                configuration = configApp.Build();
             });
 
             builder.ConfigureWebJobs(b =>
@@ -71,7 +77,9 @@ namespace NewAlbums.Notifications
 
             builder.ConfigureServices(serviceCollection =>
             {
-                /*
+                serviceCollection.AddDbContext<NewAlbumsDbContext>(options =>
+                    options.UseSqlServer(configuration.GetConnectionString("Default")));
+
                 serviceCollection.GenericServicesSimpleSetup<NewAlbumsDbContext>(
                     new GenericServicesConfig
                     {
@@ -79,16 +87,17 @@ namespace NewAlbums.Notifications
                     },
                     Assembly.GetAssembly(typeof(BaseAppService))
                 );
-                */
 
                 //NewsAlbums.Application services
                 serviceCollection.AddTransient<ISpotifyAppService, SpotifyAppService>();
                 serviceCollection.AddTransient<IArtistAppService, ArtistAppService>();
+                serviceCollection.AddTransient<IAlbumAppService, AlbumAppService>();
                 serviceCollection.AddTransient<ISubscriberAppService, SubscriberAppService>();
                 serviceCollection.AddTransient<ISubscriptionAppService, SubscriptionAppService>();
 
                 //NewAlbums.Core managers
                 serviceCollection.AddTransient<EmailManager>();
+                //TODO: have to do something about IHostingEnvironment dependency of PathProvider
                 serviceCollection.AddTransient<IPathProvider, PathProvider>();
 
             });

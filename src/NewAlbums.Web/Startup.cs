@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
+using NewAlbums.Albums;
 using NewAlbums.Artists;
 using NewAlbums.Emails;
 using NewAlbums.EntityFrameworkCore;
@@ -59,6 +60,7 @@ namespace NewAlbums.Web
             //NewsAlbums.Application services
             services.AddTransient<ISpotifyAppService, SpotifyAppService>();
             services.AddTransient<IArtistAppService, ArtistAppService>();
+            services.AddTransient<IAlbumAppService, AlbumAppService>();
             services.AddTransient<ISubscriberAppService, SubscriberAppService>();
             services.AddTransient<ISubscriptionAppService, SubscriptionAppService>();
 

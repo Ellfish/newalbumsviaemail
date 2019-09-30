@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\20190925063917_Added_Subscriber_Subscription_And_CreationAuditedEntity_Base_Class.cs" />
+    <Compile Remove="Migrations\20190930071229_Added_Album.cs" />
+    <Compile Remove="Migrations\20190930071229_Added_Album.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

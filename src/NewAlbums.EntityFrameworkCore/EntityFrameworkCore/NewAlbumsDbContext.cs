@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NewAlbums.Albums;
 using NewAlbums.Artists;
 using NewAlbums.Subscribers;
 using NewAlbums.Subscriptions;
@@ -11,7 +12,11 @@ namespace NewAlbums.EntityFrameworkCore
     public class NewAlbumsDbContext : DbContext
     {
         public DbSet<Artist> Artists { get; set; }
+
+        public DbSet<Album> Albums { get; set; }
+
         public DbSet<Subscriber> Subscribers { get; set; }
+
         public DbSet<Subscription> Subscriptions { get; set; }
 
         public NewAlbumsDbContext(DbContextOptions<NewAlbumsDbContext> options)

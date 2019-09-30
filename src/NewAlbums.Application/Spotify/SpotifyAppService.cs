@@ -143,6 +143,7 @@ namespace NewAlbums.Spotify
                             SpotifyId = albumItem.Id,
                             Name = albumItem.Name,
                             Image = GetImage(albumItem.Images, 200),
+                            ReleaseDate = albumItem.ReleaseDate,
                             Artists = albumItem.Artists.Select(artistItem => new ArtistDto
                             {
                                 SpotifyId = artistItem.Id,

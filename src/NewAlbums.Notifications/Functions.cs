@@ -1,8 +1,11 @@
 ﻿using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using NewAlbums.Notifications.Dto;
+using NewAlbums.Albums;
+using NewAlbums.Albums.Dto;
 using NewAlbums.Spotify;
 using NewAlbums.Spotify.Dto;
+using NewAlbums.Subscribers;
+using NewAlbums.Subscribers.Dto;
 using NewAlbums.Subscriptions;
 using NewAlbums.Subscriptions.Dto;
 using System;
@@ -17,42 +20,47 @@ namespace NewAlbums.Notifications
     {
         private readonly ISpotifyAppService _spotifyAppService;
         private readonly ISubscriptionAppService _subscriptionAppService;
-        private readonly INotificationAppService _notificationAppService;
+        private readonly IAlbumAppService _albumAppService;
+        private readonly ISubscriberAppService _subscriberAppService;
         private readonly ILogger _logger;
 
         public Functions(
             ISpotifyAppService spotifyAppService,
             ISubscriptionAppService subscriptionAppService,
-            INotificationAppService notificationAppService,
+            IAlbumAppService albumAppService,
+            ISubscriberAppService subscriberAppService,
             ILogger logger
             )
         {
             _spotifyAppService = spotifyAppService;
             _subscriptionAppService = subscriptionAppService;
-            _notificationAppService = notificationAppService;
+            _albumAppService = albumAppService;
+            _subscriberAppService = subscriberAppService;
             _logger = logger;
         }
 
         [NoAutomaticTrigger]
         public async Task ProcessNewSpotifyAlbums()
         {
-            var newAlbumsOutput = await _spotifyAppService.GetNewAlbums(new GetNewAlbumsInput());
+            //Get all new albums from Spotify
+            var allNewAlbumsOutput = await _spotifyAppService.GetNewAlbums(new GetNewAlbumsInput());
 
-            if (newAlbumsOutput.HasError)
+            if (allNewAlbumsOutput.HasError)
             {
-                _logger.LogError(newAlbumsOutput.ErrorMessage);
+                _logger.LogError(allNewAlbumsOutput.ErrorMessage);
                 return;
             }
             
-            if (!newAlbumsOutput.Albums.Any())
+            if (!allNewAlbumsOutput.Albums.Any())
             {
                 _logger.LogInformation("No new albums found from Spotify.");
                 return;
             }
 
+            //Reduce albums to only those with subscriptions to their artists
             var filteredAlbumsOutput = await _subscriptionAppService.FilterAlbumsByExistingSubscriptions(new FilterAlbumsByExistingSubscriptionsInput
             {
-                Albums = newAlbumsOutput.Albums
+                Albums = allNewAlbumsOutput.Albums
             });
 
             if (filteredAlbumsOutput.HasError)
@@ -67,9 +75,27 @@ namespace NewAlbums.Notifications
                 return;
             }
 
-            var notifyOutput = await _notificationAppService.NotifySubscribers(new NotifySubscribersInput
+            //Reduce albums further to only those that haven't already been notified about
+            var albumsToNotifyOutput = await _albumAppService.CreateNewAlbums(new CreateNewAlbumsInput
             {
                 Albums = filteredAlbumsOutput.Albums
+            });
+
+            if (albumsToNotifyOutput.HasError)
+            {
+                _logger.LogError(albumsToNotifyOutput.ErrorMessage);
+                return;
+            }
+
+            if (!albumsToNotifyOutput.NewAlbums.Any())
+            {
+                _logger.LogInformation("No new albums that haven't already been notified.");
+                return;
+            }
+
+            var notifyOutput = await _subscriberAppService.NotifySubscribers(new NotifySubscribersInput
+            {
+                Albums = albumsToNotifyOutput.NewAlbums
             });
 
             if (notifyOutput.HasError)

@@ -9,5 +9,7 @@ namespace NewAlbums.Subscribers
     public interface ISubscriberAppService
     {
         Task<GetOrCreateSubscriberOutput> GetOrCreate(GetOrCreateSubscriberInput input);
+
+        Task<NotifySubscribersOutput> NotifySubscribers(NotifySubscribersInput input);
     }
 }

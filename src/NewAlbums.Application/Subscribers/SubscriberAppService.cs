@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GenericServices;
 using Microsoft.Extensions.Logging;
+using NewAlbums.Emails;
 using NewAlbums.Subscribers.Dto;
 using NewAlbums.Utils;
 
@@ -12,10 +13,15 @@ namespace NewAlbums.Subscribers
     public class SubscriberAppService : BaseAppService, ISubscriberAppService
     {
         private readonly ICrudServicesAsync _crudServices;
+        private readonly EmailManager _emailManager;
 
-        public SubscriberAppService(ICrudServicesAsync crudServices)
+        public SubscriberAppService(
+            ICrudServicesAsync crudServices,
+            EmailManager emailManager
+            )
         {
             _crudServices = crudServices;
+            _emailManager = emailManager;
         }
 
         public async Task<GetOrCreateSubscriberOutput> GetOrCreate(GetOrCreateSubscriberInput input)
@@ -56,6 +62,11 @@ namespace NewAlbums.Subscribers
                     ErrorMessage = ex.Message
                 };
             }
+        }
+
+        public async Task<NotifySubscribersOutput> NotifySubscribers(NotifySubscribersInput input)
+        {
+            throw new NotImplementedException();
         }
     }
 }
