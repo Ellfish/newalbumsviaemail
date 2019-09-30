@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using NewAlbums.Debugging;
 using NewAlbums.Spotify.Dto;
 using SpotifyAPI.Web;
@@ -28,9 +29,11 @@ namespace NewAlbums.Spotify
         /// </summary>
         private const int MAX_FOLLOWED_ARTISTS = 1000;
 
-        public SpotifyAppService()
+        private readonly IConfiguration _configuration;
+
+        public SpotifyAppService(IConfiguration configuration)
         {
-            
+            _configuration = configuration;
         }
 
         public async Task<GetFollowedArtistsOutput> GetFollowedArtists(GetFollowedArtistsInput input)
@@ -113,6 +116,14 @@ namespace NewAlbums.Spotify
                 Artists = followedArtists.OrderBy(a => a.Name).ToList(),
                 ErrorMessage = !followedArtists.Any() ? "You're not currently following any artists." : null
             };
+        }
+
+        public async Task<GetNewAlbumsOutput> GetNewAlbums(GetNewAlbumsInput input)
+        {
+            var test = _configuration.GetValue<string>("AzureWebJobsStorage");
+
+
+            return new GetNewAlbumsOutput();
         }
 
         /// <summary>

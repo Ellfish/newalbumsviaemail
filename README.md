@@ -17,3 +17,4 @@ I used the Visual Studio React template, which utilises [Create React App](https
 - Add the following user secrets, setting values for yourself (right-click NewAlbums.Web, choose 'Manage User Secrets') 
   - App:AdminEmailAddress
   - App:AdminFullName
+- Set the following System environment variable: ASPNETCORE_ENVIRONMENT=Development

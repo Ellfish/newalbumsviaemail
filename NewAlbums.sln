@@ -1,15 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.779
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewAlbums.Web", "src\NewAlbums.Web\NewAlbums.Web.csproj", "{DB18A8AF-9AD6-4A83-A235-819F13E510E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewAlbums.Core", "src\NewAlbums.Core\NewAlbums.Core.csproj", "{E46E99D1-CF01-45CC-ABAF-BEF108E1C681}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewAlbums.Core", "src\NewAlbums.Core\NewAlbums.Core.csproj", "{E46E99D1-CF01-45CC-ABAF-BEF108E1C681}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewAlbums.Application", "src\NewAlbums.Application\NewAlbums.Application.csproj", "{1AFB883A-915A-4D54-80FC-4B5803B01465}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewAlbums.Application", "src\NewAlbums.Application\NewAlbums.Application.csproj", "{1AFB883A-915A-4D54-80FC-4B5803B01465}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewAlbums.EntityFrameworkCore", "src\NewAlbums.EntityFrameworkCore\NewAlbums.EntityFrameworkCore.csproj", "{B3D2C425-53AF-40F9-BDB1-704F71F170F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewAlbums.EntityFrameworkCore", "src\NewAlbums.EntityFrameworkCore\NewAlbums.EntityFrameworkCore.csproj", "{B3D2C425-53AF-40F9-BDB1-704F71F170F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewAlbums.Notifications", "src\NewAlbums.Notifications\NewAlbums.Notifications.csproj", "{34D6F4EC-77D7-47A4-A0AF-2B9E83436DCD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{B3D2C425-53AF-40F9-BDB1-704F71F170F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3D2C425-53AF-40F9-BDB1-704F71F170F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3D2C425-53AF-40F9-BDB1-704F71F170F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34D6F4EC-77D7-47A4-A0AF-2B9E83436DCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34D6F4EC-77D7-47A4-A0AF-2B9E83436DCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34D6F4EC-77D7-47A4-A0AF-2B9E83436DCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34D6F4EC-77D7-47A4-A0AF-2B9E83436DCD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
