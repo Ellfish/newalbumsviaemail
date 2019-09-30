@@ -1,9 +1,11 @@
 ﻿using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using NewAlbums.Spotify;
+using NewAlbums.Spotify.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NewAlbums.Notifications
 {
@@ -22,9 +24,11 @@ namespace NewAlbums.Notifications
         }
 
         [NoAutomaticTrigger]
-        public void ProcessNewSpotifyAlbums()
+        public async Task ProcessNewSpotifyAlbums()
         {
-            int i = 0;
+            var newAlbumsOutput = await _spotifyAppService.GetNewAlbums(new GetNewAlbumsInput());
+
+
         }
     }
 }

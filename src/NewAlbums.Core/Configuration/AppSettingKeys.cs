@@ -32,5 +32,11 @@ namespace NewAlbums.Configuration
             public const string ApiUrl = "Mailgun:ApiUrl";
             public const string Domain = "Mailgun:Domain";
         }
+
+        public static class Spotify
+        {
+            public const string ClientId = "Spotify:ClientId";
+            public const string ClientSecret = "Spotify:ClientSecret";
+        }
     }
 }

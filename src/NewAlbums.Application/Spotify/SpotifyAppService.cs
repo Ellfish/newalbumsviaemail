@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NewAlbums.Albums.Dto;
+using NewAlbums.Artists.Dto;
+using NewAlbums.Configuration;
 using NewAlbums.Debugging;
 using NewAlbums.Spotify.Dto;
 using SpotifyAPI.Web;
@@ -18,17 +21,6 @@ namespace NewAlbums.Spotify
 {
     public class SpotifyAppService : BaseAppService, ISpotifyAppService
     {
-        /// <summary>
-        /// Enforced by Spotify API
-        /// </summary>
-        private const int MAX_LIMIT_GET_FOLLOWED_ARTISTS = 50;
-
-        /// <summary>
-        /// Max number of artists we want to return for a user, to avoid hitting the Spotify API
-        /// too hard and to reduce load time of the request
-        /// </summary>
-        private const int MAX_FOLLOWED_ARTISTS = 1000;
-
         private readonly IConfiguration _configuration;
 
         public SpotifyAppService(IConfiguration configuration)
@@ -47,41 +39,25 @@ namespace NewAlbums.Spotify
 
             var followedArtists = new List<SpotifyArtistDto>();
 
-            //Keep requesting MAX_LIMIT_GET_FOLLOWED_ARTISTS until we get all followed artists, or reach MAX_FOLLOWED_ARTISTS
-            int i = MAX_FOLLOWED_ARTISTS / MAX_LIMIT_GET_FOLLOWED_ARTISTS;
+            //Keep requesting MaxLimitGetFollowedArtists until we get all followed artists, or reach MaxLimitTotalFollowedArtists
+            int i = SpotifyConsts.MaxLimitTotalFollowedArtists / SpotifyConsts.MaxLimitGetFollowedArtists;
             string afterArtistId = "";
 
             while (i > 0)
             {
-                var response = await api.GetFollowedArtistsAsync(FollowType.Artist, limit: MAX_LIMIT_GET_FOLLOWED_ARTISTS, after: afterArtistId);
+                var response = await api.GetFollowedArtistsAsync(FollowType.Artist, limit: SpotifyConsts.MaxLimitGetFollowedArtists, after: afterArtistId);
+
                 if (response.HasError())
                 {
                     Logger.LogError("Error status: {0}, message: {1}", response.Error.Status, response.Error.Message);
 
-                    //Handle rate limiting: https://developer.spotify.com/documentation/web-api/#rate-limiting
-                    if (response.StatusCode() == HttpStatusCode.TooManyRequests)
-                    {
-                        string retryAfterSeconds = response.Header("Retry-After");
-                        if (!String.IsNullOrWhiteSpace(retryAfterSeconds))
-                        {
-                            int retryAfterSecondsInt = 0;
-                            if (int.TryParse(retryAfterSeconds, out retryAfterSecondsInt))
-                            {
-                                //Safest to add one second here, see comments for: https://stackoverflow.com/a/30557896
-                                retryAfterSecondsInt++;
-                                await Task.Delay(retryAfterSecondsInt * 1000);
+                    if (await HandleRateLimitingError(response))
+                        continue;
 
-                                continue;
-                            }
-                        }
-                    }
-                    else
+                    return new GetFollowedArtistsOutput
                     {
-                        return new GetFollowedArtistsOutput
-                        {
-                            ErrorMessage = response.Error.Message
-                        };
-                    }
+                        ErrorMessage = response.Error.Message
+                    };
                 }
 
                 if (response.Artists.Items == null || response.Artists.Items.Count == 0)
@@ -120,10 +96,113 @@ namespace NewAlbums.Spotify
 
         public async Task<GetNewAlbumsOutput> GetNewAlbums(GetNewAlbumsInput input)
         {
+            var albums = new List<AlbumDto>();
 
+            var api = await GetApiWithClientCredentials();
 
-            return new GetNewAlbumsOutput();
+            int max = SpotifyConsts.MaxLimitTotalSearchItems / SpotifyConsts.MaxLimitGetSearchItems;
+            int i = 0;
+            while (i < max)
+            {
+                int offset = i * SpotifyConsts.MaxLimitGetSearchItems;
+                //tag:new retrieves only albums released in the last two weeks
+                var searchResponse = await api.SearchItemsAsync("tag:new", SearchType.Album, SpotifyConsts.MaxLimitGetSearchItems, offset);
+
+                if (searchResponse.HasError())
+                {
+                    Logger.LogError("Error status: {0}, message: {1}", searchResponse.Error.Status, searchResponse.Error.Message);
+
+                    if (await HandleRateLimitingError(searchResponse))
+                        continue;
+
+                    return new GetNewAlbumsOutput
+                    {
+                        ErrorMessage = searchResponse.Error.Message
+                    };
+                }
+
+                if (searchResponse.Albums.Items == null || searchResponse.Albums.Items.Count == 0)
+                    break;
+
+                albums.AddRange(
+                    searchResponse.Albums.Items.Select(albumItem => new AlbumDto
+                    {
+                        SpotifyId = albumItem.Id,
+                        Name = albumItem.Name,
+                        Artists = albumItem.Artists.Select(artistItem => new ArtistDto
+                        {
+                            SpotifyId = artistItem.Id,
+                            Name = artistItem.Name
+                        }).ToList()
+                    })
+                );
+
+                //Assume that if less than the limit are returned, that we're on the last page
+                if (searchResponse.Albums.Total < SpotifyConsts.MaxLimitGetSearchItems)
+                    break;
+
+                i++;
+            }
+
+            return new GetNewAlbumsOutput
+            {
+                Albums = albums
+            };
         }
+
+        /// <summary>
+        /// For Spotify API calls that only require client authorization, not tied to a specific user
+        /// See: https://developer.spotify.com/documentation/general/guides/authorization-guide/#client-credentials-flow
+        /// </summary>
+        private async Task<SpotifyWebAPI> GetApiWithClientCredentials()
+        {
+            string clientId = _configuration.GetValue<string>(AppSettingKeys.Spotify.ClientId);
+            string clientSecret = _configuration.GetValue<string>(AppSettingKeys.Spotify.ClientSecret);
+
+            var auth = new CredentialsAuth(clientId, clientSecret);
+
+            var accessToken = await auth.GetToken();
+
+            if (accessToken.HasError())
+            {
+                Logger.LogError("ClientId: {0}, Error: {1}, ErrorDescription: {2}", clientId, accessToken.Error, accessToken.ErrorDescription);
+                throw new Exception("Error requesting Spotify access token: " + accessToken.Error);
+            }
+
+            return new SpotifyWebAPI
+            {
+                AccessToken = accessToken.AccessToken,
+                TokenType = accessToken.TokenType,
+                UseAuth = true
+            };
+        }
+
+        /// <summary>
+        /// Returns true if there was a rate limit error and we waited long enough to try again.
+        /// https://developer.spotify.com/documentation/web-api/#rate-limiting
+        /// </summary>
+        private async Task<bool> HandleRateLimitingError(BasicModel response)
+        {
+            //Handle rate limiting: https://developer.spotify.com/documentation/web-api/#rate-limiting
+            if (response.StatusCode() == HttpStatusCode.TooManyRequests)
+            {
+                string retryAfterSeconds = response.Header("Retry-After");
+                if (!String.IsNullOrWhiteSpace(retryAfterSeconds))
+                {
+                    int retryAfterSecondsInt = 0;
+                    if (int.TryParse(retryAfterSeconds, out retryAfterSecondsInt))
+                    {
+                        //Safest to add one second here, see comments for: https://stackoverflow.com/a/30557896
+                        retryAfterSecondsInt++;
+                        await Task.Delay(retryAfterSecondsInt * 1000);
+
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        } 
 
         /// <summary>
         /// Finds the smallest image over 100px wide and sets that as the SpotifyArtistDto.Image.
