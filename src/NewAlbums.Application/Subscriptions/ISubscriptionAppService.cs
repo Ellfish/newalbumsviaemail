@@ -9,5 +9,7 @@ namespace NewAlbums.Subscriptions
     public interface ISubscriptionAppService
     {
         Task<SubscribeToArtistsOutput> SubscribeToArtists(SubscribeToArtistsInput input);
+
+        Task<FilterAlbumsByExistingSubscriptionsOutput> FilterAlbumsByExistingSubscriptions(FilterAlbumsByExistingSubscriptionsInput input);
     }
 }

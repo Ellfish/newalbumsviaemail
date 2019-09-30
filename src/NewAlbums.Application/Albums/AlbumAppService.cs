@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 using GenericServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NewAlbums.Artists.Dto;
+using NewAlbums.Albums.Dto;
 
-namespace NewAlbums.Artists
+namespace NewAlbums.Albums
 {
-    public class ArtistAppService : BaseAppService, IArtistAppService
+    public class AlbumAppService : BaseAppService, IAlbumAppService
     {
         private readonly ICrudServicesAsync _crudServices;
 
-        public ArtistAppService(ICrudServicesAsync crudServices)
+        public AlbumAppService(ICrudServicesAsync crudServices)
         {
             _crudServices = crudServices;
         }
 
+        /*
         /// <summary>
         /// When a user subscribes to an artist, we want to store the artist in our database. 
         /// An artist may already exist if another user has already subscribed to them.
@@ -66,5 +67,6 @@ namespace NewAlbums.Artists
                 };
             }
         }
+        */
     }
 }
