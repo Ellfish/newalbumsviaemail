@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using NewAlbums.Artists;
 using NewAlbums.Emails;
 using NewAlbums.EntityFrameworkCore;
@@ -130,8 +131,37 @@ namespace NewAlbums.Web
             provider.Mappings[".webmanifest"] = "application/manifest+json";
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
+
+            //10 mins in dev, 365 days in production
+            var maxAge = env.IsDevelopment() ? TimeSpan.FromMinutes(10) : TimeSpan.FromDays(365);
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    var headers = ctx.Context.Response.GetTypedHeaders();
+
+                    headers.CacheControl = new CacheControlHeaderValue
+                    {
+                        Public = true,
+                        MaxAge = maxAge
+                    };
+                }
+            });
+
+            app.UseSpaStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    var headers = ctx.Context.Response.GetTypedHeaders();
+
+                    headers.CacheControl = new CacheControlHeaderValue
+                    {
+                        Public = true,
+                        MaxAge = maxAge
+                    };
+                }
+            });
 
             //From: https://code-maze.com/aspnetcore-webapi-best-practices/
             app.UseExceptionHandler(config =>
