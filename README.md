@@ -11,10 +11,14 @@ I used the Visual Studio React template, which utilises [Create React App](https
 
 - Clone the repo
 - Have .NET Core 2.1 installed
-- I use Visual Studio 2017 Community, I haven't tested this setup otherwise
+- I use Visual Studio 2019 Community, I haven't tested this setup otherwise
 - Build the solution
 - In Package Manager Console, run Update-Database with 'NewAlbums.EntityFrameworkCore' selected
 - Add the following user secrets, setting values for yourself (right-click NewAlbums.Web, choose 'Manage User Secrets') 
   - App:AdminEmailAddress
   - App:AdminFullName
-- Set the following System environment variable: ASPNETCORE_ENVIRONMENT=Development
+- Set the following System environment variable: `ASPNETCORE_ENVIRONMENT=Development`
+
+#### Troubleshooting
+
+- In the NewAlbums.Web web deploy dialog, under Entity Framework Migrations, if you see an error about the "dotnet ef" command, run `dotnet tool install -g dotnet-ef` 

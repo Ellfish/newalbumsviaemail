@@ -27,6 +27,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="App_Data\Emails\.keep" />
+    <None Remove="App_Data\Logs\.keep" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="App_Data\Emails\.keep">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Data\Logs\.keep">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\NewAlbums.Application\NewAlbums.Application.csproj" />
     <ProjectReference Include="..\NewAlbums.Core\NewAlbums.Core.csproj" />
     <ProjectReference Include="..\NewAlbums.EntityFrameworkCore\NewAlbums.EntityFrameworkCore.csproj" />

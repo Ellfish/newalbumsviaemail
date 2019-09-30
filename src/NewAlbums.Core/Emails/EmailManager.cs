@@ -36,10 +36,10 @@ namespace NewAlbums.Emails
         /// </summary>
         public async Task<string> SendEmail(EmailMessage email)
         {
+            SaveEmailToDisk(email);
+
             if (DebugHelper.IsDebug)
             {
-                SaveEmailToDisk(email);
-
                 //Don't actually send the email in debug/development mode
                 return null;
             }

@@ -120,7 +120,6 @@ namespace NewAlbums.Spotify
 
         public async Task<GetNewAlbumsOutput> GetNewAlbums(GetNewAlbumsInput input)
         {
-            var test = _configuration.GetValue<string>("AzureWebJobsStorage");
 
 
             return new GetNewAlbumsOutput();
