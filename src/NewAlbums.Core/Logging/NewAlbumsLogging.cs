@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace NewAlbums.Logging
@@ -12,7 +13,11 @@ namespace NewAlbums.Logging
 
         public static void ConfigureLogger(ILoggerFactory factory)
         {
-            factory.AddLog4Net();
+            var configFile = new FileInfo("log4net.config");
+            if (configFile.Exists)
+            {
+                factory.AddLog4Net();
+            }
         }
 
         public static ILoggerFactory LoggerFactory

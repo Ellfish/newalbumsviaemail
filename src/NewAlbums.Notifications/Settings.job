@@ -1,4 +1,7 @@
 {
+  //Not using CRON schedule because that requires Always On feature for Azure app service, which isn't available in free plan
+  //Run at 7pm UTC (5am AEST) every day
+  //"schedule": "0 0 19 * * *"
 
   //    Examples:
 
