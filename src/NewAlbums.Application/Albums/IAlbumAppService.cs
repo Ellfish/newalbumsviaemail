@@ -8,6 +8,6 @@ namespace NewAlbums.Albums
 {
     public interface IAlbumAppService
     {
-        Task<CreateNewAlbumsOutput> CreateNewAlbums(CreateNewAlbumsInput input);
+        Task<CreateAlbumsOutput> CreateAlbums(CreateAlbumsInput input);
     }
 }

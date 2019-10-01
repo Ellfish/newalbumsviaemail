@@ -112,20 +112,20 @@ namespace NewAlbums.Notifications
                             //Don't let one error stop the entire thing from running, skip and move on to the next
                             continue;
                         }
+                    }
 
-                        //TODO Save new albums to database
-                        /*
-                        var albumsOutput = await _albumAppService.CreateNewAlbums(new CreateNewAlbumsInput
-                        {
-                            Albums = filteredAlbumsOutput.Albums
-                        });
+                    //Save new albums to database
+                    var albumsOutput = await _albumAppService.CreateAlbums(new CreateAlbumsInput
+                    {
+                        Artist = artist,
+                        Albums = newReleaseAlbums
+                    });
 
-                        if (albumsOutput.HasError)
-                        {
-                            logger.LogError(albumsOutput.ErrorMessage);
-                            return;
-                        }
-                        */
+                    if (albumsOutput.HasError)
+                    {
+                        logger.LogError(albumsOutput.ErrorMessage);
+                        //Don't let one error stop the entire thing from running, skip and move on to the next
+                        continue;
                     }
                 }
             }            

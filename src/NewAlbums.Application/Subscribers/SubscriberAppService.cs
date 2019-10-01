@@ -121,6 +121,7 @@ namespace NewAlbums.Subscribers
         }
 
         //TODO: unsubscribe link
+        //TODO: HTML email template
         private string GetNotificationAlbumHtml(NotifySubscribersInput input)
         {
             return "";
