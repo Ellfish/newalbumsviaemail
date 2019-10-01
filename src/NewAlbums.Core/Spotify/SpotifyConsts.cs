@@ -23,8 +23,8 @@ namespace NewAlbums.Spotify
         public const int MaxLimitGetSearchItems = 50;
 
         /// <summary>
-        /// Enforced by us to avoid hitting Spotify API too hard
+        /// Enforced by Spotify
         /// </summary>
-        public const int MaxLimitTotalSearchItems = MaxLimitGetSearchItems * 20;
+        public const int MaxLimitTotalSearchItems = 10000;
     }
 }

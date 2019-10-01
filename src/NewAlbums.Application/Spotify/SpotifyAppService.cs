@@ -105,6 +105,11 @@ namespace NewAlbums.Spotify
             }
         }
 
+
+        /// <summary>
+        /// Can't use this because Spotify enforces a limit of 10,000 items, even though there may be 10 times that number of
+        /// tag:new album results. Can't filter futher by AlbumType or release date either. https://github.com/spotify/web-api/issues/862
+        /// </summary>
         public async Task<GetNewAlbumsOutput> GetNewAlbums(GetNewAlbumsInput input)
         {
             try
@@ -119,7 +124,7 @@ namespace NewAlbums.Spotify
                 {
                     int offset = i * SpotifyConsts.MaxLimitGetSearchItems;
                     //tag:new retrieves only albums released in the last two weeks
-                    var searchResponse = await api.SearchItemsAsync("tag:new", SearchType.Album, SpotifyConsts.MaxLimitGetSearchItems, offset);
+                    var searchResponse = await api.SearchItemsAsync("tag:new", SearchType.Album, SpotifyConsts.MaxLimitGetSearchItems, offset, "AU");
 
                     if (searchResponse.HasError())
                     {
@@ -152,8 +157,7 @@ namespace NewAlbums.Spotify
                         })
                     );
 
-                    //Assume that if less than the limit are returned, that we're on the last page
-                    if (searchResponse.Albums.Total < SpotifyConsts.MaxLimitGetSearchItems)
+                    if (!searchResponse.Albums.HasNextPage())
                         break;
 
                     i++;
@@ -226,7 +230,7 @@ namespace NewAlbums.Spotify
             }
 
             return false;
-        } 
+        }
 
         /// <summary>
         /// Finds the smallest image over minWidth wide and returns it as a SpotifyImageDto.

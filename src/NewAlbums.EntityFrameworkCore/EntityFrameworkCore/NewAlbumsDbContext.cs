@@ -14,6 +14,8 @@ namespace NewAlbums.EntityFrameworkCore
         public DbSet<Artist> Artists { get; set; }
 
         public DbSet<Album> Albums { get; set; }
+        
+        public DbSet<ArtistAlbum> ArtistAlbums { get; set; }
 
         public DbSet<Subscriber> Subscribers { get; set; }
 
@@ -23,6 +25,11 @@ namespace NewAlbums.EntityFrameworkCore
             : base(options)
         {
 
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ArtistAlbum>().HasKey(aa => new { aa.ArtistId, aa.AlbumId });
         }
     }
 }

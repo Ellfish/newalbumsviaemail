@@ -11,31 +11,17 @@ namespace NewAlbums.Paths
 {
     public class PathProvider : IPathProvider
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IConfiguration _configuration;
 
         private const string EmailsFolderName = "Emails";
 
         public PathProvider(
-            IHostingEnvironment hostingEnvironment,
             IConfiguration configuration)
         {
-            _hostingEnvironment = hostingEnvironment;
             _configuration = configuration;
         }
 
         #region Files on disk
-
-        /// <summary>
-        /// relativeWebFilePath should be relative to the WebRootPath, ie the wwwroot folder
-        /// </summary>
-        public string GetAbsoluteFilePath(string relativeWebFilePath)
-        {
-            string relativeFilePathSanitised = relativeWebFilePath.TrimStart('~', '/');
-
-            return _hostingEnvironment.WebRootPath.EnsureEndsWith(Path.DirectorySeparatorChar) +
-                relativeFilePathSanitised.Replace('/', Path.DirectorySeparatorChar);
-        }
 
         public string GetAbsoluteEmailsFolderPath()
         {

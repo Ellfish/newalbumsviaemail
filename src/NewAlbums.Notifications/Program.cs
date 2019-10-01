@@ -73,6 +73,11 @@ namespace NewAlbums.Notifications
             builder.ConfigureLogging((context, b) =>
                 {
                     b.AddConsole();
+
+                    if (context.HostingEnvironment.EnvironmentName.ToLower() == "development")
+                    {
+                        b.AddLog4Net();
+                    }
                 });
 
             builder.ConfigureServices(serviceCollection =>
@@ -97,7 +102,6 @@ namespace NewAlbums.Notifications
 
                 //NewAlbums.Core managers
                 serviceCollection.AddTransient<EmailManager>();
-                //TODO: have to do something about IHostingEnvironment dependency of PathProvider
                 serviceCollection.AddTransient<IPathProvider, PathProvider>();
 
             });

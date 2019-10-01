@@ -9,5 +9,7 @@ namespace NewAlbums.Artists
     public interface IArtistAppService
     {
         Task<GetOrCreateManyOutput> GetOrCreateMany(GetOrCreateManyInput input);
+
+        Task<GetAllArtistsOutput> GetAll(GetAllArtistsInput input);
     }
 }

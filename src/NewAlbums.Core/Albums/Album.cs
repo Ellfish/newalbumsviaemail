@@ -6,10 +6,6 @@ using System.Text;
 
 namespace NewAlbums.Albums
 {
-    /// <summary>
-    /// Not necessary to link Albums to Artists in our database. Albums are only stored so we don't
-    /// send more than one notification per album.
-    /// </summary>
     public class Album : CreationAuditedEntity<long>
     {
         [MaxLength(255)]
@@ -23,6 +19,8 @@ namespace NewAlbums.Albums
         /// </summary>
         [MaxLength(10)]
         public virtual string ReleaseDate { get; set; }
+
+        public virtual ICollection<ArtistAlbum> Artists { get; set; }
 
         public string SpotifyUrl
         {

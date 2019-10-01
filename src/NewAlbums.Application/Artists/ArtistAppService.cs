@@ -66,5 +66,27 @@ namespace NewAlbums.Artists
                 };
             }
         }
+
+        public async Task<GetAllArtistsOutput> GetAll(GetAllArtistsInput input)
+        {
+            try
+            {
+                var allArtists = await _crudServices.ReadManyNoTracked<ArtistDto>()
+                    .ToListAsync();
+
+                return new GetAllArtistsOutput
+                {
+                    Artists = allArtists
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "");
+                return new GetAllArtistsOutput
+                {
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
     }
 }

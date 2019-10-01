@@ -22,38 +22,42 @@ namespace NewAlbums.Notifications
         private readonly ISubscriptionAppService _subscriptionAppService;
         private readonly IAlbumAppService _albumAppService;
         private readonly ISubscriberAppService _subscriberAppService;
-        private readonly ILogger _logger;
 
         public Functions(
             ISpotifyAppService spotifyAppService,
             ISubscriptionAppService subscriptionAppService,
             IAlbumAppService albumAppService,
-            ISubscriberAppService subscriberAppService,
-            ILogger logger
+            ISubscriberAppService subscriberAppService
             )
         {
             _spotifyAppService = spotifyAppService;
             _subscriptionAppService = subscriptionAppService;
             _albumAppService = albumAppService;
             _subscriberAppService = subscriberAppService;
-            _logger = logger;
         }
 
+        /// <summary>
+        /// Get all artists, foreach artist get all albums, for any new albums notify subscribers to that artist.
+        /// It would have been better to use 
+        /// </summary>
         [NoAutomaticTrigger]
-        public async Task ProcessNewSpotifyAlbums()
+        public async Task ProcessNewSpotifyAlbums(ILogger logger)
         {
-            //Get all new albums from Spotify
+            //Get 
+
+
+
             var allNewAlbumsOutput = await _spotifyAppService.GetNewAlbums(new GetNewAlbumsInput());
 
             if (allNewAlbumsOutput.HasError)
             {
-                _logger.LogError(allNewAlbumsOutput.ErrorMessage);
+                logger.LogError(allNewAlbumsOutput.ErrorMessage);
                 return;
             }
             
             if (!allNewAlbumsOutput.Albums.Any())
             {
-                _logger.LogInformation("No new albums found from Spotify.");
+                logger.LogInformation("No new albums found from Spotify.");
                 return;
             }
 
@@ -65,13 +69,13 @@ namespace NewAlbums.Notifications
 
             if (filteredAlbumsOutput.HasError)
             {
-                _logger.LogError(filteredAlbumsOutput.ErrorMessage);
+                logger.LogError(filteredAlbumsOutput.ErrorMessage);
                 return;
             }
 
             if (!filteredAlbumsOutput.Albums.Any())
             {
-                _logger.LogInformation("No new albums from Spotify match any saved artists.");
+                logger.LogInformation("No new albums from Spotify match any saved artists.");
                 return;
             }
 
@@ -83,13 +87,13 @@ namespace NewAlbums.Notifications
 
             if (albumsToNotifyOutput.HasError)
             {
-                _logger.LogError(albumsToNotifyOutput.ErrorMessage);
+                logger.LogError(albumsToNotifyOutput.ErrorMessage);
                 return;
             }
 
             if (!albumsToNotifyOutput.NewAlbums.Any())
             {
-                _logger.LogInformation("No new albums that haven't already been notified.");
+                logger.LogInformation("No new albums that haven't already been notified.");
                 return;
             }
 
@@ -100,7 +104,7 @@ namespace NewAlbums.Notifications
 
             if (notifyOutput.HasError)
             {
-                _logger.LogError(notifyOutput.ErrorMessage);
+                logger.LogError(notifyOutput.ErrorMessage);
                 return;
             }
         }

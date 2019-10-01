@@ -1,4 +1,5 @@
-﻿using NewAlbums.Entities;
+﻿using NewAlbums.Albums;
+using NewAlbums.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,5 +14,7 @@ namespace NewAlbums.Artists
 
         [MaxLength(30)]
         public virtual string SpotifyId { get; set; }
+
+        public virtual ICollection<ArtistAlbum> Albums { get; set; }
     }
 }
