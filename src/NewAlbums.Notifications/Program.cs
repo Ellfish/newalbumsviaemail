@@ -106,6 +106,10 @@ namespace NewAlbums.Notifications
 
             });
 
+            //Set the App_Data directory so we can retrieve it later. https://stackoverflow.com/a/48357218
+            string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(currentDirectory, "App_Data"));
+
             var host = builder.Build();
             using (host)
             {

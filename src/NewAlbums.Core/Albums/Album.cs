@@ -22,12 +22,9 @@ namespace NewAlbums.Albums
 
         public virtual ICollection<ArtistAlbum> Artists { get; set; }
 
-        public string SpotifyUrl
-        {
-            get
-            {
-                return $"https://open.spotify.com/album/{SpotifyId}";
-            }
+        public static string GetSpotifyUrl(string spotifyId)
+        { 
+            return $"https://open.spotify.com/album/{spotifyId}";
         }
     }
 }

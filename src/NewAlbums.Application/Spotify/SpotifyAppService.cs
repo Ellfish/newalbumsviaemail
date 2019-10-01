@@ -74,12 +74,12 @@ namespace NewAlbums.Spotify
                         })
                     );
 
-                    //Only return a manageable amount of artists when debugging
-                    if (DebugHelper.IsDebug)
-                    {
-                        followedArtists = followedArtists.Take(20).ToList();
-                        break;
-                    }
+                    //Uncomment to only return a manageable amount of artists when debugging/testing
+                    //if (DebugHelper.IsDebug)
+                    //{
+                    //    followedArtists = followedArtists.Take(20).ToList();
+                    //    break;
+                    //}
 
                     if (!response.Artists.HasNext())
                         break;
@@ -105,6 +105,70 @@ namespace NewAlbums.Spotify
             }
         }
 
+        public async Task<GetAlbumsForArtistOutput> GetAlbumsForArtist(GetAlbumsForArtistInput input)
+        {
+            try
+            {
+                var albums = new List<AlbumDto>();
+
+                var api = await GetApiWithClientCredentials();
+
+                int max = SpotifyConsts.MaxLimitTotalArtistAlbums / SpotifyConsts.MaxLimitGetArtistAlbums;
+                int i = 0;
+                while (i < max)
+                {
+                    int offset = i * SpotifyConsts.MaxLimitGetArtistAlbums;
+                    
+                    var searchResponse = await api.GetArtistsAlbumsAsync(input.SpotifyArtistId, AlbumType.Album, 
+                        SpotifyConsts.MaxLimitGetArtistAlbums, offset, SpotifyConsts.MarketToUse);
+
+                    if (searchResponse.HasError())
+                    {
+                        Logger.LogError("Error status: {0}, message: {1}", searchResponse.Error.Status, searchResponse.Error.Message);
+
+                        if (await HandleRateLimitingError(searchResponse))
+                            continue;
+
+                        return new GetAlbumsForArtistOutput
+                        {
+                            ErrorMessage = searchResponse.Error.Message
+                        };
+                    }
+
+                    //Assume there are no more if this is true
+                    if (searchResponse.Items == null || searchResponse.Items.Count == 0)
+                        break;
+
+                    albums.AddRange(
+                        searchResponse.Items.Select(albumItem => new AlbumDto
+                        {
+                            SpotifyId = albumItem.Id,
+                            Name = albumItem.Name,
+                            Image = GetImage(albumItem.Images, 200),
+                            ReleaseDate = albumItem.ReleaseDate
+                        })
+                    );
+
+                    if (!searchResponse.HasNextPage())
+                        break;
+
+                    i++;
+                }
+
+                return new GetAlbumsForArtistOutput
+                {
+                    Albums = albums
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "");
+                return new GetAlbumsForArtistOutput
+                {
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
 
         /// <summary>
         /// Can't use this because Spotify enforces a limit of 10,000 items, even though there may be 10 times that number of
@@ -124,7 +188,7 @@ namespace NewAlbums.Spotify
                 {
                     int offset = i * SpotifyConsts.MaxLimitGetSearchItems;
                     //tag:new retrieves only albums released in the last two weeks
-                    var searchResponse = await api.SearchItemsAsync("tag:new", SearchType.Album, SpotifyConsts.MaxLimitGetSearchItems, offset, "AU");
+                    var searchResponse = await api.SearchItemsAsync("tag:new", SearchType.Album, SpotifyConsts.MaxLimitGetSearchItems, offset, SpotifyConsts.MarketToUse);
 
                     if (searchResponse.HasError())
                     {
@@ -149,11 +213,11 @@ namespace NewAlbums.Spotify
                             Name = albumItem.Name,
                             Image = GetImage(albumItem.Images, 200),
                             ReleaseDate = albumItem.ReleaseDate,
-                            Artists = albumItem.Artists.Select(artistItem => new ArtistDto
-                            {
-                                SpotifyId = artistItem.Id,
-                                Name = artistItem.Name
-                            }).ToList()
+                            //Artists = albumItem.Artists.Select(artistItem => new ArtistDto
+                            //{
+                            //    SpotifyId = artistItem.Id,
+                            //    Name = artistItem.Name
+                            //}).ToList()
                         })
                     );
 

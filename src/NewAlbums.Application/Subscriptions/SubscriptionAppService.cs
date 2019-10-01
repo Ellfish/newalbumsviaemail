@@ -64,35 +64,26 @@ namespace NewAlbums.Subscriptions
             }
         }
 
-        /// <summary>
-        /// We only care about new Spotify albums if a user has subscribed to the album's artist(s).
-        /// This method reduces the given albums to a list of albums by artists that are subscribed to.
-        /// </summary>
-        public async Task<FilterAlbumsByExistingSubscriptionsOutput> FilterAlbumsByExistingSubscriptions(FilterAlbumsByExistingSubscriptionsInput input)
+        public async Task<GetSubscriptionsForArtistOutput> GetSubscriptionsForArtist(GetSubscriptionsForArtistInput input)
         {
+            if (input.ArtistId <= 0)
+                throw new ArgumentException("ArtistId must be a valid Id", "ArtistId");
+
             try
             {
-                var allArtistSpotifyIds = await _crudServices.ReadManyNoTracked<Subscription>()
-                    .Select(a => a.Artist.SpotifyId)
-                    .Distinct()
+                var subscriptions = await _crudServices.ReadManyNoTracked<SubscriptionDto>()
+                    .Where(s => s.ArtistId == input.ArtistId)
                     .ToListAsync();
 
-                var output = new FilterAlbumsByExistingSubscriptionsOutput();
-
-                foreach (var album in input.Albums)
+                return new GetSubscriptionsForArtistOutput
                 {
-                    if (album.Artists.Any(a => allArtistSpotifyIds.Contains(a.SpotifyId)))
-                    {
-                        output.Albums.Add(album);
-                    }
-                }
-
-                return output;
+                    Subscriptions = subscriptions
+                };
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "");
-                return new FilterAlbumsByExistingSubscriptionsOutput
+                Logger.LogError(ex, "ArtistId: " + input.ArtistId);
+                return new GetSubscriptionsForArtistOutput
                 {
                     ErrorMessage = ex.Message
                 };

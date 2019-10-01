@@ -10,7 +10,9 @@ namespace NewAlbums.Spotify
     {
         Task<GetFollowedArtistsOutput> GetFollowedArtists(GetFollowedArtistsInput input);
 
-        Task<GetNewAlbumsOutput> GetNewAlbums(GetNewAlbumsInput input);
+        Task<GetAlbumsForArtistOutput> GetAlbumsForArtist(GetAlbumsForArtistInput input);
 
+        //Not used
+        //Task<GetNewAlbumsOutput> GetNewAlbums(GetNewAlbumsInput input);
     }
 }

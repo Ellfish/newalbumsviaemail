@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NewAlbums.Subscriptions.Dto
+namespace NewAlbums.Spotify.Dto
 {
-    public class FilterAlbumsByExistingSubscriptionsInput
+    public class GetAlbumsForArtistOutput : BaseOutput
     {
         public IList<AlbumDto> Albums { get; set; }
 
-        public FilterAlbumsByExistingSubscriptionsInput()
+        public GetAlbumsForArtistOutput()
         {
             Albums = new List<AlbumDto>();
         }

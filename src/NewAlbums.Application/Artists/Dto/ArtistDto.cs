@@ -1,4 +1,5 @@
 ﻿using GenericServices;
+using NewAlbums.Albums.Dto;
 using NewAlbums.Entities;
 using System;
 using System.Collections.Generic;
@@ -11,5 +12,12 @@ namespace NewAlbums.Artists.Dto
         public string Name { get; set; }
 
         public string SpotifyId { get; set; }
+
+        public IList<ArtistAlbumDto> Albums { get; set; }
+
+        public ArtistDto()
+        {
+            Albums = new List<ArtistAlbumDto>();
+        }
     }
 }

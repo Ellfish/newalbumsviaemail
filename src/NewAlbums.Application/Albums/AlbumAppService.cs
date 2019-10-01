@@ -45,7 +45,8 @@ namespace NewAlbums.Albums
                         {
                             Name = inputAlbum.Name,
                             SpotifyId = inputAlbum.SpotifyId,
-                            ReleaseDate = inputAlbum.ReleaseDate
+                            ReleaseDate = inputAlbum.ReleaseDate,
+                            
                         });
 
                         output.NewAlbums.Add(newAlbum);

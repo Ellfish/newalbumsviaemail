@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Logging;
 using NewAlbums.Albums;
 using NewAlbums.Albums.Dto;
+using NewAlbums.Artists;
+using NewAlbums.Artists.Dto;
 using NewAlbums.Spotify;
 using NewAlbums.Spotify.Dto;
 using NewAlbums.Subscribers;
@@ -20,18 +22,21 @@ namespace NewAlbums.Notifications
     {
         private readonly ISpotifyAppService _spotifyAppService;
         private readonly ISubscriptionAppService _subscriptionAppService;
+        private readonly IArtistAppService _artistAppService;
         private readonly IAlbumAppService _albumAppService;
         private readonly ISubscriberAppService _subscriberAppService;
 
         public Functions(
             ISpotifyAppService spotifyAppService,
             ISubscriptionAppService subscriptionAppService,
+            IArtistAppService artistAppService,
             IAlbumAppService albumAppService,
             ISubscriberAppService subscriberAppService
             )
         {
             _spotifyAppService = spotifyAppService;
             _subscriptionAppService = subscriptionAppService;
+            _artistAppService = artistAppService;
             _albumAppService = albumAppService;
             _subscriberAppService = subscriberAppService;
         }
@@ -43,70 +48,87 @@ namespace NewAlbums.Notifications
         [NoAutomaticTrigger]
         public async Task ProcessNewSpotifyAlbums(ILogger logger)
         {
-            //Get 
-
-
-
-            var allNewAlbumsOutput = await _spotifyAppService.GetNewAlbums(new GetNewAlbumsInput());
-
-            if (allNewAlbumsOutput.HasError)
+            //Get all saved Artists
+            var allArtistsOutput = await _artistAppService.GetAll(new GetAllArtistsInput { IncludeAlbums = true });
+            if (allArtistsOutput.HasError)
             {
-                logger.LogError(allNewAlbumsOutput.ErrorMessage);
-                return;
-            }
-            
-            if (!allNewAlbumsOutput.Albums.Any())
-            {
-                logger.LogInformation("No new albums found from Spotify.");
+                logger.LogError(allArtistsOutput.ErrorMessage);
                 return;
             }
 
-            //Reduce albums to only those with subscriptions to their artists
-            var filteredAlbumsOutput = await _subscriptionAppService.FilterAlbumsByExistingSubscriptions(new FilterAlbumsByExistingSubscriptionsInput
-            {
-                Albums = allNewAlbumsOutput.Albums
-            });
+            //An album is only considered a new release if its ReleaseDate was in the last 14 days
+            DateTime newReleaseCutoff = DateTime.UtcNow.AddDays(-14);
 
-            if (filteredAlbumsOutput.HasError)
+            foreach (var artist in allArtistsOutput.Artists)
             {
-                logger.LogError(filteredAlbumsOutput.ErrorMessage);
-                return;
-            }
+                var artistAlbumsOutput = await _spotifyAppService.GetAlbumsForArtist(new GetAlbumsForArtistInput
+                {
+                    SpotifyArtistId = artist.SpotifyId
+                });
 
-            if (!filteredAlbumsOutput.Albums.Any())
-            {
-                logger.LogInformation("No new albums from Spotify match any saved artists.");
-                return;
-            }
+                if (artistAlbumsOutput.HasError)
+                {
+                    logger.LogError(artistAlbumsOutput.ErrorMessage);
+                    //Don't let one artist error stop the entire thing from running, skip and move on to the next
+                    continue;
+                }
 
-            //Reduce albums further to only those that haven't already been notified about
-            var albumsToNotifyOutput = await _albumAppService.CreateNewAlbums(new CreateNewAlbumsInput
-            {
-                Albums = filteredAlbumsOutput.Albums
-            });
+                //If the album came out recently and we don't know about it (ie it wasn't under the Artist.Albums collection),
+                //then we want to notify about it
+                var newReleaseAlbums = artistAlbumsOutput.Albums
+                    .Where(a => a.ReleaseDateNormalised >= newReleaseCutoff 
+                        && !artist.Albums.Any(al => al.Album.SpotifyId == a.SpotifyId))
+                    .ToList();
 
-            if (albumsToNotifyOutput.HasError)
-            {
-                logger.LogError(albumsToNotifyOutput.ErrorMessage);
-                return;
-            }
+                if (newReleaseAlbums.Any())
+                {
+                    var subscriptionsOutput = await _subscriptionAppService.GetSubscriptionsForArtist(new GetSubscriptionsForArtistInput
+                    {
+                        ArtistId = artist.Id
+                    });
 
-            if (!albumsToNotifyOutput.NewAlbums.Any())
-            {
-                logger.LogInformation("No new albums that haven't already been notified.");
-                return;
-            }
+                    if (subscriptionsOutput.HasError)
+                    {
+                        logger.LogError(subscriptionsOutput.ErrorMessage);
+                        //Don't let one error stop the entire thing from running, skip and move on to the next
+                        continue;
+                    }
 
-            var notifyOutput = await _subscriberAppService.NotifySubscribers(new NotifySubscribersInput
-            {
-                Albums = albumsToNotifyOutput.NewAlbums
-            });
+                    //Generally there will just be one newReleaseAlbum. Doesn't matter if we send multiple emails per artist
+                    //in the rare case that more than one new release came out for them.
+                    foreach (var newReleaseAlbum in newReleaseAlbums)
+                    {
+                        //Send notification for all subscriptions
+                        var notifyOutput = await _subscriberAppService.NotifySubscribers(new NotifySubscribersInput
+                        {
+                            Artist = artist,
+                            Album = newReleaseAlbum,
+                            Subscriptions = subscriptionsOutput.Subscriptions
+                        });
 
-            if (notifyOutput.HasError)
-            {
-                logger.LogError(notifyOutput.ErrorMessage);
-                return;
-            }
+                        if (notifyOutput.HasError)
+                        {
+                            logger.LogError(notifyOutput.ErrorMessage);
+                            //Don't let one error stop the entire thing from running, skip and move on to the next
+                            continue;
+                        }
+
+                        //TODO Save new albums to database
+                        /*
+                        var albumsOutput = await _albumAppService.CreateNewAlbums(new CreateNewAlbumsInput
+                        {
+                            Albums = filteredAlbumsOutput.Albums
+                        });
+
+                        if (albumsOutput.HasError)
+                        {
+                            logger.LogError(albumsOutput.ErrorMessage);
+                            return;
+                        }
+                        */
+                    }
+                }
+            }            
         }
     }
 }

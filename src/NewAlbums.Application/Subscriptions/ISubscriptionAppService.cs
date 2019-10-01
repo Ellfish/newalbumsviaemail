@@ -10,6 +10,6 @@ namespace NewAlbums.Subscriptions
     {
         Task<SubscribeToArtistsOutput> SubscribeToArtists(SubscribeToArtistsInput input);
 
-        Task<FilterAlbumsByExistingSubscriptionsOutput> FilterAlbumsByExistingSubscriptions(FilterAlbumsByExistingSubscriptionsInput input);
+        Task<GetSubscriptionsForArtistOutput> GetSubscriptionsForArtist(GetSubscriptionsForArtistInput input);
     }
 }

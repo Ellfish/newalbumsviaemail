@@ -71,8 +71,16 @@ namespace NewAlbums.Artists
         {
             try
             {
-                var allArtists = await _crudServices.ReadManyNoTracked<ArtistDto>()
-                    .ToListAsync();
+                var allArtistsQuery = _crudServices.ReadManyNoTracked<ArtistDto>();
+
+                if (input.IncludeAlbums)
+                {
+                    allArtistsQuery = allArtistsQuery
+                        .Include(a => a.Albums)
+                            .ThenInclude(al => al.Album);
+                }
+                    
+                var allArtists = await allArtistsQuery.ToListAsync();
 
                 return new GetAllArtistsOutput
                 {

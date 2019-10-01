@@ -1,4 +1,6 @@
-﻿using NewAlbums.Artists.Dto;
+﻿using GenericServices;
+using NewAlbums.Artists.Dto;
+using NewAlbums.Entities;
 using NewAlbums.Spotify.Dto;
 using System;
 using System.Collections.Generic;
@@ -7,7 +9,7 @@ using System.Text;
 
 namespace NewAlbums.Albums.Dto
 {
-    public class AlbumDto
+    public class AlbumDto : CreationAuditedEntityDto<long>, ILinkToEntity<Album>
     {
         public string SpotifyId { get; set; }
 
@@ -15,16 +17,33 @@ namespace NewAlbums.Albums.Dto
 
         public string ReleaseDate { get; set; }
 
-        [ReadOnly(true)]
-        public string SpotifyUrl { get; set; }
+        /// <summary>
+        /// Returns the ReleaseDate as a DateTime if it represents a specific day in format "yyyy-MM-dd", and not just a year or year and month.
+        /// Otherwise returns a DateTime initialised to DateTime.MinValue
+        /// </summary>
+        public DateTime ReleaseDateNormalised
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(ReleaseDate) || ReleaseDate.Length != 10)
+                    return DateTime.MinValue;
 
-        public IList<ArtistDto> Artists { get; set; }
+                DateTime releaseDate;
+                if (DateTime.TryParse(ReleaseDate, out releaseDate))
+                {
+                    return releaseDate;
+                }
+
+                return DateTime.MinValue;
+            }
+        }
 
         public SpotifyImageDto Image { get; set; }
 
         public AlbumDto()
         {
-            Artists = new List<ArtistDto>();
+            //Default
+            Image = new SpotifyImageDto();
         }
     }
 }

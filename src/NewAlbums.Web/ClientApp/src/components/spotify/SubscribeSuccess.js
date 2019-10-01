@@ -25,7 +25,7 @@ export class SubscribeSuccess extends Component {
             <div>
                 <h1>Success!</h1>
 
-                <p>You're now subscribed to {this.state.artists.length} artists.</p>
+                <p>You subscribed to {this.state.artists.length} artists.</p>
 
                 <p>Keep an eye on your email inbox for new album notifications.</p>
             </div>

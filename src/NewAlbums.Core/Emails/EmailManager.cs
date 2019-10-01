@@ -207,6 +207,10 @@ namespace NewAlbums.Emails
                 string emailsFolderPath = _pathProvider.GetAbsoluteEmailsFolderPath();
                 if (!String.IsNullOrWhiteSpace(emailsFolderPath))
                 {
+                    var info = new DirectoryInfo(emailsFolderPath);
+                    if (!info.Exists)
+                        info.Create();
+
                     if (!String.IsNullOrWhiteSpace(email.BodyHtml))
                     {
                         string htmlFilename = FileUtils.GetFileSafeName(String.Format("{0}-{1}-{2}.html",
