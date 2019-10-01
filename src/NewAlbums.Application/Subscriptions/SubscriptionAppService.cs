@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GenericServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NewAlbums.Subscribers;
 using NewAlbums.Subscriptions.Dto;
 
 namespace NewAlbums.Subscriptions
@@ -84,6 +85,72 @@ namespace NewAlbums.Subscriptions
             {
                 Logger.LogError(ex, "ArtistId: " + input.ArtistId);
                 return new GetSubscriptionsForArtistOutput
+                {
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
+
+        public async Task<UnsubscribeFromArtistOutput> UnsubscribeFromArtist(UnsubscribeFromArtistInput input)
+        {
+            if (input.ArtistId <= 0)
+                throw new ArgumentException("ArtistId must be a valid Id", "ArtistId");
+
+            if (String.IsNullOrWhiteSpace(input.UnsubscribeToken))
+                throw new ArgumentException("UnsubscribeToken must be set", "UnsubscribeToken");
+
+            try
+            {
+                var subscription = await _crudServices.ReadSingleAsync<Subscription>(
+                    s => s.ArtistId == input.ArtistId && s.Subscriber.UnsubscribeToken == input.UnsubscribeToken);
+
+                //Ignore if subscription is null, means unsubscribe has already succeeded earlier
+                if (subscription != null)
+                {
+                    await _crudServices.DeleteAndSaveAsync<Subscription>(subscription.Id);
+                }
+
+                return new UnsubscribeFromArtistOutput
+                {
+                    ErrorMessage = _crudServices.IsValid ? null : _crudServices.GetAllErrors()
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "ArtistId: {0}, UnsubscribeToken: {1}", input.ArtistId, input.UnsubscribeToken);
+                return new UnsubscribeFromArtistOutput
+                {
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
+
+        public async Task<UnsubscribeFromAllOutput> UnsubscribeFromAll(UnsubscribeFromAllInput input)
+        {
+            if (String.IsNullOrWhiteSpace(input.UnsubscribeToken))
+                throw new ArgumentException("UnsubscribeToken must be set", "UnsubscribeToken");
+
+            try
+            {
+                var subscriber = await _crudServices.ReadSingleAsync<Subscriber>(
+                    s => s.UnsubscribeToken == input.UnsubscribeToken);
+
+                //Ignore if subscriber is null, means UnsubscribeFromAll has already succeeded earlier
+                if (subscriber != null)
+                {
+                    //This will cascade delete their Subscriptions too
+                    await _crudServices.DeleteAndSaveAsync<Subscriber>(subscriber.Id);
+                }
+
+                return new UnsubscribeFromAllOutput
+                {
+                    ErrorMessage = _crudServices.IsValid ? null : _crudServices.GetAllErrors()
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "UnsubscribeToken: {0}", input.UnsubscribeToken);
+                return new UnsubscribeFromAllOutput
                 {
                     ErrorMessage = ex.Message
                 };

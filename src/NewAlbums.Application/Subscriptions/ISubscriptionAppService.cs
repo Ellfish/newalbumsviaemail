@@ -11,5 +11,9 @@ namespace NewAlbums.Subscriptions
         Task<SubscribeToArtistsOutput> SubscribeToArtists(SubscribeToArtistsInput input);
 
         Task<GetSubscriptionsForArtistOutput> GetSubscriptionsForArtist(GetSubscriptionsForArtistInput input);
+
+        Task<UnsubscribeFromArtistOutput> UnsubscribeFromArtist(UnsubscribeFromArtistInput input);
+
+        Task<UnsubscribeFromAllOutput> UnsubscribeFromAll(UnsubscribeFromAllInput input);
     }
 }

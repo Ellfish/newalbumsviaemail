@@ -83,6 +83,36 @@ namespace NewAlbums.Web.Controllers
             return Ok(new ApiOkResponse(true));
         }
 
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Unsubscribe([FromBody] UnsubscribeRequest model)
+        {
+            if (model.ArtistId.HasValue && model.ArtistId.Value <= 0)
+                return BadRequest(new ApiResponse(400, "Please provide a valid ArtistId."));
+
+            BaseOutput unsubscribeOutput = null;
+
+            if (model.ArtistId.HasValue)
+            {
+                unsubscribeOutput = await _subscriptionAppService.UnsubscribeFromArtist(new UnsubscribeFromArtistInput
+                {
+                    ArtistId = model.ArtistId.Value,
+                    UnsubscribeToken = model.UnsubscribeToken
+                });
+            }
+            else
+            {
+                unsubscribeOutput = await _subscriptionAppService.UnsubscribeFromAll(new UnsubscribeFromAllInput
+                {
+                    UnsubscribeToken = model.UnsubscribeToken
+                });
+            }
+
+            if (unsubscribeOutput.HasError)
+                return StatusCode(500, new ApiResponse(500, unsubscribeOutput.ErrorMessage));
+
+            return Ok(new ApiOkResponse(true));
+        }
+
         private async Task SendNotificationEmail(string subscriberEmailAddress, int artistsCount)
         {
             string adminEmailAddress = _configuration[AppSettingKeys.App.AdminEmailAddress];
