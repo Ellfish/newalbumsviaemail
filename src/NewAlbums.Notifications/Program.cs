@@ -26,11 +26,9 @@ namespace NewAlbums.Notifications
     public class Program
     {
         /// <summary>
-        /// Please set the following connection strings for this WebJob to run 
-        /// (use user-secrets in development, App Service connection strings in Azure production)
-        /// AzureWebJobsStorage
+        /// See appsettings.json for where to configure various settings required by this console app 
+        /// (user-secrets in dev, Azure app service Connection Strings and Application Settings in production)
         /// </summary>
-        /// <param name="args"></param>
         static async Task Main(string[] args)
         {
             var builder = new HostBuilder();
@@ -82,6 +80,9 @@ namespace NewAlbums.Notifications
 
             builder.ConfigureServices(serviceCollection =>
             {
+                //Need to do this or later when IConfiguration is injected, it'll be missing our user secrets configured for dev above
+                serviceCollection.AddSingleton<IConfiguration>(configuration);
+
                 serviceCollection.AddDbContext<NewAlbumsDbContext>(options =>
                     options.UseSqlServer(configuration.GetConnectionString("Default")));
 

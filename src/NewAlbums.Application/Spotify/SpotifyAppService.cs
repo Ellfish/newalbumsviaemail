@@ -23,6 +23,9 @@ namespace NewAlbums.Spotify
     {
         private readonly IConfiguration _configuration;
 
+        private SpotifyWebAPI _apiWithClientCredentials = null;
+        private Token _apiAccessToken = null;
+
         public SpotifyAppService(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -30,8 +33,11 @@ namespace NewAlbums.Spotify
 
         public async Task<GetFollowedArtistsOutput> GetFollowedArtists(GetFollowedArtistsInput input)
         {
+            Logger.LogInformation("Getting followed artists...");
+
             try
             {
+                //Initialise the SpotifyWebAPI with the access token provided by the user authenticating with Spotify
                 var api = new SpotifyWebAPI
                 {
                     AccessToken = input.AccessToken,
@@ -89,6 +95,8 @@ namespace NewAlbums.Spotify
                     i--;
                 }
 
+                Logger.LogInformation("Returning {0} followed artists.", followedArtists.Count);
+
                 return new GetFollowedArtistsOutput
                 {
                     Artists = followedArtists.OrderBy(a => a.Name).ToList(),
@@ -107,19 +115,30 @@ namespace NewAlbums.Spotify
 
         public async Task<GetAlbumsForArtistOutput> GetAlbumsForArtist(GetAlbumsForArtistInput input)
         {
+            if (String.IsNullOrWhiteSpace(input.SpotifyArtistId))
+                throw new ArgumentException("SpotifyArtistId must be a valid Spotify Id", "SpotifyArtistId");
+
+            Logger.LogInformation("Getting albums for SpotifyArtistId: {0}", input.SpotifyArtistId);
+
             try
             {
                 var albums = new List<AlbumDto>();
-
-                var api = await GetApiWithClientCredentials();
 
                 int max = SpotifyConsts.MaxLimitTotalArtistAlbums / SpotifyConsts.MaxLimitGetArtistAlbums;
                 int i = 0;
                 while (i < max)
                 {
+                    //Allows us to only request a new API access token for the first time, or when the existing one expires
+                    if (_apiWithClientCredentials == null || _apiAccessToken.IsExpired())
+                    {
+                        var apiOutput = await GetApiWithClientCredentials();
+                        _apiWithClientCredentials = apiOutput.Api;
+                        _apiAccessToken = apiOutput.Token;
+                    }
+
                     int offset = i * SpotifyConsts.MaxLimitGetArtistAlbums;
                     
-                    var searchResponse = await api.GetArtistsAlbumsAsync(input.SpotifyArtistId, AlbumType.Album, 
+                    var searchResponse = await _apiWithClientCredentials.GetArtistsAlbumsAsync(input.SpotifyArtistId, AlbumType.Album, 
                         SpotifyConsts.MaxLimitGetArtistAlbums, offset, SpotifyConsts.MarketToUse);
 
                     if (searchResponse.HasError())
@@ -155,6 +174,8 @@ namespace NewAlbums.Spotify
                     i++;
                 }
 
+                Logger.LogInformation("Returning {0} albums for SpotifyArtistId: {1}", albums.Count, input.SpotifyArtistId);
+
                 return new GetAlbumsForArtistOutput
                 {
                     Albums = albums
@@ -180,15 +201,22 @@ namespace NewAlbums.Spotify
             {
                 var albums = new List<AlbumDto>();
 
-                var api = await GetApiWithClientCredentials();
-
                 int max = SpotifyConsts.MaxLimitTotalSearchItems / SpotifyConsts.MaxLimitGetSearchItems;
                 int i = 0;
                 while (i < max)
                 {
+                    //Allows us to only request a new API access token for the first time, or when the existing one expires
+                    if (_apiWithClientCredentials == null || _apiAccessToken.IsExpired())
+                    {
+                        var apiOutput = await GetApiWithClientCredentials();
+                        _apiWithClientCredentials = apiOutput.Api;
+                        _apiAccessToken = apiOutput.Token;
+                    }
+
                     int offset = i * SpotifyConsts.MaxLimitGetSearchItems;
                     //tag:new retrieves only albums released in the last two weeks
-                    var searchResponse = await api.SearchItemsAsync("tag:new", SearchType.Album, SpotifyConsts.MaxLimitGetSearchItems, offset, SpotifyConsts.MarketToUse);
+                    var searchResponse = await _apiWithClientCredentials.SearchItemsAsync("tag:new", SearchType.Album, 
+                        SpotifyConsts.MaxLimitGetSearchItems, offset, SpotifyConsts.MarketToUse);
 
                     if (searchResponse.HasError())
                     {
@@ -246,7 +274,7 @@ namespace NewAlbums.Spotify
         /// For Spotify API calls that only require client authorization, not tied to a specific user
         /// See: https://developer.spotify.com/documentation/general/guides/authorization-guide/#client-credentials-flow
         /// </summary>
-        private async Task<SpotifyWebAPI> GetApiWithClientCredentials()
+        private async Task<GetSpotifyApiOutput> GetApiWithClientCredentials()
         {
             string clientId = _configuration.GetValue<string>(AppSettingKeys.Spotify.ClientId);
             string clientSecret = _configuration.GetValue<string>(AppSettingKeys.Spotify.ClientSecret);
@@ -261,11 +289,15 @@ namespace NewAlbums.Spotify
                 throw new Exception("Error requesting Spotify access token: " + accessToken.Error);
             }
 
-            return new SpotifyWebAPI
+            return new GetSpotifyApiOutput
             {
-                AccessToken = accessToken.AccessToken,
-                TokenType = accessToken.TokenType,
-                UseAuth = true
+                Api = new SpotifyWebAPI
+                {
+                    AccessToken = accessToken.AccessToken,
+                    TokenType = accessToken.TokenType,
+                    UseAuth = true
+                },
+                Token = accessToken
             };
         }
 
@@ -279,6 +311,9 @@ namespace NewAlbums.Spotify
             if (response.StatusCode() == HttpStatusCode.TooManyRequests)
             {
                 string retryAfterSeconds = response.Header("Retry-After");
+
+                Logger.LogInformation("Received TooManyRequests response with Retry-After: {0}", retryAfterSeconds);
+
                 if (!String.IsNullOrWhiteSpace(retryAfterSeconds))
                 {
                     int retryAfterSecondsInt = 0;

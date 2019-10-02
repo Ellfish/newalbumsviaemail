@@ -48,6 +48,8 @@ namespace NewAlbums.Notifications
         [NoAutomaticTrigger]
         public async Task ProcessNewSpotifyAlbums(ILogger logger)
         {
+            logger.LogInformation("ProcessNewSpotifyAlbums start");
+
             //Get all saved Artists
             var allArtistsOutput = await _artistAppService.GetAll(new GetAllArtistsInput { IncludeAlbums = true });
             if (allArtistsOutput.HasError)
@@ -55,6 +57,8 @@ namespace NewAlbums.Notifications
                 logger.LogError(allArtistsOutput.ErrorMessage);
                 return;
             }
+
+            logger.LogInformation("Found {0} saved artists", allArtistsOutput.Artists.Count);
 
             //An album is only considered a new release if its ReleaseDate was in the last 14 days
             DateTime newReleaseCutoff = DateTime.UtcNow.AddDays(-14);
@@ -82,6 +86,8 @@ namespace NewAlbums.Notifications
 
                 if (newReleaseAlbums.Any())
                 {
+                    logger.LogInformation("Found {0} new release albums for SpotifyArtistId: {1}", newReleaseAlbums.Count, artist.SpotifyId);
+
                     var subscriptionsOutput = await _subscriptionAppService.GetSubscriptionsForArtist(new GetSubscriptionsForArtistInput
                     {
                         ArtistId = artist.Id

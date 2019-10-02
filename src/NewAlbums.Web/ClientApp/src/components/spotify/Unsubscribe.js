@@ -4,6 +4,7 @@ import { useOurApi } from '../../hooks/useOurApi';
 import parseSearch from '../../utils/parseSearch';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorMessage from '../common/ErrorMessage';
+import './Unsubscribe.scss';
 
 export default function Unsubscribe(props) {
     const searchValues = parseSearch();
@@ -30,7 +31,9 @@ export default function Unsubscribe(props) {
         <div>
             <h1>Are you sure you want to unsubscribe?</h1>
 
-            {renderForm()}
+            <div className='unsubscribe-container'>
+                {renderForm()}
+            </div>
         </div>
     );
 

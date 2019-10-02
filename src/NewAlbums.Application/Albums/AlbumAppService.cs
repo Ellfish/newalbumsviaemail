@@ -41,6 +41,8 @@ namespace NewAlbums.Albums
                         //Check if we need to add this artist to the list of artists for the album
                         if (!existingAlbum.Artists.Any(a => a.ArtistId == input.Artist.Id))
                         {
+                            Logger.LogInformation("Adding SpotifyArtistId: {0} to existing SpotifyAlbumId: {1} in database", input.Artist.SpotifyId, inputAlbum.SpotifyId);
+
                             var artistAlbum = new ArtistAlbum
                             {
                                 ArtistId = input.Artist.Id,
@@ -52,6 +54,8 @@ namespace NewAlbums.Albums
                     }
                     else
                     {
+                        Logger.LogInformation("Saving SpotifyAlbumId: {0} to database", inputAlbum.SpotifyId);
+
                         var newAlbum = new Album
                         {
                             Name = inputAlbum.Name,

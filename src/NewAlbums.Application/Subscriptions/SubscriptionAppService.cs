@@ -104,16 +104,22 @@ namespace NewAlbums.Subscriptions
                 var subscription = await _crudServices.ReadSingleAsync<Subscription>(
                     s => s.ArtistId == input.ArtistId && s.Subscriber.UnsubscribeToken == input.UnsubscribeToken);
 
-                //Ignore if subscription is null, means unsubscribe has already succeeded earlier
                 if (subscription != null)
                 {
                     await _crudServices.DeleteAndSaveAsync<Subscription>(subscription.Id);
-                }
 
-                return new UnsubscribeFromArtistOutput
+                    return new UnsubscribeFromArtistOutput
+                    {
+                        ErrorMessage = _crudServices.IsValid ? null : _crudServices.GetAllErrors()
+                    };
+                }
+                else
                 {
-                    ErrorMessage = _crudServices.IsValid ? null : _crudServices.GetAllErrors()
-                };
+                    return new UnsubscribeFromArtistOutput
+                    {
+                        ErrorMessage = "Subscription not found. Either you've already unsubscribed, or the URL that got you here wasn't quite right."
+                    };
+                }
             }
             catch (Exception ex)
             {
@@ -135,17 +141,23 @@ namespace NewAlbums.Subscriptions
                 var subscriber = await _crudServices.ReadSingleAsync<Subscriber>(
                     s => s.UnsubscribeToken == input.UnsubscribeToken);
 
-                //Ignore if subscriber is null, means UnsubscribeFromAll has already succeeded earlier
                 if (subscriber != null)
                 {
                     //This will cascade delete their Subscriptions too
                     await _crudServices.DeleteAndSaveAsync<Subscriber>(subscriber.Id);
-                }
 
-                return new UnsubscribeFromAllOutput
+                    return new UnsubscribeFromAllOutput
+                    {
+                        ErrorMessage = _crudServices.IsValid ? null : _crudServices.GetAllErrors()
+                    };
+                }
+                else
                 {
-                    ErrorMessage = _crudServices.IsValid ? null : _crudServices.GetAllErrors()
-                };
+                    return new UnsubscribeFromAllOutput
+                    {
+                        ErrorMessage = "Subscription not found. Either you've already unsubscribed, or the URL that got you here wasn't quite right."
+                    };
+                }
             }
             catch (Exception ex)
             {
