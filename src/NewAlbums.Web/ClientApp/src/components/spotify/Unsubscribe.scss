@@ -1,5 +1,6 @@
 @import '../../styles/variables';
 
 .unsubscribe-container {
+    //Prevents the footer jumping around when we display the loading spinner and success/error messages
     min-height: 200px;
 }

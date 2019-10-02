@@ -8,7 +8,7 @@ export default function LoadingSpinner(props) {
             visible='true'
             height={50}
             width={50}
-            timeout={15}
+            timeout={15000}
         />
     ); 
 }

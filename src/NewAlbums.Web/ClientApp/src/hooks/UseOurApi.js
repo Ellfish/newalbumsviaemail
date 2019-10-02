@@ -19,8 +19,7 @@ export const useOurApi = (url, initialData, method, postData) => {
             if (unmounted) return initialData;
 
             setHasError(!response.ok);
-            setIsLoading(false);
-
+            
             const contentType = response.headers.get("content-type");
             const isJson = contentType && contentType.indexOf("application/json") !== -1;
 
@@ -64,7 +63,12 @@ export const useOurApi = (url, initialData, method, postData) => {
         };
 
         if (url && !unmounted) {
-            fetchData().then(responseJson => !unmounted && setFetchedData(responseJson.result));
+            fetchData().then(responseJson => {
+                if (!unmounted) {
+                    setFetchedData(responseJson.result);
+                    setIsLoading(false);
+                }
+            });
 
             //Only return the cleanup function when we've actually called fetchData()
             return () => {
