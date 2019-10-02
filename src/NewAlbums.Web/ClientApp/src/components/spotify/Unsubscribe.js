@@ -8,17 +8,15 @@ import './Unsubscribe.scss';
 
 export default function Unsubscribe(props) {
     const searchValues = parseSearch();
-    const [artistId, setArtistId] = useState(searchValues.artistId);
-    const [unsubscribeToken, setUnsubscribeToken] = useState(searchValues.unsubscribeToken);
     const [unsubscribeUrl, setUnsubscribeUrl] = useState(null);
 
     let postData = {
-        artistId: artistId,
-        unsubscribeToken: unsubscribeToken
+        artistId: searchValues.artistId,
+        unsubscribeToken: searchValues.unsubscribeToken
     };
     const { isLoading, hasError, errorMessage, responseData } = useOurApi(unsubscribeUrl, {}, 'POST', postData);
 
-    if (!unsubscribeToken) {
+    if (!postData.unsubscribeToken) {
         return (
             <div>
                 <h1>Invalid Unsubscribe Link</h1>
@@ -29,13 +27,21 @@ export default function Unsubscribe(props) {
 
     return (
         <div>
-            <h1>Are you sure you want to unsubscribe?</h1>
+            <h1>{getHeading()}</h1>
 
             <div className='unsubscribe-container'>
                 {renderForm()}
             </div>
         </div>
     );
+
+    function getHeading() {
+        if (postData.artistId) {
+            return 'Are you sure you want to unsubscribe from this artist?';
+        } else {
+            return 'Are you sure you want to unsubscribe from all artists?';
+        }
+    }
 
     function renderForm() {
         if (isLoading) {

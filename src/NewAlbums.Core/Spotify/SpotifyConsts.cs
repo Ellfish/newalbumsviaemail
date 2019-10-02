@@ -15,7 +15,7 @@ namespace NewAlbums.Spotify
         /// Enforced by us. Max number of artists we want to return for a user, to avoid hitting the Spotify API
         /// too hard and to reduce load time of the request
         /// </summary>
-        public const int MaxLimitTotalFollowedArtists = MaxLimitGetFollowedArtists * 20;
+        public const int MaxLimitTotalFollowedArtists = MaxLimitGetFollowedArtists * 200;
 
         /// <summary>
         /// Enforced by Spotify API

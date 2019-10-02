@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, FormGroup, FormControl, ControlLabel, Row, Col } from 'react-bootstrap';
 import { useOurApi } from '../../hooks/useOurApi';
 import ErrorMessage from '../common/ErrorMessage';
 import LoadingSpinner from '../common/LoadingSpinner';
@@ -11,6 +11,7 @@ export default function FollowedArtistsList(props) {
     const url = `/api/Spotify/FollowedArtists?AccessToken=${props.accessToken}`;
     const { responseData, isLoading, hasError, errorMessage } = useOurApi(url, []);
     const [artists, setArtists] = useState([]);
+    const [artistNameFilter, setArtistNameFilter] = useState('');
 
     if (isLoading || (!hasError && responseData.length === 0)) {
         return <LoadingSpinner />;
@@ -29,6 +30,25 @@ export default function FollowedArtistsList(props) {
             <Button bsStyle='primary' className='m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
             <Button bsStyle='primary' onClick={() => setSelectedAllArtists(false)}>Select None</Button>
 
+            <Row className='no-gutter m-t-10'>
+                <Col xs={12} sm={6}>
+                    <FormGroup
+                        bsSize='lg'
+                        controlId='artist-name-filter'
+                    >
+                        <ControlLabel>Filter by name</ControlLabel>
+                        <FormControl
+                            type='text'
+                            placeholder='eg: Crowded House'
+                            spellCheck={false}
+                            autoComplete='off'
+                            value={artistNameFilter}
+                            onChange={handleArtistNameFilterChange}
+                        />
+                    </FormGroup>
+                </Col>
+            </Row>
+
             <ul className='followed-artists-list list-unstyled'>
                 {renderArtistListItems()}
             </ul>
@@ -43,7 +63,9 @@ export default function FollowedArtistsList(props) {
     function renderArtistListItems() {
         let artistListItems = [];
         for (let i = 0; i < artists.length; i++) {
-            artistListItems.push(<FollowedArtistsListItem artist={artists[i]} key={artists[i].id} handleClick={(artist) => handleArtistClick(artist)} />);
+            if (!artistNameFilter || artists[i].name.toLowerCase().indexOf(artistNameFilter.toLowerCase()) >= 0) {
+                artistListItems.push(<FollowedArtistsListItem artist={artists[i]} key={artists[i].id} handleClick={(artist) => handleArtistClick(artist)} />);
+            }
         }
 
         return artistListItems;
@@ -59,7 +81,15 @@ export default function FollowedArtistsList(props) {
         }));
     }
 
+    function handleArtistNameFilterChange(e) {
+        setArtistNameFilter(e.target.value);
+    }
+
     function setSelectedAllArtists(selected) {
+        if (selected) {
+            setArtistNameFilter('');
+        }
+
         setArtists(artists.map((artist) => {
             artist.selected = selected;
             return artist;
