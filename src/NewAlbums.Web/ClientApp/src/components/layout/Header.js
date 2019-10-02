@@ -6,6 +6,8 @@ export default function Header(props) {
 
     return (
         <header>
+            <img className='header-logo' src='/images/logo.png' alt='Logo' />
+
             <Link to='/' className='home-link'>
                 <div className='app-name'>New Albums via Email</div>
             </Link>
