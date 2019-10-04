@@ -46,6 +46,12 @@ export class PrivacyPolicy extends Component {
                     or installing an ad-blocker such as uBlock Origin or Adblock Plus.
                 </p>
 
+                <h2>Cookies</h2>
+
+                <p>
+                    TODO
+                </p>
+
                 <h2>Legal</h2>
 
                 <p>By using this app you consent to this Privacy Policy. This policy was last updated on 1st October 2019.</p>

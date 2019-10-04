@@ -8,7 +8,7 @@ export class Home extends Component {
         const redirectUrl = encodeURIComponent(`${process.env.REACT_APP_API_URL}/spotify-callback/`);
         const scopes = encodeURIComponent('user-follow-read');
         //Set this to true to always show the Spotify auth dialog, even if already authenticated.
-        const showDialog = false;
+        const showDialog = true;
         const spotifyAuthoriseUrl = `https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${redirectUrl}&scope=${scopes}&show_dialog=${showDialog}`;
 
         return (
