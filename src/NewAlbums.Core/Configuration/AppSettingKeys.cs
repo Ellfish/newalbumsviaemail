@@ -38,5 +38,11 @@ namespace NewAlbums.Configuration
             public const string ClientId = "Spotify:ClientId";
             public const string ClientSecret = "Spotify:ClientSecret";
         }
+
+        public static class Style
+        {
+            public const string PrimaryColour = "Style:PrimaryColour";
+            public const string BackgroundColour = "Style:BackgroundColour";
+        }
     }
 }

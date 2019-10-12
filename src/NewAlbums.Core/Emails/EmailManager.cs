@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NewAlbums.Configuration;
 using NewAlbums.Debugging;
 using NewAlbums.Emails.Dto;
+using NewAlbums.Emails.Templates;
 using NewAlbums.Paths;
 using NewAlbums.Utils;
 using RestSharp;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,6 +30,35 @@ namespace NewAlbums.Emails
         {
             _pathProvider = pathProvider;
             _configuration = configuration;
+        }
+
+        public async Task<StringBuilder> GetHtmlEmailTemplate(string templateType, Dictionary<string, string> variableValues)
+        {
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"NewAlbums.Emails.Templates.{templateType}.html"))
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await stream.CopyToAsync(memoryStream);
+                    var bytes = memoryStream.ToArray();
+                    var template = new StringBuilder(Encoding.UTF8.GetString(bytes, 3, bytes.Length - 3));
+
+                    ReplaceVariables(ref template, variableValues);
+                    return template;
+                }
+            }
+        }
+
+        private void ReplaceVariables(ref StringBuilder template, Dictionary<string, string> variableValues)
+        {
+            //Common variables
+            template.Replace($"{{{TemplateVariables.PrimaryColour}}}", _configuration[AppSettingKeys.Style.PrimaryColour]);
+            template.Replace($"{{{TemplateVariables.BackgroundColour}}}", _configuration[AppSettingKeys.Style.BackgroundColour]);
+
+            //Other variables specific to this email
+            foreach (var key in variableValues.Keys)
+            {
+                template.Replace($"{{{key}}}", variableValues[key]);
+            }
         }
 
         /// <summary>

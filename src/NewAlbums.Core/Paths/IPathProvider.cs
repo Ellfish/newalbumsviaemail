@@ -7,7 +7,7 @@ namespace NewAlbums.Paths
     public interface IPathProvider
     {
         string GetAbsoluteEmailsFolderPath();
-
+        
         string GetAbsoluteUrl(string relativeWebFilePath);
     }
 }

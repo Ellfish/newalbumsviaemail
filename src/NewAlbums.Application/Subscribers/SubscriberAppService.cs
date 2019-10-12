@@ -10,6 +10,7 @@ using NewAlbums.Albums.Dto;
 using NewAlbums.Configuration;
 using NewAlbums.Emails;
 using NewAlbums.Emails.Dto;
+using NewAlbums.Emails.Templates;
 using NewAlbums.Subscribers.Dto;
 using NewAlbums.Utils;
 
@@ -92,7 +93,7 @@ namespace NewAlbums.Subscribers
                     string unsubscribeFromAllUrl = GetUnsubscribeUrl(subscriberDto.UnsubscribeToken, null);
 
                     string emailText = GetNotificationAlbumText(input, unsubscribeFromArtistUrl, unsubscribeFromAllUrl);
-                    string emailHtml = GetNotificationAlbumHtml(input, unsubscribeFromArtistUrl, unsubscribeFromAllUrl);
+                    string emailHtml = await GetNotificationAlbumHtml(input, unsubscribeFromArtistUrl, unsubscribeFromAllUrl);
 
                     var email = new EmailMessage
                     {
@@ -133,11 +134,17 @@ namespace NewAlbums.Subscribers
             return text;
         }
 
-        //TODO: unsubscribe link
-        //TODO: HTML email template
-        private string GetNotificationAlbumHtml(NotifySubscribersInput input, string unsubscribeArtistUrl, string unsubscribeAllUrl)
+        //TODO: unsubscribe links
+        private async Task<string> GetNotificationAlbumHtml(NotifySubscribersInput input, string unsubscribeArtistUrl, string unsubscribeAllUrl)
         {
-            return "";
+            var templateValues = new Dictionary<string, string>
+            {
+                { TemplateVariables.Heading,  $"New album from {input.Artist.Name}" }
+            };
+
+            var template = await _emailManager.GetHtmlEmailTemplate(TemplateTypes.Alert, templateValues);
+
+            return template.ToString();
         }
 
         private string GetUnsubscribeUrl(string unsubscribeToken, long? artistId)
