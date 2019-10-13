@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewAlbums.Application", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewAlbums.EntityFrameworkCore", "src\NewAlbums.EntityFrameworkCore\NewAlbums.EntityFrameworkCore.csproj", "{B3D2C425-53AF-40F9-BDB1-704F71F170F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewAlbums.Notifications", "src\NewAlbums.Notifications\NewAlbums.Notifications.csproj", "{34D6F4EC-77D7-47A4-A0AF-2B9E83436DCD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewAlbums.Notifications", "src\NewAlbums.Notifications\NewAlbums.Notifications.csproj", "{34D6F4EC-77D7-47A4-A0AF-2B9E83436DCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewAlbums.Tests", "src\NewAlbums.Tests\NewAlbums.Tests.csproj", "{951FBBB2-30DD-4CE2-B798-0447A0A8A720}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{34D6F4EC-77D7-47A4-A0AF-2B9E83436DCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34D6F4EC-77D7-47A4-A0AF-2B9E83436DCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34D6F4EC-77D7-47A4-A0AF-2B9E83436DCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{951FBBB2-30DD-4CE2-B798-0447A0A8A720}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{951FBBB2-30DD-4CE2-B798-0447A0A8A720}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{951FBBB2-30DD-4CE2-B798-0447A0A8A720}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{951FBBB2-30DD-4CE2-B798-0447A0A8A720}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
