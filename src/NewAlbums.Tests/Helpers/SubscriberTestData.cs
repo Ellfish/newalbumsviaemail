@@ -57,15 +57,15 @@ namespace NewAlbums.Tests.Helpers
             artists.Add(new Artist
             {
                 CreatedDate = _createdDate,
-                Name = "Crowded House",
-                SpotifyId = "7ohlPA8dRBtCf92zaZCaaB"
+                Name = "Nils Frahm",
+                SpotifyId = "5gqhueRUZEa7VDnQt4HODp"
             });
 
             artists.Add(new Artist
             {
                 CreatedDate = _createdDate,
-                Name = "Nils Frahm",
-                SpotifyId = "5gqhueRUZEa7VDnQt4HODp"
+                Name = "Crowded House",
+                SpotifyId = "7ohlPA8dRBtCf92zaZCaaB"
             });
 
             return artists;

@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>NewAlbums</RootNamespace>
+    <UserSecretsId>0765b20f-cab2-45ab-8c48-374a56b46b95</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
