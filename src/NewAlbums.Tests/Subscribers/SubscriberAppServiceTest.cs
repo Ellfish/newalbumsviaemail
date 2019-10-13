@@ -20,6 +20,7 @@ using NewAlbums.Emails;
 using System.Threading.Tasks;
 using NewAlbums.Albums.Dto;
 using NewAlbums.Spotify.Dto;
+using NewAlbums.Emails.Templates;
 
 namespace NewAlbums.Tests.Subscribers
 {
@@ -36,7 +37,8 @@ namespace NewAlbums.Tests.Subscribers
             _sharedFixture = sharedFixture;
 
             var emailManager = new EmailManager(_sharedFixture.PathProvider, _sharedFixture.Configuration);
-            _subscriberAppService = new SubscriberAppService(CrudServicesAsync, emailManager, _sharedFixture.Configuration);
+            var templateManager = new TemplateManager(_sharedFixture.Configuration);
+            _subscriberAppService = new SubscriberAppService(CrudServicesAsync, emailManager, templateManager, _sharedFixture.Configuration);
         }
 
         [Fact]

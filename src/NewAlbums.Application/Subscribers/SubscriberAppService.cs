@@ -11,6 +11,7 @@ using NewAlbums.Configuration;
 using NewAlbums.Emails;
 using NewAlbums.Emails.Dto;
 using NewAlbums.Emails.Templates;
+using NewAlbums.Emails.Templates.Dto;
 using NewAlbums.Subscribers.Dto;
 using NewAlbums.Utils;
 
@@ -20,16 +21,19 @@ namespace NewAlbums.Subscribers
     {
         private readonly ICrudServicesAsync _crudServices;
         private readonly EmailManager _emailManager;
+        private readonly TemplateManager _templateManager;
         private readonly IConfiguration _configuration;
 
         public SubscriberAppService(
             ICrudServicesAsync crudServices,
             EmailManager emailManager,
+            TemplateManager templateManager,
             IConfiguration configuration
             )
         {
             _crudServices = crudServices;
             _emailManager = emailManager;
+            _templateManager = templateManager;
             _configuration = configuration;
         }
 
@@ -137,12 +141,20 @@ namespace NewAlbums.Subscribers
         //TODO: unsubscribe links
         private async Task<string> GetNotificationAlbumHtml(NotifySubscribersInput input, string unsubscribeArtistUrl, string unsubscribeAllUrl)
         {
-            var templateValues = new Dictionary<string, string>
+            var getTemplateInput = new GetTemplateInput
             {
-                { TemplateVariables.Heading,  $"New album from {input.Artist.Name}" }
+                TemplateType = TemplateTypes.Alert,
+                SimpleVariableValues = new Dictionary<string, string>
+                {
+                    { TemplateVariables.Heading,  $"New album from {input.Artist.Name}" }
+                },
+                BodyParagraphs = new List<BodyParagraph>
+                {
+                    //TODO
+                }
             };
 
-            var template = await _emailManager.GetHtmlEmailTemplate(TemplateTypes.Alert, templateValues);
+            var template = await _templateManager.GetHtmlEmailTemplate(getTemplateInput);
 
             return template.ToString();
         }

@@ -8,9 +8,13 @@ namespace NewAlbums.Emails.Templates
     {
         //Content
         public const string Heading = "Heading";
+        public const string Body = "Body";
 
         //Styling
         public const string PrimaryColour = "PrimaryColour";
         public const string BackgroundColour = "BackgroundColour";
+
+        //Other
+        public const string FrontEndRootUrl = "FrontEndRootUrl";
     }
 }
