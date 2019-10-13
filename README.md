@@ -7,16 +7,18 @@ I built it as a fun way to learn React. I also decided to create the .NET Core b
 I used the Visual Studio React template, which utilises [Create React App](https://github.com/facebookincubator/create-react-app).
 
 
-### Dev environment setup
+### Windows dev environment setup
 
 - Clone the repo
-- Have .NET Core 2.1 installed
+- Install the following dependencies:
+  - .NET Core 2.1
+  - Node 10.16+
+  - npm 6.9+
 - I use Visual Studio 2019 Community, I haven't tested this setup otherwise
 - Build the solution
+- Right click on NewAlbums.Web and choose "Set as StartUp Project"
 - In Package Manager Console, run Update-Database with 'NewAlbums.EntityFrameworkCore' selected
-- Add the following user secrets, setting values for yourself (right-click NewAlbums.Web, choose 'Manage User Secrets') 
-  - App:AdminEmailAddress
-  - App:AdminFullName
+- Open NewAlbums.Web/appsettings.json and add the user secrets that are indicated in that file, setting values for yourself (right-click NewAlbums.Web, choose 'Manage User Secrets')
 - Set the following System environment variable: `ASPNETCORE_ENVIRONMENT=Development`
 
 #### Troubleshooting

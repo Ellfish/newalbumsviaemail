@@ -42,7 +42,9 @@ namespace NewAlbums.Configuration
         public static class Style
         {
             public const string PrimaryColour = "Style:PrimaryColour";
+            public const string TextColourOnPrimary = "Style:TextColourOnPrimary";
             public const string BackgroundColour = "Style:BackgroundColour";
+            public const string TextColourOnBackground = "Style:TextColourOnBackground";
         }
     }
 }

@@ -1,11 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using NewAlbums.Configuration;
-using NewAlbums.Debugging;
-using NewAlbums.Emails.Dto;
 using NewAlbums.Emails.Templates;
 using NewAlbums.Emails.Templates.Dto;
-using NewAlbums.Paths;
-using NewAlbums.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -49,6 +45,7 @@ namespace NewAlbums.Emails.Templates
         {
             //Common variables
             string primaryColour = _configuration[AppSettingKeys.Style.PrimaryColour];
+            string textColourOnPrimary = _configuration[AppSettingKeys.Style.TextColourOnPrimary];
 
             template.Replace($"{{{TemplateVariables.PrimaryColour}}}", primaryColour);
             template.Replace($"{{{TemplateVariables.BackgroundColour}}}", _configuration[AppSettingKeys.Style.BackgroundColour]);
@@ -60,8 +57,8 @@ namespace NewAlbums.Emails.Templates
                 template.Replace($"{{{key}}}", input.SimpleVariableValues[key]);
             }
 
+            //Body
             var bodyHtml = new StringBuilder();
-
             foreach (var paragraph in input.BodyParagraphs)
             {
                 bodyHtml.Append($"{BodyRowHtml}{BodyCellHtml}");
@@ -72,7 +69,10 @@ namespace NewAlbums.Emails.Templates
                 }
                 else
                 {
-                    bodyHtml.Append($"<a href=\"{paragraph.ButtonUrl}\" class=\"btn-primary\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: {primaryColour}; margin: 0; border-color: {primaryColour}; border-style: solid; border-width: 10px 20px;\">{paragraph.Text}</a>");
+                    bodyHtml.Append($"<a href=\"{paragraph.ButtonUrl}\" class=\"btn-primary\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; "
+                        + $"box-sizing: border-box; font-size: 14px; color: {textColourOnPrimary}; text-decoration: none; line-height: 2em; font-weight: bold; " 
+                        + $"text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: {primaryColour}; "
+                        + $"margin: 0; border-color: {primaryColour}; border-style: solid; border-width: 10px 20px;\">{paragraph.Text}</a>");
                 }
 
                 bodyHtml.Append("</td></tr>");
