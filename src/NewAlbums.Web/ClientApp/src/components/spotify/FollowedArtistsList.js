@@ -12,6 +12,7 @@ export default function FollowedArtistsList(props) {
     const { responseData, isLoading, hasError, errorMessage } = useOurApi(url, []);
     const [artists, setArtists] = useState([]);
     const [artistNameFilter, setArtistNameFilter] = useState('');
+    const [preselectedArtistsCount, setPreselectedArtistsCount] = useState(0);
 
     if (isLoading || (!hasError && responseData.length === 0)) {
         return <LoadingSpinner />;
@@ -23,11 +24,12 @@ export default function FollowedArtistsList(props) {
 
     if (responseData.length > 0 && artists.length === 0) {
         setArtists(responseData);
-    }    
+        setPreselectedArtistsCount(getNumSelectedArtists(responseData));
+    }
 
     return (
         <div>
-            <p>Following {artists.length} artists</p>
+            <p className='m-b-40'>You're following {artists.length} artists on Spotify. {renderPreselectionMessage()}</p>
 
             <Button bsStyle='primary' className='m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
             <Button bsStyle='primary' onClick={() => setSelectedAllArtists(false)}>Select None</Button>
@@ -64,6 +66,12 @@ export default function FollowedArtistsList(props) {
         </div>
     );
 
+    function renderPreselectionMessage() {
+        if (preselectedArtistsCount > 0) {
+            return 'We\'ve preselected ' + preselectedArtistsCount + ' of your top artists (according to Spotify) for you.';
+        }
+    }
+
     function renderArtistListItems() {
         let artistListItems = [];
         for (let i = 0; i < artists.length; i++) {
@@ -98,5 +106,17 @@ export default function FollowedArtistsList(props) {
             artist.selected = selected;
             return artist;
         }));
+    }
+
+    function getNumSelectedArtists(artistsResponseData) {
+        let count = 0;
+
+        artistsResponseData.forEach((a) => {
+            if (a.selected) {
+                count++;
+            }
+        });
+
+        return count;
     }
 }

@@ -28,7 +28,8 @@ namespace NewAlbums.Web.Controllers
         {
             var output = await _spotifyAppService.GetFollowedArtists(new GetFollowedArtistsInput
             {
-                AccessToken = model.AccessToken
+                AccessToken = model.AccessToken,
+                PreselectTopArtists = true
             });
 
             if (output.HasError)

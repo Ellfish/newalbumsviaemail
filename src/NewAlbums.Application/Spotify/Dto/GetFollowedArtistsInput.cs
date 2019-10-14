@@ -9,5 +9,10 @@ namespace NewAlbums.Spotify.Dto
     {
         [Required]
         public string AccessToken { get; set; }
+
+        /// <summary>
+        /// If true, we return the user's top 50 artists with Selected = true
+        /// </summary>
+        public bool PreselectTopArtists { get; set; }
     }
 }

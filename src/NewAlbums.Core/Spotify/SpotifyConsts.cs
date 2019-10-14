@@ -18,6 +18,11 @@ namespace NewAlbums.Spotify
         public const int MaxLimitTotalFollowedArtists = MaxLimitGetFollowedArtists * 200;
 
         /// <summary>
+        /// Enforced by Spotify API, no paging
+        /// </summary>
+        public const int MaxLimitGetTopArtists = 50;
+
+        /// <summary>
         /// Enforced by Spotify API
         /// </summary>
         public const int MaxLimitGetSearchItems = 50;

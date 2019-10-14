@@ -11,5 +11,10 @@ namespace NewAlbums.Spotify.Dto
         public string Name { get; set; }
 
         public SpotifyImageDto Image { get; set; }
+
+        /// <summary>
+        /// Used to preselect certain artists for the front-end
+        /// </summary>
+        public bool Selected { get; set; }
     }
 }

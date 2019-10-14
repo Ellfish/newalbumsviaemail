@@ -46,6 +46,13 @@ namespace NewAlbums.Spotify
                 };
 
                 var followedArtists = new List<SpotifyArtistDto>();
+                
+                //Also get top artists if requested
+                var topArtistIds = new List<string>();
+                if (input.PreselectTopArtists)
+                {
+                    topArtistIds = await GetTopArtistIds(input.AccessToken);
+                }
 
                 //Keep requesting MaxLimitGetFollowedArtists until we get all followed artists, or reach MaxLimitTotalFollowedArtists
                 int i = SpotifyConsts.MaxLimitTotalFollowedArtists / SpotifyConsts.MaxLimitGetFollowedArtists;
@@ -76,7 +83,8 @@ namespace NewAlbums.Spotify
                         {
                             Id = artistItem.Id,
                             Name = artistItem.Name,
-                            Image = GetImage(artistItem.Images, 100)
+                            Image = GetImage(artistItem.Images, 100),
+                            Selected = topArtistIds.Contains(artistItem.Id)
                         })
                     );
 
@@ -97,6 +105,10 @@ namespace NewAlbums.Spotify
 
                 Logger.LogInformation("Returning {0} followed artists.", followedArtists.Count);
 
+                var followedArtistIds = followedArtists.Select(a => a.Id).ToList();
+                var ids = topArtistIds.Where(id => !followedArtistIds.Contains(id));
+
+
                 return new GetFollowedArtistsOutput
                 {
                     Artists = followedArtists.OrderBy(a => a.Name).ToList(),
@@ -110,6 +122,44 @@ namespace NewAlbums.Spotify
                 {
                     ErrorMessage = ex.Message
                 };
+            }
+        }
+
+        protected async Task<List<string>> GetTopArtistIds(string accessToken)
+        {
+            Logger.LogInformation("Getting top artists...");
+
+            try
+            {
+                //Initialise the SpotifyWebAPI with the access token provided by the user authenticating with Spotify
+                var api = new SpotifyWebAPI
+                {
+                    AccessToken = accessToken,
+                    TokenType = "Bearer",
+                    UseAuth = true
+                };
+
+                var topArtistIds = new List<string>();
+
+                var response = await api.GetUsersTopArtistsAsync(TimeRangeType.LongTerm, limit: SpotifyConsts.MaxLimitGetTopArtists);
+
+                if (response.HasError())
+                {
+                    Logger.LogError("Error status: {0}, message: {1}", response.Error.Status, response.Error.Message);
+                    //Not an essential method, just return empty
+                    return new List<string>();
+                }
+
+                topArtistIds.AddRange(response.Items.Select(artistItem => artistItem.Id));
+
+                Logger.LogInformation("Returning {0} top artists.", topArtistIds.Count);
+                return topArtistIds;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "");
+                //Not an essential method, just return empty
+                return new List<string>();
             }
         }
 
