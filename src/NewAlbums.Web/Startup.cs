@@ -128,10 +128,6 @@ namespace NewAlbums.Web
                 .ScriptSources(s => s.CustomSources("https://www.google-analytics.com", "https://storage.googleapis.com"))
             );
 
-            //Fix for IIS
-            var provider = new FileExtensionContentTypeProvider();
-            provider.Mappings[".webmanifest"] = "application/manifest+json";
-
             app.UseHttpsRedirection();
 
             //10 mins in dev, 365 days in production

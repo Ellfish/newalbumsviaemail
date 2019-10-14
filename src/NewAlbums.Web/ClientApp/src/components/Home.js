@@ -58,7 +58,7 @@ export class Home extends Component {
                     Click the button below to let us access (some of) your Spotify data. The only data we access is your followed artists (to let you choose which to subscribe to),
                     and your top artists (to pre-select your top 50 artists).
                     We will never sell or do anything unethical with your data.
-                    You can even check out our source code on <a href='https://github.com/Ellfish/newalbumsviaemail'>Github</a>.
+                    You can even see our source code on <a href='https://github.com/Ellfish/newalbumsviaemail'>Github</a>.
                 </p>
 
                 <Button bsStyle='primary' bsSize='lg' className='m-t-50' href={spotifyAuthoriseUrl}>Get Started</Button>
