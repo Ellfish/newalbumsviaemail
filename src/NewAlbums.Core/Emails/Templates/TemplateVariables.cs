@@ -9,6 +9,7 @@ namespace NewAlbums.Emails.Templates
         //Content
         public const string Heading = "Heading";
         public const string Body = "Body";
+        public const string Footer = "Footer";
 
         //Styling
         public const string PrimaryColour = "PrimaryColour";

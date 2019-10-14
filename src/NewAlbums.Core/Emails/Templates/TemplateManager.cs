@@ -2,6 +2,7 @@
 using NewAlbums.Configuration;
 using NewAlbums.Emails.Templates;
 using NewAlbums.Emails.Templates.Dto;
+using NewAlbums.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,9 +16,13 @@ namespace NewAlbums.Emails.Templates
     {
         private readonly IConfiguration _configuration;
 
-        private const string BodyRowHtml = "<tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\">";
-        private const string BodyCellHtml = "<td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box;" 
-                                            + "font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;\" valign=\"top\">";
+        private const string EmailFontFamily = "font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;";
+        private string EmailRowHtml = $"<tr style=\"{EmailFontFamily} box-sizing: border-box; font-size: 14px; margin: 0;\">";
+        private string BodyCellHtml = $"<td class=\"content-block\" style=\"{EmailFontFamily} box-sizing: border-box;" 
+                                      + "font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px; text-align: center;\" align=\"center\" valign=\"top\">";
+
+        private string FooterCellHtml = $"<td class=\"aligncenter content-block\" style=\"{EmailFontFamily} box-sizing: border-box; font-size: 12px; vertical-align: top; "
+                                        + "color: #999; text-align: center; margin: 0; padding: 0;\" align=\"center\" valign=\"top\">";
 
         public TemplateManager(
             IConfiguration configuration)
@@ -61,24 +66,71 @@ namespace NewAlbums.Emails.Templates
             var bodyHtml = new StringBuilder();
             foreach (var paragraph in input.BodyParagraphs)
             {
-                bodyHtml.Append($"{BodyRowHtml}{BodyCellHtml}");
+                bodyHtml.Append($"{EmailRowHtml}{BodyCellHtml}");
 
                 if (String.IsNullOrWhiteSpace(paragraph.ButtonUrl))
                 {
-                    bodyHtml.Append($"{paragraph.Text}");
+                    bodyHtml.Append($"{paragraph.HtmlText}");
                 }
                 else
                 {
-                    bodyHtml.Append($"<a href=\"{paragraph.ButtonUrl}\" class=\"btn-primary\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; "
+                    bodyHtml.Append($"<a href=\"{paragraph.ButtonUrl}\" target=\"_blank\" rel=\"noopener\" class=\"btn-primary\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; "
                         + $"box-sizing: border-box; font-size: 14px; color: {textColourOnPrimary}; text-decoration: none; line-height: 2em; font-weight: bold; " 
-                        + $"text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: {primaryColour}; "
-                        + $"margin: 0; border-color: {primaryColour}; border-style: solid; border-width: 10px 20px;\">{paragraph.Text}</a>");
+                        + $"text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; background-color: {primaryColour}; "
+                        + $"margin: 0; border-color: {primaryColour}; border-style: solid; border-width: 10px 20px;\">{paragraph.HtmlText}</a>");
                 }
 
                 bodyHtml.Append("</td></tr>");
             }
 
             template.Replace($"{{{TemplateVariables.Body}}}", bodyHtml.ToString());
+
+            //Footer
+            var footerHtml = new StringBuilder();
+
+            //Append provided lines first
+            foreach (var line in input.FooterLines)
+            {
+                footerHtml.Append($"{EmailRowHtml}{FooterCellHtml}{line.HtmlText}</td></tr>");
+            }
+
+            //Then append generic lines for all emails
+            string frontEndRootUrl = _configuration[AppSettingKeys.App.FrontEndRootUrl];
+            string contactEmailAddress = _configuration[AppSettingKeys.App.ContactEmailAddress];
+            string spotifyLogoUrl = frontEndRootUrl.EnsureEndsWith('/') + "images/spotify-logo-white.png";
+
+            footerHtml.Append($"{EmailRowHtml}{FooterCellHtml}{GetEmailLink(frontEndRootUrl, frontEndRootUrl, null, "12px")}</td></tr>");
+            footerHtml.Append($"{EmailRowHtml}{FooterCellHtml}{GetEmailLink($"mailto:{contactEmailAddress}", contactEmailAddress, null, "12px")}</td></tr>");
+            footerHtml.Append($"{EmailRowHtml}{FooterCellHtml}Artist and album content including cover art supplied by:</td></tr>");
+            footerHtml.Append($"{EmailRowHtml}{FooterCellHtml}<img alt=\"Spotify logo\" src=\"{spotifyLogoUrl}\" width=\"80\" height=\"24\" style=\"width: 80px; height: 24px; margin: 0; outline: none;\" /></td></tr>");
+
+            template.Replace($"{{{TemplateVariables.Footer}}}", footerHtml.ToString());
+        }
+
+        public string GetEmailLink(string url, string text, string colour = null, string fontSize = "14px")
+        {
+            if (String.IsNullOrWhiteSpace(colour))
+            {
+                colour = _configuration[AppSettingKeys.Style.PrimaryColour];
+            }
+
+            string target = "_blank";
+            if (url.StartsWith("mailto:"))
+            {
+                target = "_self";
+            }
+
+            return $"<a href=\"{url}\" target=\"{target}\" rel=\"noopener\" style=\"{EmailFontFamily} "
+                + $"font-size: {fontSize}; color: {colour}; text-decoration: underline; margin: 0; box-sizing: border-box; \">{text}</a>";
+        }
+
+        public string GetEmailTextFooter()
+        {
+            string appName = _configuration[AppSettingKeys.App.Name];
+            string frontEndRootUrl = _configuration[AppSettingKeys.App.FrontEndRootUrl];
+            string contactEmailAddress = _configuration[AppSettingKeys.App.ContactEmailAddress];
+
+            return $"\r\n\r\n\r\n----------------Sent by {appName}\r\n{frontEndRootUrl}\r\nContact: {contactEmailAddress}";
         }
     }
 }

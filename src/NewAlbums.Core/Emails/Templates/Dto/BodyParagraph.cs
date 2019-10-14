@@ -6,7 +6,7 @@ namespace NewAlbums.Emails.Templates.Dto
 {
     public class BodyParagraph
     {
-        public string Text { get; set; }
+        public string HtmlText { get; set; }
 
         /// <summary>
         /// If this is set, the Text is displayed as a button

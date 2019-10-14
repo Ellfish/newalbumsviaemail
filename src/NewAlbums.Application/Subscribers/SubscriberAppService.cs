@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using GenericServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -130,17 +131,19 @@ namespace NewAlbums.Subscribers
 
         private string GetNotificationAlbumText(NotifySubscribersInput input, string unsubscribeArtistUrl, string unsubscribeAllUrl)
         {
-            string text = $"Good news, {input.Artist.Name} just released a new album called \"{input.Album.Name}\".\r\n\r\n"
+            string text = $"Good news, {input.Artist.Name} just released a new album: {input.Album.Name}.\r\n\r\n"
                 + $"Click the following link to listen: {Album.GetSpotifyUrl(input.Album.SpotifyId)}\r\n\r\n\r\n\r\n"
                 + $"To unsubscribe from new albums for this artist, click the following link: {unsubscribeArtistUrl}\r\n"
-                + $"To unsubscribe from all new albums from us, click the following link: {unsubscribeAllUrl}\r\n";
+                + $"To unsubscribe from all new albums from us, click the following link: {unsubscribeAllUrl}\r\n"
+                + _templateManager.GetEmailTextFooter();
 
             return text;
         }
 
-        //TODO: unsubscribe links
         private async Task<string> GetNotificationAlbumHtml(NotifySubscribersInput input, string unsubscribeArtistUrl, string unsubscribeAllUrl)
         {
+            string albumImageWidth = "280";
+
             var getTemplateInput = new GetTemplateInput
             {
                 TemplateType = TemplateTypes.Alert,
@@ -150,7 +153,14 @@ namespace NewAlbums.Subscribers
                 },
                 BodyParagraphs = new List<BodyParagraph>
                 {
-                    //TODO
+                    new BodyParagraph { HtmlText = $"Good news, {input.Artist.Name} just released a new album: {HttpUtility.HtmlEncode(input.Album.Name)}." },
+                    new BodyParagraph { HtmlText = $"<img alt=\"{HttpUtility.HtmlEncode(input.Album.Name)}\" src=\"{input.Album.Image.Url}\" width=\"{albumImageWidth}\" height=\"{albumImageWidth}\" />" },
+                    new BodyParagraph { HtmlText = "Click Here to Listen", ButtonUrl = $"{Album.GetSpotifyUrl(input.Album.SpotifyId)}" }
+                },
+                FooterLines = new List<FooterLine>
+                { 
+                    new FooterLine { HtmlText = _templateManager.GetEmailLink(unsubscribeArtistUrl, "Unsubscribe", null, "12px") + " from new albums for this artist." },
+                    new FooterLine { HtmlText = _templateManager.GetEmailLink(unsubscribeAllUrl, "Unsubscribe", null, "12px") + " from all new albums from us." }
                 }
             };
 

@@ -62,7 +62,7 @@ namespace NewAlbums.Tests.Subscribers
                 Album = new AlbumDto
                 {
                     CreatedDate = DateTime.UtcNow,
-                    Name = "Testing 123",
+                    Name = "Testing < 123 <br /> with HTML",
                     ReleaseDate = DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd"),
                     SpotifyId = "1iBbBHhftbF1lJmOPs4D18",
                     Image = new SpotifyImageDto

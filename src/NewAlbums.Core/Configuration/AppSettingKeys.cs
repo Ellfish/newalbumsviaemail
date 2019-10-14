@@ -24,6 +24,7 @@ namespace NewAlbums.Configuration
             public const string AdminFullName = "App:AdminFullName";
 
             public const string SystemEmailAddress = "App:SystemEmailAddress";
+            public const string ContactEmailAddress = "App:ContactEmailAddress";
         }
 
         public static class Mailgun

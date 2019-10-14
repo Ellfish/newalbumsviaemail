@@ -14,10 +14,13 @@ namespace NewAlbums.Emails.Templates.Dto
         public Dictionary<string, string> SimpleVariableValues { get; set; }
 
         public IList<BodyParagraph> BodyParagraphs { get; set; }
+        
+        public IList<FooterLine> FooterLines { get; set; }
 
         public GetTemplateInput()
         {
             BodyParagraphs = new List<BodyParagraph>();
+            FooterLines = new List<FooterLine>();
         }
     }
 }
