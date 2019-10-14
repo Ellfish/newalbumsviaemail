@@ -27,7 +27,7 @@ export class PrivacyPolicy extends Component {
 
                 <p>
                     In order to access the artists you follow on Spotify, you need to login to your Spotify account and allow our app access.
-                    We only access your followed artists once &ndash; we do not access them again, unless you complete the subscribe process again.
+                    We only access your followed artists and top artists once &ndash; we do not access them again, unless you complete the subscribe process again.
                     You may note that Spotify is also giving us access to your public playlists &ndash; this is by default, and we do not actually access this data.
                 </p>
 

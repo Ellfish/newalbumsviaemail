@@ -16,6 +16,7 @@ header {
     }
 
     .home-link {
+        display: inline-block;
         text-decoration: none !important;
     }
 
@@ -24,5 +25,23 @@ header {
         font-size: 50px;
         font-weight: 700;
         line-height: 75px;
+    }
+}
+
+@media (max-width: 767px) {
+    header {
+        padding-top: 25px;
+        padding-bottom: 50px;
+
+        .header-logo {
+            width: 100px;
+            margin: 0 auto 20px auto;
+        }
+
+        .app-name {
+            font-size: 40px;
+            line-height: 46px;
+            margin-bottom: 10px;
+        }
     }
 }
