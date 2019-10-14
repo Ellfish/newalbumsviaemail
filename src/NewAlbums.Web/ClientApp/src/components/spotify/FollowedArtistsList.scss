@@ -1,5 +1,24 @@
 @import '../../styles/variables';
 
-.followed-artists-list {
-    margin-top: 60px;
+.followed-artists-list-container {
+    overflow-x: hidden;
+
+    .followed-artists-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-top: 60px;
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+}
+
+@media (max-width: 767px) {
+    .followed-artists-list-container {
+        .followed-artists-list {
+            margin-left: -5px;
+            margin-right: -5px;
+        }
+    }
 }

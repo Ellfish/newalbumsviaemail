@@ -27,6 +27,8 @@ export default function FollowedArtistsList(props) {
 
     return (
         <div>
+            <p>Following {artists.length} artists</p>
+
             <Button bsStyle='primary' className='m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
             <Button bsStyle='primary' onClick={() => setSelectedAllArtists(false)}>Select None</Button>
 
@@ -49,9 +51,11 @@ export default function FollowedArtistsList(props) {
                 </Col>
             </Row>
 
-            <ul className='followed-artists-list list-unstyled'>
-                {renderArtistListItems()}
-            </ul>
+            <div className='followed-artists-list-container'>
+                <div className='followed-artists-list'>
+                    {renderArtistListItems()}
+                </div>
+            </div>
 
             <Button bsStyle='primary' className='m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
             <Button bsStyle='primary' onClick={() => setSelectedAllArtists(false)}>Select None</Button>
