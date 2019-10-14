@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using NewAlbums.Albums;
 using NewAlbums.Artists;
 using NewAlbums.Emails;
+using NewAlbums.Emails.Templates;
 using NewAlbums.EntityFrameworkCore;
 using NewAlbums.Paths;
 using NewAlbums.Spotify;
@@ -103,6 +104,7 @@ namespace NewAlbums.Notifications
 
                 //NewAlbums.Core managers
                 serviceCollection.AddTransient<EmailManager>();
+                serviceCollection.AddTransient<TemplateManager>();
                 serviceCollection.AddTransient<IPathProvider, PathProvider>();
 
             });
