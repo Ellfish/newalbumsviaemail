@@ -80,7 +80,7 @@ namespace NewAlbums.Web.Controllers
                 await SendNotificationEmail(subscriberOutput.Subscriber.EmailAddress, artistsOutput.Artists.Count);
             }            
 
-            return Ok(new ApiOkResponse(true));
+            return Ok(new ApiOkResponse(subscriptionOutput.StatusMessage));
         }
 
         [HttpPost("[action]")]
@@ -113,6 +113,9 @@ namespace NewAlbums.Web.Controllers
             return Ok(new ApiOkResponse(true));
         }
 
+        /// <summary>
+        /// Notifies the site admin that there was a new subscriber
+        /// </summary>
         private async Task SendNotificationEmail(string subscriberEmailAddress, int artistsCount)
         {
             string adminEmailAddress = _configuration[AppSettingKeys.App.AdminEmailAddress];

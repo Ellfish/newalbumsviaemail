@@ -17,6 +17,7 @@ using Microsoft.Net.Http.Headers;
 using NewAlbums.Albums;
 using NewAlbums.Artists;
 using NewAlbums.Emails;
+using NewAlbums.Emails.Templates;
 using NewAlbums.EntityFrameworkCore;
 using NewAlbums.Logging;
 using NewAlbums.Paths;
@@ -66,6 +67,7 @@ namespace NewAlbums.Web
 
             //NewAlbums.Core managers
             services.AddTransient<EmailManager>();
+            services.AddTransient<TemplateManager>();
             services.AddTransient<IPathProvider, PathProvider>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

@@ -29,11 +29,11 @@ export default function SubscribeForm(props) {
             return <LoadingSpinner />;
         } else if (hasError) {
             return <ErrorMessage message={errorMessage} />;
-        } else if (responseData === true) {
+        } else if (responseData && responseData.length) {
             return (
                 <Redirect to={{
                     pathname: '/subscribe-success',
-                    state: { artists: getSelectedArtists() }
+                    state: { statusMessage: responseData }
                 }}
                 />
             );

@@ -10,6 +10,12 @@ namespace NewAlbums.Subscriptions
 {
     public class Subscription : CreationAuditedEntity<long>
     {
+        /// <summary>
+        /// We need some sort of limit to prevent users overloading our database with artists.
+        /// 2000 should be a lot more than most users follow, or would choose to subscribe to.
+        /// </summary>
+        public const int MaxPerSubscriber = 2000;
+
         public virtual long SubscriberId { get; set; }
 
         [ForeignKey("SubscriberId")]

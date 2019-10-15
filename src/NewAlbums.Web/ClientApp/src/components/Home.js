@@ -22,7 +22,7 @@ export class Home extends Component {
 
                 <ul>
                     <li>We only email you about albums, which (we think) are more important to know about than single releases, and therefore worthy of a spot in your crowded inbox.</li>
-                    <li>Spotify's emails are biased towards featured/promoted artists, and reportedly miss some artists.</li>
+                    <li>Spotify's emails are biased towards featured/promoted artists, and misses some artists.</li>
                     <li>You may not care about new releases from all your followed artists, especially if you share an account. This app lets you choose which artists to be notified about.</li>
                 </ul>
 
@@ -32,17 +32,26 @@ export class Home extends Component {
 
                 <div className='how-does-it-work-container'>
                     <div className='how-does-it-work-step'>
-                        <img src='/images/how-does-it-work-step-1.jpg' alt='Allow Spotify access' />
+                        <div className='image-container'>
+                            <img src='/images/how-does-it-work-step-1.jpg' alt='Allow Spotify access' width='143' height='143' />
+                            <div className='center-hole' />
+                        </div>
 
-                        <h4>1.<br />Allow this app access to some of your Spotify data</h4>
+                        <h4>1.<br />Allow this app limited access to your Spotify data</h4>
                     </div>
                     <div className='how-does-it-work-step'>
-                        <img src='/images/how-does-it-work-step-2.jpg' alt='Choose artists' />
+                        <div className='image-container'>
+                            <img src='/images/how-does-it-work-step-2.jpg' alt='Choose artists' width='143' height='143' />
+                            <div className='center-hole' />
+                        </div>
 
                         <h4>2.<br />Select which artists to subscribe to</h4>
                     </div>
                     <div className='how-does-it-work-step'>
-                        <img src='/images/how-does-it-work-step-3.jpg' alt='Enter email address' />
+                        <div className='image-container'>
+                            <img src='/images/how-does-it-work-step-3.jpg' alt='Enter email address' width='143' height='143' />
+                            <div className='center-hole' />
+                        </div>
 
                         <h4>3.<br />Enter your email address and click Subscribe</h4>
                     </div>

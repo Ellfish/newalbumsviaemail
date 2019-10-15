@@ -35,25 +35,44 @@ namespace NewAlbums.Subscriptions
                     .Where(s => s.SubscriberId == input.Subscriber.Id)
                     .ToListAsync();
 
-                foreach (var artist in input.Artists)
+                int existingSubscriptionsCount = existingSubscriptions.Count;
+                int subscriptionsCount = existingSubscriptionsCount;
+                bool limitReached = subscriptionsCount >= Subscription.MaxPerSubscriber;
+
+                if (subscriptionsCount < Subscription.MaxPerSubscriber)
                 {
-                    if (!existingSubscriptions.Any(s => s.ArtistId == artist.Id))
+                    foreach (var artist in input.Artists)
                     {
-                        //Don't use _crudServices.CreateAndSaveAsync, because we only want to call Save once for performance reasons
-                        _crudServices.Context.Add(new Subscription
+                        if (!existingSubscriptions.Any(s => s.ArtistId == artist.Id))
                         {
-                            ArtistId = artist.Id,
-                            SubscriberId = input.Subscriber.Id
-                        });
+                            //Don't use _crudServices.CreateAndSaveAsync, because we only want to call Save once for performance reasons
+                            _crudServices.Context.Add(new Subscription
+                            {
+                                ArtistId = artist.Id,
+                                SubscriberId = input.Subscriber.Id
+                            });
+
+                            subscriptionsCount++;
+                            if (subscriptionsCount >= Subscription.MaxPerSubscriber)
+                            {
+                                //Reached the maximum limit, don't create any more subscriptions for this Subscriber
+                                limitReached = true;
+                                break;
+                            }
+                        }
                     }
+
+                    await _crudServices.Context.SaveChangesAsync();
                 }
 
-                await _crudServices.Context.SaveChangesAsync();
-
-                return new SubscribeToArtistsOutput
+                var output = new SubscribeToArtistsOutput
                 {
                     ErrorMessage = _crudServices.IsValid ? null : _crudServices.GetAllErrors()
                 };
+
+                output.SetStatusMessage(existingSubscriptionsCount, subscriptionsCount - existingSubscriptionsCount, limitReached);
+
+                return output;
             }
             catch (Exception ex)
             {
