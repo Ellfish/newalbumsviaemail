@@ -10,14 +10,14 @@ $brand-primary: $colour-primary;
 //Scaffolding
 $body-bg: $spotify-black;
 $text-color: $white;
-$link-color: $colour-primary-light;
-$link-hover-color: $colour-primary;
+$link-color: $white; //$colour-primary-light;
+$link-hover-color: $colour-primary-light;
 
 //Typography
 $font-family-sans-serif: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
 $font-size-base: 16px;
 $headings-font-weight: 700;
-$headings-color: $colour-primary;
+$headings-color: $white;// $colour-primary;
 
 //Buttons
 $btn-font-weight: 700;

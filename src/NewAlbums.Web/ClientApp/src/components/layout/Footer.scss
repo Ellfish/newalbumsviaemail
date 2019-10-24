@@ -6,14 +6,6 @@ footer {
     background-color: $colour-primary;
     text-align: center;
 
-    a {
-        color: $colour-primary-lighter;
-
-        &:active, &:hover, &:visited, &:focus {
-            color: $colour-primary-light !important;
-        }
-    }
-
     .footer-links-list {
         margin-bottom: 40px;
 

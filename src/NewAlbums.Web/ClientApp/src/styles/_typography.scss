@@ -2,6 +2,8 @@
 
 a {
     @include transition(color .3s ease);
+
+    text-decoration: underline;
 }
 
 h1 {

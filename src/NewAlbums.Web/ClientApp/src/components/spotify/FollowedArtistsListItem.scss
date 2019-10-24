@@ -9,14 +9,13 @@
 
     &.selected {
         .artist-image {
-            border: 8px solid $colour-primary;
+            border: 8px solid $spotify-green;
         }
 
         .artist-name {
-            color: $colour-primary;
+            color: $spotify-green;
         }
     }
-
     //Some artist images aren't intrinsically square. Force them to fit within a square shape,
     //which gets its width from .artist-container which is a dynamic width.
     .square {
@@ -70,7 +69,7 @@
     .artist-container {
         &:hover:not(.selected) {
             .artist-image {
-                border: 4px solid $colour-primary;
+                border: 4px solid $spotify-green;
             }
         }
     }
