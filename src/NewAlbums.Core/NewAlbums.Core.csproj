@@ -8,10 +8,12 @@
 
   <ItemGroup>
     <None Remove="Emails\Templates\Alert.html" />
+    <None Remove="Emails\Templates\Test.html" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Emails\Templates\Alert.html" />
+    <EmbeddedResource Include="Emails\Templates\Test.html" />
   </ItemGroup>
 
   <ItemGroup>

@@ -38,7 +38,7 @@ namespace NewAlbums.Emails.Templates
                 {
                     await stream.CopyToAsync(memoryStream);
                     var bytes = memoryStream.ToArray();
-                    var template = new StringBuilder(Encoding.UTF8.GetString(bytes, 3, bytes.Length - 3));
+                    var template = new StringBuilder(Encoding.UTF8.GetString(bytes, 0, bytes.Length));
 
                     ReplaceVariables(ref template, input);
                     return template;
