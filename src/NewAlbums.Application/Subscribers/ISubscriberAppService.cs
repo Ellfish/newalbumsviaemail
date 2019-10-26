@@ -10,6 +10,8 @@ namespace NewAlbums.Subscribers
     {
         Task<GetOrCreateSubscriberOutput> GetOrCreate(GetOrCreateSubscriberInput input);
 
+        Task<UpdateSubscriberOutput> Update(UpdateSubscriberInput input);
+
         Task<NotifySubscribersOutput> NotifySubscribers(NotifySubscribersInput input);
     }
 }

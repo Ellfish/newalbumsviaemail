@@ -15,6 +15,8 @@ namespace NewAlbums.Subscribers
         [MaxLength(MAX_LENGTH_EMAIL_ADDRESS)]
         public virtual string EmailAddress { get; set; }
 
+        public virtual bool EmailAddressVerified { get; set; }
+
         /// <summary>
         /// Simple way to allow users to unsubscribe from emails without requiring authentication
         /// </summary>

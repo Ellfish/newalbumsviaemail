@@ -10,10 +10,13 @@ namespace NewAlbums.Web.Requests.Subscription
     public class SubscribeToArtistsRequest
     {
         [Required]
+        [EmailAddress]
         public string EmailAddress { get; set; }
 
         [Required]
         public IList<SpotifyArtistDto> SpotifyArtists { get; set; }
+
+        public string SpotifyAccessToken { get; set; }
 
         public SubscribeToArtistsRequest()
         {

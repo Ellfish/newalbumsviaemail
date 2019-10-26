@@ -10,10 +10,13 @@ using NewAlbums.Artists.Dto;
 using NewAlbums.Configuration;
 using NewAlbums.Emails;
 using NewAlbums.Emails.Dto;
+using NewAlbums.Spotify;
+using NewAlbums.Spotify.Dto;
 using NewAlbums.Subscribers;
 using NewAlbums.Subscribers.Dto;
 using NewAlbums.Subscriptions;
 using NewAlbums.Subscriptions.Dto;
+using NewAlbums.Utils;
 using NewAlbums.Web.Filters;
 using NewAlbums.Web.Requests.Subscription;
 using NewAlbums.Web.Responses.Common;
@@ -27,6 +30,7 @@ namespace NewAlbums.Web.Controllers
         private readonly ISubscriberAppService _subscriberAppService;
         private readonly IArtistAppService _artistAppService;
         private readonly ISubscriptionAppService _subscriptionAppService;
+        private readonly ISpotifyAppService _spotifyAppService;
         private readonly EmailManager _emailManager;
         private readonly IConfiguration _configuration;
 
@@ -34,25 +38,46 @@ namespace NewAlbums.Web.Controllers
             ISubscriberAppService subscriberAppService,
             IArtistAppService artistAppService,
             ISubscriptionAppService subscriptionAppService,
+            ISpotifyAppService spotifyAppService,
             EmailManager emailManager,
             IConfiguration configuration)
         {
             _subscriberAppService = subscriberAppService;
             _artistAppService = artistAppService;
             _subscriptionAppService = subscriptionAppService;
+            _spotifyAppService = spotifyAppService;
             _emailManager = emailManager;
             _configuration = configuration;
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> SubscribeToArtists([FromBody] SubscribeToArtistsRequest model)
+        public async Task<IActionResult> SubscribeToArtists([FromBody] SubscribeToArtistsRequest request)
         {
-            if (!model.SpotifyArtists.Any())
+            if (!request.SpotifyArtists.Any())
                 return BadRequest(new ApiResponse(400, "Please select at least one artist to subscribe to."));
+
+            //Get the email address from their Spotify account again to see if we can auto-verify their Subscriber email.
+            //This is more secure than eg trusting a flag in the request, which could be spoofed.
+            //If there are any errors, fall back to assuming we need to verify their email.
+            bool emailVerified = false;
+            string requestEmail = StringUtils.NormaliseEmailAddress(request.EmailAddress);
+            if (!String.IsNullOrWhiteSpace(request.SpotifyAccessToken))
+            {
+                var emailOutput = await _spotifyAppService.GetUserEmail(new GetUserEmailInput
+                {
+                    AccessToken = request.SpotifyAccessToken
+                });
+
+                if (!emailOutput.HasError && emailOutput.EmailAddress != null && StringUtils.NormaliseEmailAddress(emailOutput.EmailAddress) == requestEmail)
+                {
+                    emailVerified = true;
+                }
+            }
 
             var subscriberOutput = await _subscriberAppService.GetOrCreate(new GetOrCreateSubscriberInput
             {
-                EmailAddress = model.EmailAddress
+                EmailAddress = request.EmailAddress,
+                EmailAddressVerified = emailVerified
             });
 
             if (subscriberOutput.HasError)
@@ -60,7 +85,7 @@ namespace NewAlbums.Web.Controllers
 
             var artistsOutput = await _artistAppService.GetOrCreateMany(new GetOrCreateManyInput
             {
-                Artists = model.SpotifyArtists
+                Artists = request.SpotifyArtists
             });
 
             if (artistsOutput.HasError)
@@ -78,32 +103,37 @@ namespace NewAlbums.Web.Controllers
             if (subscriberOutput.CreatedNewSubscriber)
             {
                 await SendNotificationEmail(subscriberOutput.Subscriber.EmailAddress, artistsOutput.Artists.Count);
-            }            
+            }
+
+            if (!emailVerified)
+            {
+                //TODO: send verification email
+            }
 
             return Ok(new ApiOkResponse(subscriptionOutput.StatusMessage));
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Unsubscribe([FromBody] UnsubscribeRequest model)
+        public async Task<IActionResult> Unsubscribe([FromBody] UnsubscribeRequest request)
         {
-            if (model.ArtistId.HasValue && model.ArtistId.Value <= 0)
+            if (request.ArtistId.HasValue && request.ArtistId.Value <= 0)
                 return BadRequest(new ApiResponse(400, "Please provide a valid ArtistId."));
 
             BaseOutput unsubscribeOutput = null;
 
-            if (model.ArtistId.HasValue)
+            if (request.ArtistId.HasValue)
             {
                 unsubscribeOutput = await _subscriptionAppService.UnsubscribeFromArtist(new UnsubscribeFromArtistInput
                 {
-                    ArtistId = model.ArtistId.Value,
-                    UnsubscribeToken = model.UnsubscribeToken
+                    ArtistId = request.ArtistId.Value,
+                    UnsubscribeToken = request.UnsubscribeToken
                 });
             }
             else
             {
                 unsubscribeOutput = await _subscriptionAppService.UnsubscribeFromAll(new UnsubscribeFromAllInput
                 {
-                    UnsubscribeToken = model.UnsubscribeToken
+                    UnsubscribeToken = request.UnsubscribeToken
                 });
             }
 

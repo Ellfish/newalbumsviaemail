@@ -49,7 +49,12 @@ namespace NewAlbums.Subscribers
                 subscriberDto = await _crudServices.ReadSingleAsync<SubscriberDto>(s => s.EmailAddress == normalisedEmail);
                 if (subscriberDto == null)
                 {
-                    subscriberDto = await _crudServices.CreateAndSaveAsync(new SubscriberDto { EmailAddress = normalisedEmail });
+                    subscriberDto = await _crudServices.CreateAndSaveAsync(new SubscriberDto 
+                    { 
+                        EmailAddress = normalisedEmail,
+                        EmailAddressVerified = input.EmailAddressVerified
+                    });
+
                     if (!_crudServices.IsValid)
                     {
                         return new GetOrCreateSubscriberOutput
@@ -78,6 +83,38 @@ namespace NewAlbums.Subscribers
             }
         }
 
+        public async Task<UpdateSubscriberOutput> Update(UpdateSubscriberInput input)
+        {
+            try
+            {
+                var subscriber = await _crudServices.ReadSingleAsync<Subscriber>(input.Id);
+                if (subscriber == null)
+                {
+                    return new UpdateSubscriberOutput
+                    {
+                        ErrorMessage = $"Subscriber with Id {input.Id} not found."
+                    };
+                }
+
+                subscriber.EmailAddressVerified = input.EmailAddressVerified;
+
+                await _crudServices.UpdateAndSaveAsync(subscriber);
+
+                return new UpdateSubscriberOutput
+                {
+                    ErrorMessage = !_crudServices.IsValid ? _crudServices.GetAllErrors() : null
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Id {input.Id}");
+                return new UpdateSubscriberOutput
+                {
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
+
         public async Task<NotifySubscribersOutput> NotifySubscribers(NotifySubscribersInput input)
         {
             if (input.Album == null)
@@ -91,6 +128,17 @@ namespace NewAlbums.Subscribers
                 foreach (var subscription in input.Subscriptions)
                 {
                     var subscriberDto = await _crudServices.ReadSingleAsync<SubscriberDto>(s => s.Id == subscription.SubscriberId);
+                    if (subscriberDto == null)
+                    {
+                        Logger.LogError("Subscriber with Id {0} not found in database", subscription.SubscriberId);
+                        continue;
+                    }
+
+                    if (!subscriberDto.EmailAddressVerified)
+                    {
+                        Logger.LogInformation("Skipping notification email for Subscriber with Id {0}, email address not verified", subscription.SubscriberId);
+                        continue;
+                    }
 
                     Logger.LogInformation("Sending notification to {0} for SpotifyAlbumId: {1}", subscriberDto.EmailAddress, input.Album.SpotifyId);
 

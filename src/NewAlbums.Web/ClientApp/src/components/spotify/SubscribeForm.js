@@ -52,7 +52,10 @@ export default function SubscribeForm(props) {
             return (
                 <Redirect to={{
                     pathname: '/subscribe-success',
-                    state: { statusMessage: responseSubscribe }
+                    state: {
+                        statusMessage: responseSubscribe,
+                        usedSpotifyAccountEmail: emailAddressMatchesSpotify
+                    }
                 }}
                 />
             );
@@ -72,9 +75,9 @@ export default function SubscribeForm(props) {
                             onChange={handleEmailChange}
                             required
                         />
-                        { !emailAddressMatchesSpotify
-                            ? <div className='text-danger m-t-5 email-warning'>Using a different email to your Spotify account requires an extra verification step.</div>
-                            : null }
+                        {!emailAddressMatchesSpotify
+                             ? <div className='m-t-5 email-warning'>Using a different email to your Spotify account requires an extra verification step.</div>
+                             : null }
                     </FormGroup>
                     <Button type='submit' bsStyle='primary' bsSize='lg' disabled={getNumSelected() === 0}>Subscribe</Button>
                 </form>
@@ -94,7 +97,8 @@ export default function SubscribeForm(props) {
         
         setPostData({
             emailAddress: emailAddress,
-            spotifyArtists: spotifyArtists
+            spotifyArtists: spotifyArtists,
+            spotifyAccessToken: props.accessToken
         });
 
         //Triggers useOurApi to post

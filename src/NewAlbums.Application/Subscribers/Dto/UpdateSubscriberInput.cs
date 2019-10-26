@@ -5,11 +5,10 @@ using System.Text;
 
 namespace NewAlbums.Subscribers.Dto
 {
-    public class GetOrCreateSubscriberInput
+    public class UpdateSubscriberInput
     {
         [Required]
-        [EmailAddress]
-        public string EmailAddress { get; set; }
+        public long Id { get; set; }
 
         public bool EmailAddressVerified { get; set; }
     }

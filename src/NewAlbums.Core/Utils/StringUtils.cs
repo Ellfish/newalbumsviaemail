@@ -11,7 +11,7 @@ namespace NewAlbums.Utils
             if (emailAddress == null)
                 return null;
 
-            return emailAddress.Trim().ToLower();
+            return emailAddress.Trim().ToLowerInvariant();
         }
     }
 }
