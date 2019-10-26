@@ -27,8 +27,8 @@ export class PrivacyPolicy extends Component {
 
                 <p>
                     In order to access the artists you follow on Spotify, you need to login to your Spotify account and allow our app access.
-                    We only access your followed artists and top artists once &ndash; we do not access them again, unless you complete the subscribe process again.
-                    You may note that Spotify is also giving us access to your public playlists &ndash; this is by default, and we do not actually access this data.
+                    We only access your followed artists, top artists, and email address once &ndash; we do not access your Spotify data again, unless you complete the subscribe process again.
+                    You may note that Spotify is also giving us access to your public playlists &ndash; this is by default, and we do not actually read this data.
                 </p>
 
                 <h2>How is this data used?</h2>
@@ -43,18 +43,18 @@ export class PrivacyPolicy extends Component {
                 <p>
                     We use Google Analytics tracking because we want to know how many people are using the app, and how they're using it.
                     Google Analytics only captures non-personally-identifiable information. If you don't want to be tracked, we recommend using the latest version of Firefox browser,
-                    or installing an ad-blocker such as uBlock Origin or Adblock Plus.
+                    installing an ad-blocker such as uBlock Origin or Adblock Plus, or installing the <a href="https://tools.google.com/dlpage/gaoptout">Google Analytics Opt-out Browser Add-on.</a>
                 </p>
 
                 <h2>Cookies</h2>
 
                 <p>
-                    TODO
+                    We use cookies from Google Analytics, see above. These should be the only cookies you get from this app.
                 </p>
 
                 <h2>Legal</h2>
 
-                <p>By using this app you consent to this Privacy Policy. This policy was last updated on 1st October 2019.</p>
+                <p>By using this app you consent to this Privacy Policy. This policy was last updated on 26th October 2019.</p>
             </div>
         );
     }

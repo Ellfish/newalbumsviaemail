@@ -7,7 +7,7 @@ export class Home extends Component {
 
     render() {
         const redirectUrl = encodeURIComponent(`${process.env.REACT_APP_API_URL}/spotify-callback/`);
-        const scopes = encodeURIComponent('user-follow-read user-top-read');
+        const scopes = encodeURIComponent('user-follow-read user-top-read user-read-email');
         //Set this to true to always show the Spotify auth dialog, even if already authenticated.
         const showDialog = true;
         const spotifyAuthoriseUrl = `https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${redirectUrl}&scope=${scopes}&show_dialog=${showDialog}`;
@@ -18,12 +18,12 @@ export class Home extends Component {
 
                 <h2>Who is this for?</h2>
 
-                <p>You need a Spotify account which follows at least one artist. You may know that Spotify already sends weekly new release emails, however:</p>
+                <p>You need a Spotify account, premium or free, which follows at least one artist. You may know that Spotify already sends weekly new release emails, however:</p>
 
                 <ul>
                     <li>We only email you about albums, which (we think) are more important to know about than single releases, and therefore worthy of a spot in your crowded inbox.</li>
-                    <li>Spotify's emails are biased towards featured/promoted artists, and misses some artists.</li>
-                    <li>You may not care about new releases from all your followed artists, especially if you share an account. This app lets you choose which artists to be notified about.</li>
+                    <li>Spotify's emails are biased towards featured/promoted artists, and miss some artists.</li>
+                    <li>You may not care about new releases from all your followed artists, especially if you share an account with someone. This app lets you choose which artists to be notified about.</li>
                 </ul>
 
                 <h2>How does it work?</h2>
@@ -65,7 +65,7 @@ export class Home extends Component {
 
                 <p>
                     Click the button below to let us access (some of) your Spotify data. The only data we access is your followed artists (to let you choose which to subscribe to),
-                    and your top artists (to pre-select your top 50 artists).
+                    your top artists (to pre-select your top 50 artists), and your email (for anti-spam verification).
                     We will never sell or do anything unethical with your data.
                     You can even see our source code on <a href='https://github.com/Ellfish/newalbumsviaemail'>Github</a>.
                 </p>
