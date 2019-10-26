@@ -29,7 +29,10 @@ export default function FollowedArtistsList(props) {
 
     return (
         <div>
-            <p className='m-b-40'>You're following {artists.length} artists on Spotify. {renderPreselectionMessage()}</p>
+            <p className='m-b-40'>
+                You're following {artists.length} artists on Spotify. {renderPreselectionMessage()}
+                Tap/click artists to select them.
+            </p>
 
             <Button bsStyle='primary' className='m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
             <Button bsStyle='primary' onClick={() => setSelectedAllArtists(false)}>Select None</Button>
@@ -62,13 +65,13 @@ export default function FollowedArtistsList(props) {
             <Button bsStyle='primary' className='m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
             <Button bsStyle='primary' onClick={() => setSelectedAllArtists(false)}>Select None</Button>
 
-            <SubscribeForm artists={artists} />
+            <SubscribeForm artists={artists} accessToken={props.accessToken} />
         </div>
     );
 
     function renderPreselectionMessage() {
         if (preselectedArtistsCount > 0) {
-            return 'We\'ve preselected ' + preselectedArtistsCount + ' of your top artists (according to Spotify) for you.';
+            return 'We\'ve preselected ' + preselectedArtistsCount + ' of your top artists (according to Spotify) for you. ';
         }
     }
 

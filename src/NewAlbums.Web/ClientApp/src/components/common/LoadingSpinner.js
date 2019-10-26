@@ -8,7 +8,8 @@ export default function LoadingSpinner(props) {
             visible='true'
             height={50}
             width={50}
-            timeout={15000}
+            //Using the timeout option was causing this issue: https://github.com/mhnpd/react-loader-spinner/issues/52#issue-510096779
+            //timeout={15000}
         />
     ); 
 }

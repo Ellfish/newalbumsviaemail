@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace NewAlbums.Web.Requests.Spotify
 {
-    public class GetFollowedArtistsRequest : BaseAuthenticatedRequest
+    public class GetUserEmailRequest : BaseAuthenticatedRequest
     {
-
+        
     }
 }

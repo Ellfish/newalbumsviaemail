@@ -4,4 +4,8 @@
     margin-top: 100px;
     //Prevents the footer jumping around when we display the loading spinner and success/error messages
     min-height: 300px;
+    
+    .email-warning {
+        color: $spotify-green;
+    }
 }

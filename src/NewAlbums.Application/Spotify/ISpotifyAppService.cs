@@ -12,7 +12,6 @@ namespace NewAlbums.Spotify
 
         Task<GetAlbumsForArtistOutput> GetAlbumsForArtist(GetAlbumsForArtistInput input);
 
-        //Not used
-        //Task<GetNewAlbumsOutput> GetNewAlbums(GetNewAlbumsInput input);
+        Task<GetUserEmailOutput> GetUserEmail(GetUserEmailInput input);
     }
 }

@@ -37,5 +37,19 @@ namespace NewAlbums.Web.Controllers
 
             return Ok(new ApiOkResponse(output.Artists));
         }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> UserEmail([FromQuery] GetUserEmailRequest model)
+        {
+            var output = await _spotifyAppService.GetUserEmail(new GetUserEmailInput
+            {
+                AccessToken = model.AccessToken
+            });
+
+            if (output.HasError)
+                return StatusCode(500, new ApiResponse(500, output.ErrorMessage));
+
+            return Ok(new ApiOkResponse(output.EmailAddress));
+        }
     }
 }

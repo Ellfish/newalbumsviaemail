@@ -8,9 +8,28 @@ import './SubscribeForm.scss';
 
 export default function SubscribeForm(props) {
     const [emailAddress, setEmailAddress] = useState('');
+    const [emailAddressMatchesSpotify, setEmailAddressMatchesSpotify] = useState(true);
     const [postData, setPostData] = useState(null);
     const [subscribeUrl, setSubscribeUrl] = useState(null);
-    const { isLoading, hasError, errorMessage, responseData } = useOurApi(subscribeUrl, {}, 'POST', postData);
+
+    //Triggered upon page load
+    const { hasError: emailHasError, responseData: responseEmailAddress } = useOurApi(`/api/Spotify/UserEmail?AccessToken=${props.accessToken}`, '');
+
+    //Not triggered under setSubscribeUrl is called in handleSubmit()
+    const {
+        isLoading: subscribeLoading,
+        hasError: subscribeHasError,
+        errorMessage: subscribeErrorMessage,
+        responseData: responseSubscribe
+    } = useOurApi(subscribeUrl, {}, 'POST', postData);   
+
+    //Attempt to auto-fill their Spotify account email address
+    if (responseEmailAddress && !emailAddress) {
+        setEmailAddress(responseEmailAddress);
+        setEmailAddressMatchesSpotify(true);
+    } else if (emailHasError) {
+        setEmailAddressMatchesSpotify(false);
+    }
 
     return (
         <div className='subscribe-form-container'>
@@ -25,15 +44,15 @@ export default function SubscribeForm(props) {
     );
 
     function renderForm() {
-        if (isLoading) {
+        if (subscribeLoading) {
             return <LoadingSpinner />;
-        } else if (hasError) {
-            return <ErrorMessage message={errorMessage} />;
-        } else if (responseData && responseData.length) {
+        } else if (subscribeHasError) {
+            return <ErrorMessage message={subscribeErrorMessage} />;
+        } else if (responseSubscribe && responseSubscribe.length) {
             return (
                 <Redirect to={{
                     pathname: '/subscribe-success',
-                    state: { statusMessage: responseData }
+                    state: { statusMessage: responseSubscribe }
                 }}
                 />
             );
@@ -53,6 +72,9 @@ export default function SubscribeForm(props) {
                             onChange={handleEmailChange}
                             required
                         />
+                        { !emailAddressMatchesSpotify
+                            ? <div className='text-danger m-t-5 email-warning'>Using a different email to your Spotify account requires an extra verification step.</div>
+                            : null }
                     </FormGroup>
                     <Button type='submit' bsStyle='primary' bsSize='lg' disabled={getNumSelected() === 0}>Subscribe</Button>
                 </form>
@@ -62,6 +84,7 @@ export default function SubscribeForm(props) {
 
     function handleEmailChange(e) {
         setEmailAddress(e.target.value);
+        setEmailAddressMatchesSpotify(e.target.value === responseEmailAddress);
     }
 
     function handleSubmit(e) {

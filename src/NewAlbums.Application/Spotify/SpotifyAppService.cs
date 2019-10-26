@@ -125,6 +125,54 @@ namespace NewAlbums.Spotify
             }
         }
 
+        /// <summary>
+        /// Attempt to get the user's email address. If this fails for any reason, it's not critical - it just
+        /// means we have to validate the email address before sending any other emails
+        /// </summary>
+        public async Task<GetUserEmailOutput> GetUserEmail(GetUserEmailInput input)
+        {
+            Logger.LogInformation("Getting user email...");
+
+            try
+            {
+                //Initialise the SpotifyWebAPI with the access token provided by the user authenticating with Spotify
+                var api = new SpotifyWebAPI
+                {
+                    AccessToken = input.AccessToken,
+                    TokenType = "Bearer",
+                    UseAuth = true
+                };
+
+                var response = await api.GetPrivateProfileAsync();
+
+                if (response.HasError())
+                {
+                    Logger.LogError("Error status: {0}, message: {1}", response.Error.Status, response.Error.Message);
+
+                    return new GetUserEmailOutput
+                    {
+                        ErrorMessage = response.Error.Message
+                    };
+                }
+
+                //Don't actually log their email address, for privacy/security reasons
+                Logger.LogInformation("Returning user email...");
+
+                return new GetUserEmailOutput
+                {
+                    EmailAddress = response.Email
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "");
+                return new GetUserEmailOutput
+                {
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
+
         protected async Task<List<string>> GetTopArtistIds(string accessToken)
         {
             Logger.LogInformation("Getting top artists...");
