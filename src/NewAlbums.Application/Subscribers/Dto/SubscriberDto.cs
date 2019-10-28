@@ -13,6 +13,8 @@ namespace NewAlbums.Subscribers.Dto
 
         public bool EmailAddressVerified { get; set; }
 
+        public string EmailVerifyCode { get; set; }
+
         [ReadOnly(true)]
         public string UnsubscribeToken { get; set; }
     }

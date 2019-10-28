@@ -12,6 +12,8 @@ namespace NewAlbums.Subscribers
 
         Task<UpdateSubscriberOutput> Update(UpdateSubscriberInput input);
 
+        Task<CheckEmailVerificationOutput> CheckEmailVerification(CheckEmailVerificationInput input);
+
         Task<NotifySubscribersOutput> NotifySubscribers(NotifySubscribersInput input);
     }
 }

@@ -10,6 +10,8 @@ using NewAlbums.Artists.Dto;
 using NewAlbums.Configuration;
 using NewAlbums.Emails;
 using NewAlbums.Emails.Dto;
+using NewAlbums.Emails.Templates;
+using NewAlbums.Emails.Templates.Dto;
 using NewAlbums.Spotify;
 using NewAlbums.Spotify.Dto;
 using NewAlbums.Subscribers;
@@ -32,6 +34,7 @@ namespace NewAlbums.Web.Controllers
         private readonly ISubscriptionAppService _subscriptionAppService;
         private readonly ISpotifyAppService _spotifyAppService;
         private readonly EmailManager _emailManager;
+        private readonly TemplateManager _templateManager;
         private readonly IConfiguration _configuration;
 
         public SubscriptionController(
@@ -40,6 +43,7 @@ namespace NewAlbums.Web.Controllers
             ISubscriptionAppService subscriptionAppService,
             ISpotifyAppService spotifyAppService,
             EmailManager emailManager,
+            TemplateManager templateManager,
             IConfiguration configuration)
         {
             _subscriberAppService = subscriberAppService;
@@ -47,6 +51,7 @@ namespace NewAlbums.Web.Controllers
             _subscriptionAppService = subscriptionAppService;
             _spotifyAppService = spotifyAppService;
             _emailManager = emailManager;
+            _templateManager = templateManager;
             _configuration = configuration;
         }
 
@@ -107,7 +112,7 @@ namespace NewAlbums.Web.Controllers
 
             if (!emailVerified)
             {
-                //TODO: send verification email
+                await SendVerificationEmail(subscriberOutput.Subscriber);
             }
 
             return Ok(new ApiOkResponse(subscriptionOutput.StatusMessage));
@@ -172,6 +177,49 @@ namespace NewAlbums.Web.Controllers
             };
 
             await _emailManager.SendEmail(message);
+        }
+
+        private async Task SendVerificationEmail(SubscriberDto subscriber)
+        {
+            string verifyUrl = "";    //TODO
+
+            var message = new EmailMessage
+            {
+                BodyText = $"Please click the link below to verify your email address:\r\n\r\n{verifyUrl}\r\n\r\nThanks for using New Albums via Email.",
+                BodyHtml = await GetVerificationEmailHtml(verifyUrl),
+                Subject = "Please verify your email address",
+                ToAddresses = new List<EmailAddress>
+                {
+                    new EmailAddress
+                    {
+                        Address = subscriber.EmailAddress
+                    }
+                }
+            };
+
+            await _emailManager.SendEmail(message);
+        }
+
+        private async Task<string> GetVerificationEmailHtml(string verifyUrl)
+        {
+            var getTemplateInput = new GetTemplateInput
+            {
+                TemplateType = TemplateTypes.Alert,
+                SimpleVariableValues = new Dictionary<string, string>
+                {
+                    { TemplateVariables.Heading,  $"Verify your email" }
+                },
+                BodyParagraphs = new List<BodyParagraph>
+                {
+                    new BodyParagraph { HtmlText = $"Please click the button below to verify your email address:" },
+                    new BodyParagraph { HtmlText = "Verify", ButtonUrl = verifyUrl  },
+                    new BodyParagraph { HtmlText = $"Thanks for using New Albums via Email." }
+                }
+            };
+
+            var template = await _templateManager.GetHtmlEmailTemplate(getTemplateInput);
+
+            return template.ToString();
         }
     }
 }

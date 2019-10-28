@@ -7,7 +7,8 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { SpotifyCallback } from './components/spotify/SpotifyCallback';
 import { SubscribeToArtists } from './components/spotify/SubscribeToArtists';
 import { SubscribeSuccess } from './components/spotify/SubscribeSuccess';
-import Unsubscribe from './components/spotify/Unsubscribe';
+import Unsubscribe from './components/emails/Unsubscribe';
+import VerifyEmail from './components/emails/VerifyEmail';
 
 export default class App extends Component {
     displayName = App.name
@@ -27,6 +28,7 @@ export default class App extends Component {
                 <Route path='/subscribe-to-artists' component={SubscribeToArtists} />
                 <Route path='/subscribe-success' component={SubscribeSuccess} />
                 <Route path='/unsubscribe' component={Unsubscribe} />
+                <Route path='/verify-email' component={VerifyEmail} />
                 <Route path='/privacy-policy' component={PrivacyPolicy} />
             </Layout>
         );

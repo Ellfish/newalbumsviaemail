@@ -14,6 +14,7 @@ export default function Unsubscribe(props) {
         artistId: searchValues.artistId,
         unsubscribeToken: searchValues.unsubscribeToken
     };
+
     const { isLoading, hasError, errorMessage, responseData } = useOurApi(unsubscribeUrl, {}, 'POST', postData);
 
     if (!postData.unsubscribeToken) {

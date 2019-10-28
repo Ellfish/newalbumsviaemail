@@ -49,10 +49,15 @@ namespace NewAlbums.Subscribers
                 subscriberDto = await _crudServices.ReadSingleAsync<SubscriberDto>(s => s.EmailAddress == normalisedEmail);
                 if (subscriberDto == null)
                 {
+                    string emailVerifyCode = !input.EmailAddressVerified
+                        ? Guid.NewGuid().ToString("N").Truncate(Subscriber.MAX_LENGTH_EMAIL_VERIFY_CODE)
+                        : null;
+
                     subscriberDto = await _crudServices.CreateAndSaveAsync(new SubscriberDto 
                     { 
                         EmailAddress = normalisedEmail,
-                        EmailAddressVerified = input.EmailAddressVerified
+                        EmailAddressVerified = input.EmailAddressVerified,
+                        EmailVerifyCode = emailVerifyCode
                     });
 
                     if (!_crudServices.IsValid)
@@ -109,6 +114,42 @@ namespace NewAlbums.Subscribers
             {
                 Logger.LogError(ex, $"Id {input.Id}");
                 return new UpdateSubscriberOutput
+                {
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
+
+        public async Task<CheckEmailVerificationOutput> CheckEmailVerification(CheckEmailVerificationInput input)
+        {
+            try
+            {
+                var subscriber = await _crudServices.ReadSingleAsync<Subscriber>(s =>
+                    s.EmailAddress == StringUtils.NormaliseEmailAddress(input.EmailAddress)
+                    && s.EmailVerifyCode == input.VerifyCode);
+
+                if (subscriber.EmailAddressVerified)
+                {
+                    return new CheckEmailVerificationOutput
+                    {
+                        ErrorMessage = "You've already verified your email address."
+                    };
+                }
+
+                if (subscriber == null)
+                {
+                    return new CheckEmailVerificationOutput
+                    {
+                        ErrorMessage = "Invalid email verification code."
+                    };
+                }
+
+                return new CheckEmailVerificationOutput();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Code {input.VerifyCode}");
+                return new CheckEmailVerificationOutput
                 {
                     ErrorMessage = ex.Message
                 };

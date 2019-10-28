@@ -223,5 +223,20 @@ namespace NewAlbums.Utils
 
             return str;
         }
+
+        public static string Truncate(this string str, int maxLength)
+        {
+            if (str == null)
+            {
+                return null;
+            }
+
+            if (str.Length <= maxLength)
+            {
+                return str;
+            }
+
+            return str.Left(maxLength);
+        }
     }
 }
