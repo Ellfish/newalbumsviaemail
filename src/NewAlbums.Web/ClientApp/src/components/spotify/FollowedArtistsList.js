@@ -31,7 +31,7 @@ export default function FollowedArtistsList(props) {
         <div>
             <p className='m-b-40'>
                 You're following {artists.length} artists on Spotify. {renderPreselectionMessage()}
-                Tap/click artists to select them.
+                Tap or click artists to select them.
             </p>
 
             <Button bsStyle='primary' className='m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>

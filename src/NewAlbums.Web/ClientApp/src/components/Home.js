@@ -14,21 +14,25 @@ export class Home extends Component {
 
         return (
             <div>
-                <h1>Subscribe to new album releases on Spotify</h1>
+                <div className='row'>
+                    <div className='col-xs-12 col-md-10'>
+                        <h1>Subscribe to new album releases on&nbsp;Spotify</h1>
 
-                <h2>Who is this for?</h2>
+                        <h2>Who is this for?</h2>
 
-                <p>You need a Spotify account, premium or free, which follows at least one artist. You may know that Spotify already sends weekly new release emails, however:</p>
+                        <p>You need a Spotify account, premium or free, which follows at least one artist. You may know that Spotify already sends weekly new release emails, however:</p>
 
-                <ul>
-                    <li>We only email you about albums, which (we think) are more important to know about than single releases, and therefore worthy of a spot in your crowded inbox.</li>
-                    <li>Spotify's emails are biased towards featured/promoted artists, and miss some artists.</li>
-                    <li>You may not care about new releases from all your followed artists, especially if you share an account with someone. This app lets you choose which artists to be notified about.</li>
-                </ul>
+                        <ul>
+                            <li>We only email you about albums, which (we think) are more important to know about than single releases, and therefore worthy of a spot in your crowded inbox.</li>
+                            <li>Spotify's emails are biased towards featured/promoted artists, and miss some artists.</li>
+                            <li>You may not care about new releases from all your followed artists, especially if you share an account with someone. This app lets you choose which artists to be notified about.</li>
+                        </ul>
 
-                <h2>How does it work?</h2>
+                        <h2>How does it work?</h2>
 
-                <p>It only takes a minute and you don't even need to register an account.</p>
+                        <p>It only takes a minute and you don't even need to register an account.</p>
+                    </div>
+                </div>
 
                 <div className='how-does-it-work-container'>
                     <div className='how-does-it-work-step'>
@@ -57,18 +61,23 @@ export class Home extends Component {
                     </div>
                 </div>
 
-                <p>
-                    Our app checks for new album releases daily. If it finds one from an artist that you've subscribed to, we'll send you an email notification. It's easy to unsubscribe at any time by clicking the link in the email.
-                </p>
+                <div className='row'>
+                    <div className='col-xs-12 col-md-10'>
 
-                <h2>Ready?</h2>
+                        <p>
+                            Our app checks for new album releases daily. If it finds one from an artist that you've subscribed to, we'll send you an email notification. It's easy to unsubscribe at any time by clicking the link in the email.
+                        </p>
 
-                <p>
-                    Click the button below to let us access (some of) your Spotify data. The only data we access is your followed artists (to let you choose which to subscribe to),
-                    your top artists (to pre-select your top 50 artists), and your email (for anti-spam verification).
-                    We will never sell or do anything unethical with your data.
-                    You can even see our source code on <a href='https://github.com/Ellfish/newalbumsviaemail'>Github</a>.
-                </p>
+                        <h2>Ready?</h2>
+
+                        <p>
+                            Click the button below to let us access (some of) your Spotify data. The only data we access is your followed artists (to let you choose which to subscribe to),
+                            your top artists (to pre-select your top 50 artists), and your email (for anti-spam verification).
+                            We will never sell or do anything unethical with your data.
+                            You can even see our source code on <a href='https://github.com/Ellfish/newalbumsviaemail'>Github</a>.
+                        </p>
+                    </div>
+                </div>
 
                 <Button bsStyle='primary' bsSize='lg' className='m-t-50' href={spotifyAuthoriseUrl}>Get Started</Button>
             </div>
