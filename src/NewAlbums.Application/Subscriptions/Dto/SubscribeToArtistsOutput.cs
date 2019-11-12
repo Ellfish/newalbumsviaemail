@@ -8,6 +8,8 @@ namespace NewAlbums.Subscriptions.Dto
     {
         public string StatusMessage { get; set; }
 
+        public bool RequiresEmailVerification { get; set; }
+
         public void SetStatusMessage(int existingSubscriptions, int newSubscriptions, bool limitReached = false)
         {
             string message = $"Subscribed to {newSubscriptions} new artist{(newSubscriptions == 1 ? "" : "s")}. ";

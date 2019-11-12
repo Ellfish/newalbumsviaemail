@@ -71,6 +71,7 @@ namespace NewAlbums.Subscriptions
                 };
 
                 output.SetStatusMessage(existingSubscriptionsCount, subscriptionsCount - existingSubscriptionsCount, limitReached);
+                output.RequiresEmailVerification = !input.Subscriber.EmailAddressVerified;
 
                 return output;
             }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Button, FormGroup, FormControl, ControlLabel, Row, Col } from 'react-bootstrap';
 import { useOurApi } from '../../hooks/useOurApi';
+import objectEmpty from '../../utils/objectEmpty';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorMessage from '../common/ErrorMessage';
 import './SubscribeForm.scss';
@@ -48,13 +49,13 @@ export default function SubscribeForm(props) {
             return <LoadingSpinner />;
         } else if (subscribeHasError) {
             return <ErrorMessage message={subscribeErrorMessage} />;
-        } else if (responseSubscribe && responseSubscribe.length) {
+        } else if (responseSubscribe && !objectEmpty(responseSubscribe)) {
             return (
                 <Redirect to={{
                     pathname: '/subscribe-success',
                     state: {
-                        statusMessage: responseSubscribe,
-                        usedSpotifyAccountEmail: emailAddressMatchesSpotify
+                        statusMessage: responseSubscribe.statusMessage,
+                        requiresEmailVerification: responseSubscribe.requiresEmailVerification
                     }
                 }}
                 />

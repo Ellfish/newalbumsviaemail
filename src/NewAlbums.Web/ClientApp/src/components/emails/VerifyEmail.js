@@ -21,16 +21,18 @@ export default function VerifyEmail(props) {
         return (
             <div>
                 <h1>Invalid Verify Link</h1>
-                <p>Please ensure you click the verify link/button in the email.</p>
+                <p>Please ensure you click the verify link or button in the email.</p>
             </div>
         );
     }
 
     return (
         <div>
-            <h1>Please click the button below to verify {postData.emailAddress}</h1>
+            <h1>Verification</h1>
 
-            <div className='verify-container'>
+            <p>Please click the button below to verify {postData.emailAddress}</p>
+
+            <div className='verify-container m-t-50'>
                 {renderForm()}
             </div>
         </div>

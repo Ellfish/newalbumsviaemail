@@ -50,7 +50,7 @@ namespace NewAlbums.Subscribers
                 if (subscriberDto == null)
                 {
                     string emailVerifyCode = !input.EmailAddressVerified
-                        ? Guid.NewGuid().ToString("N").Truncate(Subscriber.MAX_LENGTH_EMAIL_VERIFY_CODE)
+                        ? Guid.NewGuid().ToString("N").ToLowerInvariant().Truncate(Subscriber.MAX_LENGTH_EMAIL_VERIFY_CODE)
                         : null;
 
                     subscriberDto = await _crudServices.CreateAndSaveAsync(new SubscriberDto 
@@ -128,14 +128,6 @@ namespace NewAlbums.Subscribers
                     s.EmailAddress == StringUtils.NormaliseEmailAddress(input.EmailAddress)
                     && s.EmailVerifyCode == input.VerifyCode);
 
-                if (subscriber.EmailAddressVerified)
-                {
-                    return new CheckEmailVerificationOutput
-                    {
-                        ErrorMessage = "You've already verified your email address."
-                    };
-                }
-
                 if (subscriber == null)
                 {
                     return new CheckEmailVerificationOutput
@@ -144,7 +136,18 @@ namespace NewAlbums.Subscribers
                     };
                 }
 
-                return new CheckEmailVerificationOutput();
+                if (subscriber.EmailAddressVerified)
+                {
+                    return new CheckEmailVerificationOutput
+                    {
+                        ErrorMessage = "You've already verified your email address."
+                    };
+                }
+
+                return new CheckEmailVerificationOutput
+                {
+                    SubscriberId = subscriber.Id
+                };
             }
             catch (Exception ex)
             {

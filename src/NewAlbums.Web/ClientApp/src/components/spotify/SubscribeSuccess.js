@@ -8,7 +8,7 @@ export class SubscribeSuccess extends Component {
 
         this.state = {
             statusMessage: this.props.location.state ? this.props.location.state.statusMessage : null,
-            usedSpotifyAccountEmail: this.props.location.state ? this.props.location.state.usedSpotifyAccountEmail : false
+            requiresEmailVerification: this.props.location.requiresEmailVerification ? this.props.location.state.requiresEmailVerification : true
         };
     }
 
@@ -30,7 +30,7 @@ export class SubscribeSuccess extends Component {
 
                 <p>Keep an eye on your email inbox for new album notifications.</p>
 
-                {!this.state.usedSpotifyAccountEmail
+                {!this.state.requiresEmailVerification
                      ? <p>But first please verify your email address by clicking the verification link in the email we just sent you.</p>
                      : null }
             </div>

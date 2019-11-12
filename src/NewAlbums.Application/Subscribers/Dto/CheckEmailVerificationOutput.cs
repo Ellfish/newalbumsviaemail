@@ -6,6 +6,6 @@ namespace NewAlbums.Subscribers.Dto
 {
     public class CheckEmailVerificationOutput : BaseOutput
     {
-
+        public long SubscriberId { get; set; }
     }
 }

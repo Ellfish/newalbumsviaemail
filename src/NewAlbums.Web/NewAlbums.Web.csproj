@@ -27,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="App_Data\Emails\.keep" />
-    <None Remove="App_Data\Logs\.keep" />
+    <None Remove="App_Data\Emails\*" />
+    <None Remove="App_Data\Logs\Logs.*" />
   </ItemGroup>
 
   <ItemGroup>

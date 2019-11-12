@@ -110,12 +110,12 @@ namespace NewAlbums.Web.Controllers
                 await SendNotificationEmail(subscriberOutput.Subscriber.EmailAddress, artistsOutput.Artists.Count);
             }
 
-            if (!emailVerified)
+            if (!subscriberOutput.Subscriber.EmailAddressVerified)
             {
                 await SendVerificationEmail(subscriberOutput.Subscriber);
             }
 
-            return Ok(new ApiOkResponse(subscriptionOutput.StatusMessage));
+            return Ok(new ApiOkResponse(subscriptionOutput));
         }
 
         [HttpPost("[action]")]
@@ -181,11 +181,11 @@ namespace NewAlbums.Web.Controllers
 
         private async Task SendVerificationEmail(SubscriberDto subscriber)
         {
-            string verifyUrl = "";    //TODO
+            string verifyUrl = GetVerifyEmailUrl(subscriber);
 
             var message = new EmailMessage
             {
-                BodyText = $"Please click the link below to verify your email address:\r\n\r\n{verifyUrl}\r\n\r\nThanks for using New Albums via Email.",
+                BodyText = $"Hello, please click the link below to verify your email address:\r\n\r\n{verifyUrl}\r\n\r\nThanks for using New Albums via Email.",
                 BodyHtml = await GetVerificationEmailHtml(verifyUrl),
                 Subject = "Please verify your email address",
                 ToAddresses = new List<EmailAddress>
@@ -211,7 +211,7 @@ namespace NewAlbums.Web.Controllers
                 },
                 BodyParagraphs = new List<BodyParagraph>
                 {
-                    new BodyParagraph { HtmlText = $"Please click the button below to verify your email address:" },
+                    new BodyParagraph { HtmlText = $"Hello, please click the button below to verify your email address:" },
                     new BodyParagraph { HtmlText = "Verify", ButtonUrl = verifyUrl  },
                     new BodyParagraph { HtmlText = $"Thanks for using New Albums via Email." }
                 }
@@ -220,6 +220,12 @@ namespace NewAlbums.Web.Controllers
             var template = await _templateManager.GetHtmlEmailTemplate(getTemplateInput);
 
             return template.ToString();
+        }
+
+        private string GetVerifyEmailUrl(SubscriberDto subscriber)
+        {
+            string baseUrl = _configuration[AppSettingKeys.App.FrontEndRootUrl].TrimEnd('/');
+            return $"{baseUrl}/verify-email?emailAddress={subscriber.EmailAddress}&verifyCode={subscriber.EmailVerifyCode}";
         }
     }
 }

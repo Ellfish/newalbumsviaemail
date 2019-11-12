@@ -40,6 +40,7 @@ namespace NewAlbums.Web.Controllers
 
             var updateOut = await _subscriberAppService.Update(new UpdateSubscriberInput
             {
+                Id = verifyOutput.SubscriberId,
                 EmailAddressVerified = true
             });
 
