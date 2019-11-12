@@ -37,7 +37,7 @@ export class Home extends Component {
                 <div className='how-does-it-work-container'>
                     <div className='how-does-it-work-step'>
                         <div className='image-container'>
-                            <img src='/images/how-does-it-work-step-1.jpg' alt='Allow Spotify access' width='143' height='143' />
+                            <img src='/images/how-does-it-work-step-1.jpg' alt='Allow Spotify access' width='223' height='223' />
                             <div className='center-hole' />
                         </div>
 
@@ -45,7 +45,7 @@ export class Home extends Component {
                     </div>
                     <div className='how-does-it-work-step'>
                         <div className='image-container'>
-                            <img src='/images/how-does-it-work-step-2.jpg' alt='Choose artists' width='143' height='143' />
+                            <img src='/images/how-does-it-work-step-2.jpg' alt='Choose artists' width='223' height='223' />
                             <div className='center-hole' />
                         </div>
 
@@ -53,7 +53,7 @@ export class Home extends Component {
                     </div>
                     <div className='how-does-it-work-step'>
                         <div className='image-container'>
-                            <img src='/images/how-does-it-work-step-3.jpg' alt='Enter email address' width='143' height='143' />
+                            <img src='/images/how-does-it-work-step-3.jpg' alt='Enter email address' width='223' height='223' />
                             <div className='center-hole' />
                         </div>
 
