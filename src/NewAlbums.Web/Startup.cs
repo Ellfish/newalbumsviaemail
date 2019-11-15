@@ -84,9 +84,8 @@ namespace NewAlbums.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            NewAlbumsLogging.ConfigureLogger(loggerFactory);
             //Set the injected loggerFactory (which is used by ASP.NET logging messages) as the singleton instance to use everywhere
-            NewAlbumsLogging.LoggerFactory = loggerFactory;
+            NewAlbumsLogging.ConfigureLogger(loggerFactory);
 
             if (env.IsDevelopment())
             {

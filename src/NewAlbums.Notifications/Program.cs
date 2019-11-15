@@ -12,6 +12,7 @@ using NewAlbums.Artists;
 using NewAlbums.Emails;
 using NewAlbums.Emails.Templates;
 using NewAlbums.EntityFrameworkCore;
+using NewAlbums.Logging;
 using NewAlbums.Paths;
 using NewAlbums.Spotify;
 using NewAlbums.Subscribers;
@@ -72,14 +73,9 @@ namespace NewAlbums.Notifications
             builder.ConfigureLogging((context, b) =>
                 {
                     b.AddConsole();
-
-                    if (context.HostingEnvironment.EnvironmentName.ToLower() == "development")
-                    {
-                        b.AddLog4Net();
-                    }
                 });
 
-            builder.ConfigureServices(serviceCollection =>
+            builder.ConfigureServices((context, serviceCollection) =>
             {
                 //Need to do this or later when IConfiguration is injected, it'll be missing our user secrets configured for dev above
                 serviceCollection.AddSingleton<IConfiguration>(configuration);
@@ -107,11 +103,23 @@ namespace NewAlbums.Notifications
                 serviceCollection.AddTransient<TemplateManager>();
                 serviceCollection.AddTransient<IPathProvider, PathProvider>();
 
+                var serviceProvider = serviceCollection.BuildServiceProvider();
+
+                var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+
+                string configFileName = "log4net.config";
+                if (context.HostingEnvironment.EnvironmentName.ToLower() != "development")
+                {
+                    configFileName = "log4net.azure.config";
+                }
+
+                //Set the retrieved loggerFactory (which is used by ASP.NET logging messages) as the singleton instance to use everywhere
+                NewAlbumsLogging.ConfigureLogger(loggerFactory, configFileName);
             });
 
             //Set the App_Data directory so we can retrieve it later. https://stackoverflow.com/a/48357218
-            string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(currentDirectory, "App_Data"));
+            //string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(Directory.GetCurrentDirectory(), "App_Data"));
 
             var host = builder.Build();
             using (host)

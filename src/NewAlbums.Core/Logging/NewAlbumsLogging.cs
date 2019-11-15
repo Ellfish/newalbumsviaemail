@@ -11,16 +11,18 @@ namespace NewAlbums.Logging
     {
         private static ILoggerFactory _factory = null;
 
-        public static void ConfigureLogger(ILoggerFactory factory)
+        public static void ConfigureLogger(ILoggerFactory factory, string configFileName = "log4net.config")
         {
-            var configFile = new FileInfo("log4net.config");
+            var configFile = new FileInfo(configFileName);
             if (configFile.Exists)
             {
                 factory.AddLog4Net();
             }
+
+            _factory = factory;
         }
 
-        public static ILoggerFactory LoggerFactory
+        private static ILoggerFactory LoggerFactory
         {
             get
             {
