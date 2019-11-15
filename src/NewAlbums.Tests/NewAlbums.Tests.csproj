@@ -20,6 +20,7 @@
     <ProjectReference Include="..\NewAlbums.Application\NewAlbums.Application.csproj" />
     <ProjectReference Include="..\NewAlbums.Core\NewAlbums.Core.csproj" />
     <ProjectReference Include="..\NewAlbums.EntityFrameworkCore\NewAlbums.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\NewAlbums.Notifications\NewAlbums.Notifications.csproj" />
   </ItemGroup>
 
 </Project>

@@ -100,23 +100,26 @@ namespace NewAlbums.Notifications
                         continue;
                     }
 
-                    //Generally there will just be one newReleaseAlbum. Doesn't matter if we send multiple emails per artist
-                    //in the rare case that more than one new release came out for them.
-                    foreach (var newReleaseAlbum in newReleaseAlbums)
+                    if (subscriptionsOutput.Subscriptions.Any())
                     {
-                        //Send notification for all subscriptions
-                        var notifyOutput = await _subscriberAppService.NotifySubscribers(new NotifySubscribersInput
+                        //Generally there will just be one newReleaseAlbum. Doesn't matter if we send multiple emails per artist
+                        //in the rare case that more than one new release came out for them.
+                        foreach (var newReleaseAlbum in newReleaseAlbums)
                         {
-                            Artist = artist,
-                            Album = newReleaseAlbum,
-                            Subscriptions = subscriptionsOutput.Subscriptions
-                        });
+                            //Send notification for all subscriptions
+                            var notifyOutput = await _subscriberAppService.NotifySubscribers(new NotifySubscribersInput
+                            {
+                                Artist = artist,
+                                Album = newReleaseAlbum,
+                                Subscriptions = subscriptionsOutput.Subscriptions
+                            });
 
-                        if (notifyOutput.HasError)
-                        {
-                            logger.LogError(notifyOutput.ErrorMessage);
-                            //Don't let one error stop the entire thing from running, skip and move on to the next
-                            continue;
+                            if (notifyOutput.HasError)
+                            {
+                                logger.LogError(notifyOutput.ErrorMessage);
+                                //Don't let one error stop the entire thing from running, skip and move on to the next
+                                continue;
+                            }
                         }
                     }
 
@@ -134,7 +137,9 @@ namespace NewAlbums.Notifications
                         continue;
                     }
                 }
-            }            
+            }
+
+            logger.LogInformation("ProcessNewSpotifyAlbums end");
         }
     }
 }
