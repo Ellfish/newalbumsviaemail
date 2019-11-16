@@ -8,9 +8,13 @@ export default function ScrollToTop() {
 
     useEffect(() => {
         let top = 0;
-        let header = document.querySelector('header');
-        if (header) {
-            top = header.offsetHeight;
+
+        //Don't cut off the header on the home page
+        if (pathname !== '/') {
+            let header = document.querySelector('header');
+            if (header) {
+                top = header.offsetHeight;
+            }
         }
 
         //We have smoothscroll-polyfill to cover browsers which don't support "behavior"
