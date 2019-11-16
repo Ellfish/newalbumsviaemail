@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, FormGroup, FormControl, ControlLabel, Row, Col } from 'react-bootstrap';
+import { StickyContainer, Sticky } from 'react-sticky';
 import { useOurApi } from '../../hooks/useOurApi';
 import ErrorMessage from '../common/ErrorMessage';
 import LoadingSpinner from '../common/LoadingSpinner';
@@ -34,33 +35,42 @@ export default function FollowedArtistsList(props) {
                 Tap or click artists to select them.
             </p>
 
-            <Button bsStyle='primary' className='m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
-            <Button bsStyle='primary' onClick={() => setSelectedAllArtists(false)}>Select None</Button>
+            <Button bsStyle='primary' className='m-b-20 m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
+            <Button bsStyle='primary' className='m-b-20' onClick={() => setSelectedAllArtists(false)}>Select None</Button>
 
-            <Row className='no-gutter m-t-10'>
-                <Col xs={12} sm={6}>
-                    <FormGroup
-                        bsSize='lg'
-                        controlId='artist-name-filter'
-                    >
-                        <ControlLabel>Filter by name</ControlLabel>
-                        <FormControl
-                            type='text'
-                            placeholder='eg: Crowded House'
-                            spellCheck={false}
-                            autoComplete='off'
-                            value={artistNameFilter}
-                            onChange={handleArtistNameFilterChange}
-                        />
-                    </FormGroup>
-                </Col>
-            </Row>
+            <StickyContainer>
+                <Row className='no-gutter m-t-10'>
+                    <Col xs={12} sm={6}>
+                        <Sticky bottomOffset={20}>{({ style, isSticky }) =>
+                            <div className={'sticky-artist-filter-container is-sticky-' + isSticky} style={style}>
+                                <FormGroup
+                                    bsSize='lg'
+                                    controlId='artist-name-filter'
+                                    className='m-b-10'
+                                >
+                                    <ControlLabel>Filter by name</ControlLabel>
+                                    <FormControl
+                                        type='text'
+                                        placeholder='eg: Crowded House'
+                                        spellCheck={false}
+                                        autoComplete='off'
+                                        value={artistNameFilter}
+                                        onChange={handleArtistNameFilterChange}
+                                    />
+                                </FormGroup>
+                            </div>
+                        }
+                        </Sticky>
+                    </Col>
+                </Row>
 
-            <div className='followed-artists-list-container'>
-                <div className='followed-artists-list'>
-                    {renderArtistListItems()}
+                <div className='followed-artists-list-container'>
+                    <div className='followed-artists-list'>
+                        {renderArtistListItems()}
+                    </div>
                 </div>
-            </div>
+
+            </StickyContainer>
 
             <Button bsStyle='primary' className='m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
             <Button bsStyle='primary' onClick={() => setSelectedAllArtists(false)}>Select None</Button>

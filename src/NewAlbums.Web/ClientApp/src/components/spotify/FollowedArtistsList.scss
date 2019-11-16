@@ -1,5 +1,31 @@
 @import '../../styles/variables';
 
+.sticky-artist-filter-container {
+    padding: 5px 15px 5px 15px;
+    z-index: 10;
+    background-color: $colour-primary;
+}
+
+@media (min-width: 768px) {
+    .sticky-artist-filter-container {
+        &.is-sticky-true {
+            left: 0 !important;
+            width: 100% !important;
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .sticky-artist-filter-container {
+        width: calc(100% + #{$grid-padding-x} * 2);
+        margin-left: -$grid-padding-x;
+
+        &.is-sticky-true {
+            width: 100% !important;
+        }
+    }
+}
+
 .followed-artists-list-container {
     overflow-x: hidden;
 
