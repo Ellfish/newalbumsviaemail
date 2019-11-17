@@ -1,11 +1,15 @@
 @import '../../styles/variables';
 
 .artist-container {
-    width: 11%;
+    display: inline-block;
+    vertical-align: top;
+    width: 10%;
     margin-bottom: 40px;
-    margin-left: 15px;
-    margin-right: 15px;
     cursor: pointer;
+
+    &:not(:last-of-type) {
+        margin-right: 25px;
+    }
 
     &.selected {
         .artist-image {
@@ -48,15 +52,38 @@
     }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1200px) {
     .artist-container {
-        width: 20%;
+        &:not(:last-of-type) {
+            margin-right: 22px;
+        }
     }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 991px) {
     .artist-container {
-        width: 40%;
+        width: 12%;
+
+        &:not(:last-of-type) {
+            margin-right: 32px;
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .artist-container {
+        width: 20%;
+        margin-bottom: 20px;
+
+        &:not(:last-of-type) {
+            margin-right: 15px;
+        }
+
+        .artist-name {
+            font-size: 14px;
+            line-height: 18px;
+            letter-spacing: -0.5px;
+        }
     }
 }
 

@@ -6,6 +6,7 @@ import ErrorMessage from '../common/ErrorMessage';
 import LoadingSpinner from '../common/LoadingSpinner';
 import FollowedArtistsListItem from './FollowedArtistsListItem';
 import SubscribeForm from './SubscribeForm';
+import isInViewport from '../../utils/isInViewport';
 import './FollowedArtistsList.scss';
 
 export default function FollowedArtistsList(props) {
@@ -14,6 +15,7 @@ export default function FollowedArtistsList(props) {
     const [artists, setArtists] = useState([]);
     const [artistNameFilter, setArtistNameFilter] = useState('');
     const [preselectedArtistsCount, setPreselectedArtistsCount] = useState(0);
+    let artistFilterAnchor = React.createRef();
 
     if (isLoading || (!hasError && responseData.length === 0)) {
         return <LoadingSpinner />;
@@ -38,6 +40,7 @@ export default function FollowedArtistsList(props) {
             <Button bsStyle='primary' className='m-b-20 m-r-10' onClick={() => setSelectedAllArtists(true)}>Select All</Button>
             <Button bsStyle='primary' className='m-b-20' onClick={() => setSelectedAllArtists(false)}>Select None</Button>
 
+            <div id='artist-filter-anchor' ref={artistFilterAnchor} />
             <StickyContainer>
                 <Row className='no-gutter m-t-10'>
                     <Col xs={12} sm={6}>
@@ -51,6 +54,7 @@ export default function FollowedArtistsList(props) {
                                     <ControlLabel>Filter by name</ControlLabel>
                                     <FormControl
                                         type='text'
+                                        className='artist-filter-input'
                                         placeholder='eg: Crowded House'
                                         spellCheck={false}
                                         autoComplete='off'
@@ -108,6 +112,11 @@ export default function FollowedArtistsList(props) {
 
     function handleArtistNameFilterChange(e) {
         setArtistNameFilter(e.target.value);
+
+        //Filtering artists can cause the artists list to shrink to above the current viewport. Reset the window scroll to the top of the artists list.
+        if (!isInViewport(artistFilterAnchor.current)) {
+            window.scrollTo(0, artistFilterAnchor.current.getBoundingClientRect().top + window.pageYOffset + 40);
+        }
     }
 
     function setSelectedAllArtists(selected) {

@@ -23,28 +23,15 @@
         &.is-sticky-true {
             width: 100% !important;
         }
+
+        .artist-filter-input {
+            height: 40px;
+        }
     }
 }
 
 .followed-artists-list-container {
-    overflow-x: hidden;
-
     .followed-artists-list {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: flex-start;
         margin-top: 60px;
-        margin-left: -15px;
-        margin-right: -15px;
-    }
-}
-
-@media (max-width: 767px) {
-    .followed-artists-list-container {
-        .followed-artists-list {
-            margin-left: -5px;
-            margin-right: -5px;
-        }
     }
 }
