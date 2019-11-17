@@ -12,12 +12,32 @@
         margin: 20px 0 40px 0;
 
         .image-container {
+            $rps: 60 / 33.33;  //Revolutions per second
+
             position: relative;
+            //margin-bottom: 10px;
+            animation: spin #{$rps}s linear infinite;
+            animation-play-state: paused;
+            cursor: grab;
+
+            @keyframes spin {
+                100% {
+                    transform: rotate(1turn);
+                }
+            }
+
+            &:hover {
+                animation-play-state: running;
+            }
+
+            &:active {
+                animation-play-state: paused;
+            }
 
             img {
                 display: block;
-                width: 70%;
-                height: auto;
+                width: 220px;
+                height: 220px;
                 margin: 0 auto 20px auto;
                 border-radius: 50%;
                 border: 40px solid black;
@@ -40,7 +60,21 @@
         }
 
         h4 {
+            margin-top: 0;
             color: $spotify-green;
+        }
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .how-does-it-work-container {
+        .how-does-it-work-step {
+            .image-container {
+                img {
+                    width: 200px;
+                    height: 200px;
+                }
+            }
         }
     }
 }
@@ -60,8 +94,11 @@
         .how-does-it-work-step {
             width: 100%;
 
-            img {
-                max-width: 220px;
+            .image-container {
+                img {
+                    width: 260px;
+                    height: 260px;
+                }
             }
 
             h4 {
