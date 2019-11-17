@@ -15,7 +15,6 @@
             $rps: 60 / 33.33;  //Revolutions per second
 
             position: relative;
-            //margin-bottom: 10px;
             animation: spin #{$rps}s linear infinite;
             animation-play-state: paused;
             cursor: grab;
