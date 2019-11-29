@@ -4,6 +4,7 @@ import { InitGA, PageView } from './components/tracking/Tracking';
 import { Layout } from './components/layout/Layout';
 import { Home } from './components/Home';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
+import TimmySpreadsheet from './components/timmyspreadsheet/TimmySpreadsheet';
 import { NotFound } from './components/NotFound';
 import { SpotifyCallback } from './components/spotify/SpotifyCallback';
 import { SubscribeToArtists } from './components/spotify/SubscribeToArtists';
@@ -32,6 +33,7 @@ export default class App extends Component {
                     <Route path='/unsubscribe' component={Unsubscribe} />
                     <Route path='/verify-email' component={VerifyEmail} />
                     <Route path='/privacy-policy' component={PrivacyPolicy} />
+                    <Route path='/timmy-spreadsheet' component={TimmySpreadsheet} />
                     <Route component={NotFound} />
                 </Switch>
             </Layout>
