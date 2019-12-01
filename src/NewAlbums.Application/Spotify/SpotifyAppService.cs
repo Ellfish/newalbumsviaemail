@@ -31,6 +31,62 @@ namespace NewAlbums.Spotify
             _configuration = configuration;
         }
 
+        public async Task FollowArtists(List<string> ids, string accessToken)
+        {
+            var api = new SpotifyWebAPI
+            {
+                AccessToken = accessToken,
+                TokenType = "Bearer",
+                UseAuth = true
+            };
+
+            int numRuns = ids.Count / 50;
+            for (int i = 0; i <= numRuns; i++)
+            {
+                var idsToFollow = ids.Skip(i * 50).Take(50).ToList();
+                var output = await api.FollowAsync(FollowType.Artist, idsToFollow);
+            }
+        }
+
+        public async Task SaveAlbums(string accessTokenSource, string accessTokenDest)
+        {
+            var sourceApi = new SpotifyWebAPI
+            {
+                AccessToken = accessTokenSource,
+                TokenType = "Bearer",
+                UseAuth = true
+            };
+
+            var ids = new List<string>();
+            int offset = 0;
+
+            while (true)
+            {
+                var savedAlbums = await sourceApi.GetSavedAlbumsAsync(50, offset);
+
+                ids.AddRange(savedAlbums.Items.Select(i => i.Album.Id).ToList());
+
+                if (!savedAlbums.HasNextPage())
+                    break;
+
+                offset += 50;
+            }
+
+            var destApi = new SpotifyWebAPI
+            {
+                AccessToken = accessTokenDest,
+                TokenType = "Bearer",
+                UseAuth = true
+            };
+
+            int numRuns = ids.Count / 50;
+            for (int i = 0; i <= numRuns; i++)
+            {
+                var idsToSave = ids.Skip(i * 50).Take(50).ToList();
+                var output = await destApi.SaveAlbumsAsync(idsToSave);
+            }
+        }
+
         public async Task<GetFollowedArtistsOutput> GetFollowedArtists(GetFollowedArtistsInput input)
         {
             Logger.LogInformation("Getting followed artists...");
