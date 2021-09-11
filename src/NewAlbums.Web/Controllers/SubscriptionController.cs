@@ -185,7 +185,7 @@ namespace NewAlbums.Web.Controllers
 
             var message = new EmailMessage
             {
-                BodyText = $"Hello, please click the link below to verify your email address:\r\n\r\n{verifyUrl}\r\n\r\nThanks for using New Albums via Email.",
+                BodyText = $"Hello, please click the link below to verify your email address. This is required before you can receive new album emails:\r\n\r\n{verifyUrl}\r\n\r\nThanks for using New Albums via Email.",
                 BodyHtml = await GetVerificationEmailHtml(verifyUrl),
                 Subject = "Please verify your email address",
                 ToAddresses = new List<EmailAddress>
@@ -211,7 +211,7 @@ namespace NewAlbums.Web.Controllers
                 },
                 BodyParagraphs = new List<BodyParagraph>
                 {
-                    new BodyParagraph { HtmlText = $"Hello, please click the button below to verify your email address:" },
+                    new BodyParagraph { HtmlText = $"Hello, please click the button below to verify your email address. This is required before you can receive new album emails:" },
                     new BodyParagraph { HtmlText = "Verify", ButtonUrl = verifyUrl  },
                     new BodyParagraph { HtmlText = $"Thanks for using New Albums via Email." }
                 }
