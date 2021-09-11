@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using System.IO;
 using Microsoft.Extensions.Configuration;
 using NewAlbums.Configuration;
 using NewAlbums.Utils;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace NewAlbums.Paths
 {

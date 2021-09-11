@@ -12,7 +12,6 @@ export class PrivacyPolicy extends Component {
                 <p>
                     We respect your privacy. This app is non-commercial and open source, and we plan to keep it that way. We will never sell or disclose your data to third parties.
                     Your data is securely stored in our database following security best-practices.
-                    If you have any questions, please email <a href='mailto:privacy@newalbumsvia.email' target='_self'>privacy@newalbumsvia.email</a>.
                 </p>
 
                 <h2>What data do we collect?</h2>

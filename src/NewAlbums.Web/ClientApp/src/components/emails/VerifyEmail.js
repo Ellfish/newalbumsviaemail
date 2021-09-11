@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { useOurApi } from '../../hooks/useOurApi';
+import { useOurApi } from '../../hooks/UseOurApi';
 import parseSearch from '../../utils/parseSearch';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorMessage from '../common/ErrorMessage';

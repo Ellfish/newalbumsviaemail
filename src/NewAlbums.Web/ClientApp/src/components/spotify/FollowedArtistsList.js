@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, FormGroup, FormControl, ControlLabel, Row, Col } from 'react-bootstrap';
 import { StickyContainer, Sticky } from 'react-sticky';
-import { useOurApi } from '../../hooks/useOurApi';
+import { useOurApi } from '../../hooks/UseOurApi';
 import ErrorMessage from '../common/ErrorMessage';
 import LoadingSpinner from '../common/LoadingSpinner';
 import FollowedArtistsListItem from './FollowedArtistsListItem';

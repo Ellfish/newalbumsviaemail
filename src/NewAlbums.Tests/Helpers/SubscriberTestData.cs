@@ -1,10 +1,9 @@
-﻿using NewAlbums.Artists;
+﻿using System;
+using System.Collections.Generic;
+using NewAlbums.Artists;
 using NewAlbums.EntityFrameworkCore;
 using NewAlbums.Subscribers;
 using NewAlbums.Subscriptions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NewAlbums.Tests.Helpers
 {
@@ -46,7 +45,7 @@ namespace NewAlbums.Tests.Helpers
             return new Subscriber
             {
                 CreatedDate = _createdDate,
-                EmailAddress = "subscriber@newalbumsvia.email"
+                EmailAddress = "subscriber@newalbumsviaemail.com"
             };
         }
 

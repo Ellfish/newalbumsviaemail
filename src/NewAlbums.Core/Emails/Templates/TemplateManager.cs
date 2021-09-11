@@ -1,14 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
-using NewAlbums.Configuration;
-using NewAlbums.Emails.Templates;
-using NewAlbums.Emails.Templates.Dto;
-using NewAlbums.Utils;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using NewAlbums.Configuration;
+using NewAlbums.Emails.Templates.Dto;
+using NewAlbums.Utils;
 
 namespace NewAlbums.Emails.Templates
 {
@@ -17,11 +15,11 @@ namespace NewAlbums.Emails.Templates
         private readonly IConfiguration _configuration;
 
         private const string EmailFontFamily = "font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;";
-        private string EmailRowHtml = $"<tr style=\"{EmailFontFamily} box-sizing: border-box; font-size: 14px; margin: 0;\">";
-        private string BodyCellHtml = $"<td class=\"content-block\" style=\"{EmailFontFamily} box-sizing: border-box;" 
+        private readonly string EmailRowHtml = $"<tr style=\"{EmailFontFamily} box-sizing: border-box; font-size: 14px; margin: 0;\">";
+        private readonly string BodyCellHtml = $"<td class=\"content-block\" style=\"{EmailFontFamily} box-sizing: border-box;"
                                       + "font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px; text-align: center;\" align=\"center\" valign=\"top\">";
 
-        private string FooterCellHtml = $"<td class=\"aligncenter content-block\" style=\"{EmailFontFamily} box-sizing: border-box; font-size: 12px; vertical-align: top; "
+        private readonly string FooterCellHtml = $"<td class=\"aligncenter content-block\" style=\"{EmailFontFamily} box-sizing: border-box; font-size: 12px; vertical-align: top; "
                                         + "color: #999; text-align: center; margin: 0; padding: 0;\" align=\"center\" valign=\"top\">";
 
         public TemplateManager(
@@ -75,7 +73,7 @@ namespace NewAlbums.Emails.Templates
                 else
                 {
                     bodyHtml.Append($"<a href=\"{paragraph.ButtonUrl}\" target=\"_blank\" rel=\"noopener\" class=\"btn-primary\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; "
-                        + $"box-sizing: border-box; font-size: 14px; color: {textColourOnPrimary}; text-decoration: none; line-height: 2em; font-weight: bold; " 
+                        + $"box-sizing: border-box; font-size: 14px; color: {textColourOnPrimary}; text-decoration: none; line-height: 2em; font-weight: bold; "
                         + $"text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; background-color: {primaryColour}; "
                         + $"margin: 0; border-color: {primaryColour}; border-style: solid; border-width: 10px 20px;\">{paragraph.HtmlText}</a>");
                 }
@@ -96,11 +94,11 @@ namespace NewAlbums.Emails.Templates
 
             //Then append generic lines for all emails
             string frontEndRootUrl = _configuration[AppSettingKeys.App.FrontEndRootUrl];
-            string contactEmailAddress = _configuration[AppSettingKeys.App.ContactEmailAddress];
+            // string contactEmailAddress = _configuration[AppSettingKeys.App.ContactEmailAddress];
             string spotifyLogoUrl = frontEndRootUrl.EnsureEndsWith('/') + "images/spotify-logo-white.png";
 
             footerHtml.Append($"{EmailRowHtml}{FooterCellHtml}{GetEmailLink(frontEndRootUrl, frontEndRootUrl, null, "12px")}</td></tr>");
-            footerHtml.Append($"{EmailRowHtml}{FooterCellHtml}{GetEmailLink($"mailto:{contactEmailAddress}", contactEmailAddress, null, "12px")}</td></tr>");
+            // footerHtml.Append($"{EmailRowHtml}{FooterCellHtml}{GetEmailLink($"mailto:{contactEmailAddress}", contactEmailAddress, null, "12px")}</td></tr>");
             footerHtml.Append($"{EmailRowHtml}{FooterCellHtml}Artist and album content including cover art supplied by:</td></tr>");
             footerHtml.Append($"{EmailRowHtml}{FooterCellHtml}<img alt=\"Spotify logo\" src=\"{spotifyLogoUrl}\" width=\"80\" height=\"24\" style=\"width: 80px; height: 24px; margin: 0; outline: none;\" /></td></tr>");
 
@@ -128,9 +126,10 @@ namespace NewAlbums.Emails.Templates
         {
             string appName = _configuration[AppSettingKeys.App.Name];
             string frontEndRootUrl = _configuration[AppSettingKeys.App.FrontEndRootUrl];
-            string contactEmailAddress = _configuration[AppSettingKeys.App.ContactEmailAddress];
+            // string contactEmailAddress = _configuration[AppSettingKeys.App.ContactEmailAddress];
 
-            return $"\r\n\r\n\r\n----------------Sent by {appName}\r\n{frontEndRootUrl}\r\nContact: {contactEmailAddress}";
+            // return $"\r\n\r\n\r\n----------------Sent by {appName}\r\n{frontEndRootUrl}\r\nContact: {contactEmailAddress}";
+            return $"\r\n\r\n\r\n----------------Sent by {appName}\r\n{frontEndRootUrl}";
         }
     }
 }
