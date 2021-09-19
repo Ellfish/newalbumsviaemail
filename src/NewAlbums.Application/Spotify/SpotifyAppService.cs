@@ -1,21 +1,13 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using NewAlbums.Albums.Dto;
-using NewAlbums.Artists.Dto;
-using NewAlbums.Configuration;
-using NewAlbums.Debugging;
-using NewAlbums.Spotify.Dto;
-using SpotifyAPI.Web;
-using SpotifyAPI.Web.Auth;
-using SpotifyAPI.Web.Enums;
-using SpotifyAPI.Web.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using NewAlbums.Albums.Dto;
+using NewAlbums.Configuration;
+using NewAlbums.Spotify.Dto;
+using SpotifyAPI.Web;
 
 namespace NewAlbums.Spotify
 {
@@ -23,8 +15,8 @@ namespace NewAlbums.Spotify
     {
         private readonly IConfiguration _configuration;
 
-        private SpotifyWebAPI _apiWithClientCredentials = null;
-        private Token _apiAccessToken = null;
+        private SpotifyClient _apiWithClientCredentials;
+        private ClientCredentialsTokenResponse _apiAccessToken;
 
         public SpotifyAppService(IConfiguration configuration)
         {
@@ -37,16 +29,11 @@ namespace NewAlbums.Spotify
 
             try
             {
-                //Initialise the SpotifyWebAPI with the access token provided by the user authenticating with Spotify
-                var api = new SpotifyWebAPI
-                {
-                    AccessToken = input.AccessToken,
-                    TokenType = "Bearer",
-                    UseAuth = true
-                };
+                //Initialise the SpotifyClient with the access token provided by the user authenticating with Spotify
+                var api = new SpotifyClient(input.AccessToken);
 
                 var followedArtists = new List<SpotifyArtistDto>();
-                
+
                 //Also get top artists if requested
                 var topArtistIds = new List<string>();
                 if (input.PreselectTopArtists)
@@ -56,51 +43,60 @@ namespace NewAlbums.Spotify
 
                 //Keep requesting MaxLimitGetFollowedArtists until we get all followed artists, or reach MaxLimitTotalFollowedArtists
                 int i = SpotifyConsts.MaxLimitTotalFollowedArtists / SpotifyConsts.MaxLimitGetFollowedArtists;
-                string afterArtistId = "";
+                string afterArtistId = null;
 
                 while (i > 0)
                 {
-                    var response = await api.GetFollowedArtistsAsync(FollowType.Artist, limit: SpotifyConsts.MaxLimitGetFollowedArtists, after: afterArtistId);
-
-                    if (response.HasError())
+                    try
                     {
-                        Logger.LogError("Error status: {0}, message: {1}", response.Error.Status, response.Error.Message);
+                        var response = await api.Follow.OfCurrentUser(new FollowOfCurrentUserRequest
+                        {
+                            TypeParam = FollowOfCurrentUserRequest.Type.Artist,
+                            Limit = SpotifyConsts.MaxLimitGetFollowedArtists,
+                            After = afterArtistId
+                        });
 
-                        if (await HandleRateLimitingError(response))
-                            continue;
+                        if (response.Artists.Items == null || response.Artists.Items.Count == 0)
+                            break;
+
+                        followedArtists.AddRange(
+                            response.Artists.Items.Select(artistItem => new SpotifyArtistDto
+                            {
+                                Id = artistItem.Id,
+                                Name = artistItem.Name,
+                                Image = GetImage(artistItem.Images, 100),
+                                Selected = topArtistIds.Contains(artistItem.Id)
+                            })
+                        );
+
+                        //Uncomment to only return a manageable amount of artists when debugging/testing
+                        //if (DebugHelper.IsDebug)
+                        //{
+                        //    followedArtists = followedArtists.Take(20).ToList();
+                        //    break;
+                        //}
+
+                        if (String.IsNullOrEmpty(response.Artists.Next))
+                            break;
+
+                        afterArtistId = response.Artists.Items[response.Artists.Items.Count - 1].Id;
+
+                        i--;
+
+                    }
+                    catch (APITooManyRequestsException ex)
+                    {
+                        await HandleRateLimitingError(ex);
+                    }
+                    catch (APIException ex)
+                    {
+                        Logger.LogError("Error message: {0}", ex.Message);
 
                         return new GetFollowedArtistsOutput
                         {
-                            ErrorMessage = response.Error.Message
+                            ErrorMessage = ex.Message
                         };
                     }
-
-                    if (response.Artists.Items == null || response.Artists.Items.Count == 0)
-                        break;
-
-                    followedArtists.AddRange(
-                        response.Artists.Items.Select(artistItem => new SpotifyArtistDto
-                        {
-                            Id = artistItem.Id,
-                            Name = artistItem.Name,
-                            Image = GetImage(artistItem.Images, 100),
-                            Selected = topArtistIds.Contains(artistItem.Id)
-                        })
-                    );
-
-                    //Uncomment to only return a manageable amount of artists when debugging/testing
-                    //if (DebugHelper.IsDebug)
-                    //{
-                    //    followedArtists = followedArtists.Take(20).ToList();
-                    //    break;
-                    //}
-
-                    if (!response.Artists.HasNext())
-                        break;
-
-                    afterArtistId = response.Artists.Items[response.Artists.Items.Count - 1].Id;
-
-                    i--;
                 }
 
                 Logger.LogInformation("Returning {0} followed artists.", followedArtists.Count);
@@ -135,25 +131,10 @@ namespace NewAlbums.Spotify
 
             try
             {
-                //Initialise the SpotifyWebAPI with the access token provided by the user authenticating with Spotify
-                var api = new SpotifyWebAPI
-                {
-                    AccessToken = input.AccessToken,
-                    TokenType = "Bearer",
-                    UseAuth = true
-                };
+                //Initialise the SpotifyClient with the access token provided by the user authenticating with Spotify
+                var api = new SpotifyClient(input.AccessToken);
 
-                var response = await api.GetPrivateProfileAsync();
-
-                if (response.HasError())
-                {
-                    Logger.LogError("Error status: {0}, message: {1}", response.Error.Status, response.Error.Message);
-
-                    return new GetUserEmailOutput
-                    {
-                        ErrorMessage = response.Error.Message
-                    };
-                }
+                var response = await api.UserProfile.Current();
 
                 //Don't actually log their email address, for privacy/security reasons
                 Logger.LogInformation("Returning user email...");
@@ -179,24 +160,16 @@ namespace NewAlbums.Spotify
 
             try
             {
-                //Initialise the SpotifyWebAPI with the access token provided by the user authenticating with Spotify
-                var api = new SpotifyWebAPI
-                {
-                    AccessToken = accessToken,
-                    TokenType = "Bearer",
-                    UseAuth = true
-                };
+                //Initialise the SpotifyClient with the access token provided by the user authenticating with Spotify
+                var api = new SpotifyClient(accessToken);
 
                 var topArtistIds = new List<string>();
 
-                var response = await api.GetUsersTopArtistsAsync(TimeRangeType.LongTerm, limit: SpotifyConsts.MaxLimitGetTopArtists);
-
-                if (response.HasError())
+                var response = await api.Personalization.GetTopArtists(new PersonalizationTopRequest
                 {
-                    Logger.LogError("Error status: {0}, message: {1}", response.Error.Status, response.Error.Message);
-                    //Not an essential method, just return empty
-                    return new List<string>();
-                }
+                    TimeRangeParam = PersonalizationTopRequest.TimeRange.LongTerm,
+                    Limit = SpotifyConsts.MaxLimitGetTopArtists
+                });
 
                 topArtistIds.AddRange(response.Items.Select(artistItem => artistItem.Id));
 
@@ -227,49 +200,57 @@ namespace NewAlbums.Spotify
                 while (i < max)
                 {
                     //Allows us to only request a new API access token for the first time, or when the existing one expires
-                    if (_apiWithClientCredentials == null || _apiAccessToken.IsExpired())
+                    if (_apiWithClientCredentials == null || _apiAccessToken.IsExpired)
                     {
                         var apiOutput = await GetApiWithClientCredentials();
                         _apiWithClientCredentials = apiOutput.Api;
-                        _apiAccessToken = apiOutput.Token;
+                        _apiAccessToken = apiOutput.TokenResponse;
                     }
 
                     int offset = i * SpotifyConsts.MaxLimitGetArtistAlbums;
-                    
-                    var searchResponse = await _apiWithClientCredentials.GetArtistsAlbumsAsync(input.SpotifyArtistId, AlbumType.Album, 
-                        SpotifyConsts.MaxLimitGetArtistAlbums, offset, SpotifyConsts.MarketToUse);
 
-                    if (searchResponse.HasError())
+                    try
                     {
-                        Logger.LogError("Error status: {0}, message: {1}", searchResponse.Error.Status, searchResponse.Error.Message);
+                        var searchResponse = await _apiWithClientCredentials.Artists.GetAlbums(input.SpotifyArtistId, new ArtistsAlbumsRequest
+                        {
+                            Offset = offset,
+                            Market = SpotifyConsts.MarketToUse,
+                            IncludeGroupsParam = ArtistsAlbumsRequest.IncludeGroups.Album
+                        });
 
-                        if (await HandleRateLimitingError(searchResponse))
-                            continue;
+                        //Assume there are no more if this is true
+                        if (searchResponse.Items == null || searchResponse.Items.Count == 0)
+                            break;
+
+                        albums.AddRange(
+                            searchResponse.Items.Select(albumItem => new AlbumDto
+                            {
+                                SpotifyId = albumItem.Id,
+                                Name = albumItem.Name,
+                                Image = GetImage(albumItem.Images, 200),
+                                ReleaseDate = albumItem.ReleaseDate
+                            })
+                        );
+
+                        if (String.IsNullOrEmpty(searchResponse.Next))
+                            break;
+
+                        i++;
+                    }
+                    catch (APITooManyRequestsException ex)
+                    {
+                        await HandleRateLimitingError(ex);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "");
 
                         return new GetAlbumsForArtistOutput
                         {
-                            ErrorMessage = searchResponse.Error.Message
+                            ErrorMessage = ex.Message
                         };
                     }
-
-                    //Assume there are no more if this is true
-                    if (searchResponse.Items == null || searchResponse.Items.Count == 0)
-                        break;
-
-                    albums.AddRange(
-                        searchResponse.Items.Select(albumItem => new AlbumDto
-                        {
-                            SpotifyId = albumItem.Id,
-                            Name = albumItem.Name,
-                            Image = GetImage(albumItem.Images, 200),
-                            ReleaseDate = albumItem.ReleaseDate
-                        })
-                    );
-
-                    if (!searchResponse.HasNextPage())
-                        break;
-
-                    i++;
                 }
 
                 Logger.LogInformation("Returning {0} albums for SpotifyArtistId: {1}", albums.Count, input.SpotifyArtistId);
@@ -295,39 +276,32 @@ namespace NewAlbums.Spotify
         /// </summary>
         public async Task<GetNewAlbumsOutput> GetNewAlbums(GetNewAlbumsInput input)
         {
-            try
+            var albums = new List<AlbumDto>();
+
+            int max = SpotifyConsts.MaxLimitTotalSearchItems / SpotifyConsts.MaxLimitGetSearchItems;
+            int i = 0;
+            while (i < max)
             {
-                var albums = new List<AlbumDto>();
-
-                int max = SpotifyConsts.MaxLimitTotalSearchItems / SpotifyConsts.MaxLimitGetSearchItems;
-                int i = 0;
-                while (i < max)
+                //Allows us to only request a new API access token for the first time, or when the existing one expires
+                if (_apiWithClientCredentials == null || _apiAccessToken.IsExpired)
                 {
-                    //Allows us to only request a new API access token for the first time, or when the existing one expires
-                    if (_apiWithClientCredentials == null || _apiAccessToken.IsExpired())
-                    {
-                        var apiOutput = await GetApiWithClientCredentials();
-                        _apiWithClientCredentials = apiOutput.Api;
-                        _apiAccessToken = apiOutput.Token;
-                    }
+                    var apiOutput = await GetApiWithClientCredentials();
+                    _apiWithClientCredentials = apiOutput.Api;
+                    _apiAccessToken = apiOutput.TokenResponse;
+                }
 
-                    int offset = i * SpotifyConsts.MaxLimitGetSearchItems;
-                    //tag:new retrieves only albums released in the last two weeks
-                    var searchResponse = await _apiWithClientCredentials.SearchItemsAsync("tag:new", SearchType.Album, 
-                        SpotifyConsts.MaxLimitGetSearchItems, offset, SpotifyConsts.MarketToUse);
+                int offset = i * SpotifyConsts.MaxLimitGetSearchItems;
 
-                    if (searchResponse.HasError())
-                    {
-                        Logger.LogError("Error status: {0}, message: {1}", searchResponse.Error.Status, searchResponse.Error.Message);
+                //tag:new retrieves only albums released in the last two weeks
+                var search = _apiWithClientCredentials.Search;
+                var searchRequest = new SearchRequest(SearchRequest.Types.Album, "tag:new");
+                searchRequest.Limit = SpotifyConsts.MaxLimitGetSearchItems;
+                searchRequest.Offset = offset;
+                searchRequest.Market = SpotifyConsts.MarketToUse;
 
-                        if (await HandleRateLimitingError(searchResponse))
-                            continue;
-
-                        return new GetNewAlbumsOutput
-                        {
-                            ErrorMessage = searchResponse.Error.Message
-                        };
-                    }
+                try
+                {
+                    var searchResponse = await search.Item(searchRequest);
 
                     if (searchResponse.Albums.Items == null || searchResponse.Albums.Items.Count == 0)
                         break;
@@ -339,33 +313,38 @@ namespace NewAlbums.Spotify
                             Name = albumItem.Name,
                             Image = GetImage(albumItem.Images, 200),
                             ReleaseDate = albumItem.ReleaseDate,
-                            //Artists = albumItem.Artists.Select(artistItem => new ArtistDto
-                            //{
-                            //    SpotifyId = artistItem.Id,
-                            //    Name = artistItem.Name
-                            //}).ToList()
-                        })
+                                //Artists = albumItem.Artists.Select(artistItem => new ArtistDto
+                                //{
+                                //    SpotifyId = artistItem.Id,
+                                //    Name = artistItem.Name
+                                //}).ToList()
+                            })
                     );
 
-                    if (!searchResponse.Albums.HasNextPage())
+                    if (String.IsNullOrEmpty(searchResponse.Albums.Next))
                         break;
 
                     i++;
                 }
+                catch (APITooManyRequestsException ex)
+                {
+                    await HandleRateLimitingError(ex);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "");
 
-                return new GetNewAlbumsOutput
-                {
-                    Albums = albums
-                };
+                    return new GetNewAlbumsOutput
+                    {
+                        ErrorMessage = ex.Message
+                    };
+                }
             }
-            catch (Exception ex)
+
+            return new GetNewAlbumsOutput
             {
-                Logger.LogError(ex, "");
-                return new GetNewAlbumsOutput
-                {
-                    ErrorMessage = ex.Message
-                };
-            }
+                Albums = albums
+            };
         }
 
         /// <summary>
@@ -376,57 +355,38 @@ namespace NewAlbums.Spotify
         {
             string clientId = _configuration.GetValue<string>(AppSettingKeys.Spotify.ClientId);
             string clientSecret = _configuration.GetValue<string>(AppSettingKeys.Spotify.ClientSecret);
+            var config = SpotifyClientConfig.CreateDefault();
 
-            var auth = new CredentialsAuth(clientId, clientSecret);
-
-            var accessToken = await auth.GetToken();
-
-            if (accessToken.HasError())
+            try
             {
-                Logger.LogError("ClientId: {0}, Error: {1}, ErrorDescription: {2}", clientId, accessToken.Error, accessToken.ErrorDescription);
-                throw new Exception("Error requesting Spotify access token: " + accessToken.Error);
-            }
+                var request = new ClientCredentialsRequest(clientId, clientSecret);
+                var response = await new OAuthClient(config).RequestToken(request);
 
-            return new GetSpotifyApiOutput
-            {
-                Api = new SpotifyWebAPI
+                return new GetSpotifyApiOutput
                 {
-                    AccessToken = accessToken.AccessToken,
-                    TokenType = accessToken.TokenType,
-                    UseAuth = true
-                },
-                Token = accessToken
-            };
+                    Api = new SpotifyClient(response.AccessToken, response.TokenType),
+                    TokenResponse = response
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("ClientId: {0}, Message: {1}", clientId, ex.Message);
+                throw new Exception("Error requesting Spotify access token: " + ex.Message);
+            }
         }
 
         /// <summary>
-        /// Returns true if there was a rate limit error and we waited long enough to try again.
         /// https://developer.spotify.com/documentation/web-api/#rate-limiting
         /// </summary>
-        private async Task<bool> HandleRateLimitingError(BasicModel response)
+        private async Task HandleRateLimitingError(APITooManyRequestsException ex)
         {
-            //Handle rate limiting: https://developer.spotify.com/documentation/web-api/#rate-limiting
-            if (response.StatusCode() == HttpStatusCode.TooManyRequests)
-            {
-                string retryAfterSeconds = response.Header("Retry-After");
+            TimeSpan retryAfter = ex.RetryAfter;
 
-                Logger.LogInformation("Received TooManyRequests response with Retry-After: {0}", retryAfterSeconds);
+            Logger.LogInformation("Received TooManyRequests response with Retry-After: {0}", retryAfter.TotalSeconds);
 
-                if (!String.IsNullOrWhiteSpace(retryAfterSeconds))
-                {
-                    int retryAfterSecondsInt = 0;
-                    if (int.TryParse(retryAfterSeconds, out retryAfterSecondsInt))
-                    {
-                        //Safest to add one second here, see comments for: https://stackoverflow.com/a/30557896
-                        retryAfterSecondsInt++;
-                        await Task.Delay(retryAfterSecondsInt * 1000);
-
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            // Handle rate limiting: https://developer.spotify.com/documentation/web-api/#rate-limiting
+            // Safest to add one second here, see comments for: https://stackoverflow.com/a/30557896
+            await Task.Delay((int) (retryAfter.TotalSeconds + 1) * 1000);
         }
 
         /// <summary>

@@ -1,4 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NewAlbums.Configuration;
 using NewAlbums.Debugging;
@@ -7,14 +13,6 @@ using NewAlbums.Paths;
 using NewAlbums.Utils;
 using RestSharp;
 using RestSharp.Authenticators;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NewAlbums.Emails
 {
@@ -42,7 +40,12 @@ namespace NewAlbums.Emails
             if (DebugHelper.IsDebug)
             {
                 //Don't actually send the email in debug/development mode
-                return null;
+                // return null;
+
+                email.ToAddresses = new List<EmailAddress>
+                {
+                    new EmailAddress { Address = "ellfish@gmail.com", DisplayName = "Elliot" }
+                };
             }
 
             string error = null;
