@@ -40,7 +40,7 @@ namespace NewAlbums.Emails
             if (DebugHelper.IsDebug)
             {
                 //Don't actually send the email in debug/development mode
-                // return null;
+                return null;
 
                 email.ToAddresses = new List<EmailAddress>
                 {
