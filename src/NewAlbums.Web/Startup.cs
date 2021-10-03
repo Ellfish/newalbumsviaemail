@@ -1,17 +1,18 @@
+using System;
+using System.IO;
+using System.Reflection;
 using GenericServices.Configuration;
 using GenericServices.Setup;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using NewAlbums.Albums;
@@ -28,10 +29,6 @@ using NewAlbums.Web.Filters;
 using NewAlbums.Web.Responses.Common;
 using NewAlbums.Web.Rules;
 using Newtonsoft.Json;
-using NWebsec.Core.Common.Middleware.Options;
-using System;
-using System.IO;
-using System.Reflection;
 
 namespace NewAlbums.Web
 {
@@ -47,6 +44,8 @@ namespace NewAlbums.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers();
+
             services.AddDbContext<NewAlbumsDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Default")));
 
@@ -54,7 +53,7 @@ namespace NewAlbums.Web
                 new GenericServicesConfig
                 {
                     NoErrorOnReadSingleNull = true
-                }, 
+                },
                 Assembly.GetAssembly(typeof(BaseAppService))
             );
 
@@ -70,8 +69,6 @@ namespace NewAlbums.Web
             services.AddTransient<TemplateManager>();
             services.AddTransient<IPathProvider, PathProvider>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
             services.AddScoped<RequestValidationAttribute>();
 
             // In production, the React files will be served from this directory
@@ -82,7 +79,7 @@ namespace NewAlbums.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             //Set the injected loggerFactory (which is used by ASP.NET logging messages) as the singleton instance to use everywhere
             NewAlbumsLogging.ConfigureLogger(loggerFactory);
@@ -182,11 +179,13 @@ namespace NewAlbums.Web
                 });
             });
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
             app.UseSpa(spa =>

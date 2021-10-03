@@ -11,7 +11,7 @@ export default function Footer(props) {
                     New Albums via Email
                 </li>
                 <li>
-                    An app by <a href='http://www.icebergweb.com.au'>Iceberg Web Development</a>
+                    An app by <a href='https://icebergweb.com.au'>Iceberg Web Development</a>
                 </li>
                 <li>
                     Source code on <a href='https://github.com/Ellfish/newalbumsviaemail'>Github</a>

@@ -11,7 +11,6 @@ I used the Visual Studio React template, which utilises [Create React App](https
 
 - Clone the repo
 - Install the following dependencies:
-  - .NET Core 2.1
   - Node 10.16+
   - npm 6.9+
 - I use Visual Studio 2019 Community, I haven't tested this setup otherwise
