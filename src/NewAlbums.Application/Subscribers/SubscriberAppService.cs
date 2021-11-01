@@ -149,8 +149,6 @@ namespace NewAlbums.Subscribers
             }
             catch (Exception ex)
             {
-                Logger.LogInformation($"Connection: {_configuration.GetConnectionString("Default")}");
-
                 Logger.LogError(ex, $"Code {input.VerifyCode}");
                 return new CheckEmailVerificationOutput
                 {
