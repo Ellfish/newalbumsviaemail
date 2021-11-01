@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using GenericServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NewAlbums.Albums;
-using NewAlbums.Albums.Dto;
 using NewAlbums.Configuration;
 using NewAlbums.Emails;
 using NewAlbums.Emails.Dto;
@@ -53,8 +51,8 @@ namespace NewAlbums.Subscribers
                         ? Guid.NewGuid().ToString("N").ToLowerInvariant().Truncate(Subscriber.MAX_LENGTH_EMAIL_VERIFY_CODE)
                         : null;
 
-                    subscriberDto = await _crudServices.CreateAndSaveAsync(new SubscriberDto 
-                    { 
+                    subscriberDto = await _crudServices.CreateAndSaveAsync(new SubscriberDto
+                    {
                         EmailAddress = normalisedEmail,
                         EmailAddressVerified = input.EmailAddressVerified,
                         EmailVerifyCode = emailVerifyCode
@@ -151,6 +149,8 @@ namespace NewAlbums.Subscribers
             }
             catch (Exception ex)
             {
+                Logger.LogInformation($"Connection: {_configuration.GetConnectionString("Default")}");
+
                 Logger.LogError(ex, $"Code {input.VerifyCode}");
                 return new CheckEmailVerificationOutput
                 {
@@ -208,7 +208,7 @@ namespace NewAlbums.Subscribers
 
                     await _emailManager.SendEmail(email);
                 }
-                
+
                 return new NotifySubscribersOutput();
             }
             catch (Exception ex)
@@ -250,7 +250,7 @@ namespace NewAlbums.Subscribers
                     new BodyParagraph { HtmlText = "Click Here to Listen", ButtonUrl = $"{Album.GetSpotifyUrl(input.Album.SpotifyId)}" }
                 },
                 FooterLines = new List<FooterLine>
-                { 
+                {
                     new FooterLine { HtmlText = _templateManager.GetEmailLink(unsubscribeArtistUrl, "Unsubscribe", null, "12px") + " from new albums for this artist." },
                     new FooterLine { HtmlText = _templateManager.GetEmailLink(unsubscribeAllUrl, "Unsubscribe", null, "12px") + " from all new albums from us." }
                 }
