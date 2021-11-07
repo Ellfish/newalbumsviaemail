@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using GenericServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,10 +13,14 @@ namespace NewAlbums.Artists
     public class ArtistAppService : BaseAppService, IArtistAppService
     {
         private readonly ICrudServicesAsync _crudServices;
+        private readonly IMapper _mapper;
 
-        public ArtistAppService(ICrudServicesAsync crudServices)
+        public ArtistAppService(
+            ICrudServicesAsync crudServices,
+            IMapper mapper)
         {
             _crudServices = crudServices;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -71,7 +75,9 @@ namespace NewAlbums.Artists
         {
             try
             {
-                var allArtistsQuery = _crudServices.ReadManyNoTracked<ArtistDto>();
+                // Had to map outside of _crudServices (ie couldn't pass <ArtistDto> here). Was throwing an exception
+                // about the include below being invalid.
+                var allArtistsQuery = _crudServices.ReadManyNoTracked<Artist>();
 
                 if (input.IncludeAlbums)
                 {
@@ -79,12 +85,13 @@ namespace NewAlbums.Artists
                         .Include(a => a.Albums)
                             .ThenInclude(al => al.Album);
                 }
-                    
+
                 var allArtists = await allArtistsQuery.ToListAsync();
 
                 return new GetAllArtistsOutput
                 {
-                    Artists = allArtists
+
+                    Artists = _mapper.Map<IList<ArtistDto>>(allArtists)
                 };
             }
             catch (Exception ex)

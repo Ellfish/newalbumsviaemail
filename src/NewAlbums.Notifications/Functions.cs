@@ -1,4 +1,8 @@
-﻿using Microsoft.Azure.WebJobs;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using NewAlbums.Albums;
 using NewAlbums.Albums.Dto;
@@ -10,11 +14,6 @@ using NewAlbums.Subscribers;
 using NewAlbums.Subscribers.Dto;
 using NewAlbums.Subscriptions;
 using NewAlbums.Subscriptions.Dto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NewAlbums.Notifications
 {
@@ -80,8 +79,10 @@ namespace NewAlbums.Notifications
                 //If the album came out recently and we don't know about it (ie it wasn't under the Artist.Albums collection),
                 //then we want to notify about it
                 var newReleaseAlbums = artistAlbumsOutput.Albums
-                    .Where(a => a.ReleaseDateNormalised >= newReleaseCutoff 
+                    .Where(a => a.ReleaseDateNormalised >= newReleaseCutoff
                         && !artist.Albums.Any(al => al.Album.SpotifyId == a.SpotifyId))
+                    // Handle the most recent first
+                    .Reverse()
                     .ToList();
 
                 if (newReleaseAlbums.Any())
@@ -102,23 +103,37 @@ namespace NewAlbums.Notifications
 
                     if (subscriptionsOutput.Subscriptions.Any())
                     {
-                        //Generally there will just be one newReleaseAlbum. Doesn't matter if we send multiple emails per artist
-                        //in the rare case that more than one new release came out for them.
+                        // Generally there will just be one newReleaseAlbum. Doesn't matter if we send multiple emails per artist
+                        // in the rare case that more than one unique new release came out for them.
+
+                        // Nov 2021: Spotify adds multiple versions of the same album at once, with different variations on the
+                        // capitalisation of the name or other details. This is very annoying. Attempt to only notify about one version by keeping track
+                        // of the names.
+                        // We have called Reverse on the albums above to handle the most recent first, hopefully the most recent copy is the most "correct" one.
+                        var notifiedAlbumNames = new List<string>();
+
                         foreach (var newReleaseAlbum in newReleaseAlbums)
                         {
-                            //Send notification for all subscriptions
-                            var notifyOutput = await _subscriberAppService.NotifySubscribers(new NotifySubscribersInput
-                            {
-                                Artist = artist,
-                                Album = newReleaseAlbum,
-                                Subscriptions = subscriptionsOutput.Subscriptions
-                            });
+                            string normalisedAlbumName = newReleaseAlbum.Name.ToLowerInvariant().Trim();
 
-                            if (notifyOutput.HasError)
+                            if (!notifiedAlbumNames.Contains(normalisedAlbumName))
                             {
-                                logger.LogError(notifyOutput.ErrorMessage);
-                                //Don't let one error stop the entire thing from running, skip and move on to the next
-                                continue;
+                                // Send notification for all subscriptions
+                                var notifyOutput = await _subscriberAppService.NotifySubscribers(new NotifySubscribersInput
+                                {
+                                    Artist = artist,
+                                    Album = newReleaseAlbum,
+                                    Subscriptions = subscriptionsOutput.Subscriptions
+                                });
+
+                                if (notifyOutput.HasError)
+                                {
+                                    logger.LogError(notifyOutput.ErrorMessage);
+                                    // Don't let one error stop the entire thing from running, skip and move on to the next
+                                    continue;
+                                }
+
+                                notifiedAlbumNames.Add(normalisedAlbumName);
                             }
                         }
                     }

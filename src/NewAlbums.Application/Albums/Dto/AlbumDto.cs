@@ -1,11 +1,7 @@
-﻿using GenericServices;
-using NewAlbums.Artists.Dto;
+﻿using System;
+using GenericServices;
 using NewAlbums.Entities;
 using NewAlbums.Spotify.Dto;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
 
 namespace NewAlbums.Albums.Dto
 {

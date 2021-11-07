@@ -313,12 +313,12 @@ namespace NewAlbums.Spotify
                             Name = albumItem.Name,
                             Image = GetImage(albumItem.Images, 200),
                             ReleaseDate = albumItem.ReleaseDate,
-                                //Artists = albumItem.Artists.Select(artistItem => new ArtistDto
-                                //{
-                                //    SpotifyId = artistItem.Id,
-                                //    Name = artistItem.Name
-                                //}).ToList()
-                            })
+                            //Artists = albumItem.Artists.Select(artistItem => new ArtistDto
+                            //{
+                            //    SpotifyId = artistItem.Id,
+                            //    Name = artistItem.Name
+                            //}).ToList()
+                        })
                     );
 
                     if (String.IsNullOrEmpty(searchResponse.Albums.Next))

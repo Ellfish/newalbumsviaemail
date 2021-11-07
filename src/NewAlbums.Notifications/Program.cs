@@ -1,7 +1,11 @@
-﻿using GenericServices.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
+using GenericServices.Configuration;
 using GenericServices.Setup;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,11 +21,6 @@ using NewAlbums.Paths;
 using NewAlbums.Spotify;
 using NewAlbums.Subscribers;
 using NewAlbums.Subscriptions;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace NewAlbums.Notifications
 {
@@ -90,6 +89,8 @@ namespace NewAlbums.Notifications
                     },
                     Assembly.GetAssembly(typeof(BaseAppService))
                 );
+
+                serviceCollection.AddAutoMapper(typeof(IArtistAppService));
 
                 //NewsAlbums.Application services
                 serviceCollection.AddTransient<ISpotifyAppService, SpotifyAppService>();

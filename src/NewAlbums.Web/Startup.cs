@@ -57,6 +57,8 @@ namespace NewAlbums.Web
                 Assembly.GetAssembly(typeof(BaseAppService))
             );
 
+            services.AddAutoMapper(typeof(IArtistAppService));
+
             //NewsAlbums.Application services
             services.AddTransient<ISpotifyAppService, SpotifyAppService>();
             services.AddTransient<IArtistAppService, ArtistAppService>();
