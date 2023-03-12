@@ -26,10 +26,11 @@ $btn-font-weight: 700;
 //$input-border: #ccc;
 $input-border-focus: $colour-primary;
 
-//
+//Icons ($icon-font-path required for `npm run build` March 2023, and commented out bootstrap-sprockets import)
+$icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
+
 //Import Bootstrap
-//
-@import '~bootstrap-sass/assets/stylesheets/bootstrap-sprockets';
+//@import '~bootstrap-sass/assets/stylesheets/bootstrap-sprockets';
 @import '~bootstrap-sass/assets/stylesheets/bootstrap';
 
 //Not an override, but additional styling provided by Bootstrap
